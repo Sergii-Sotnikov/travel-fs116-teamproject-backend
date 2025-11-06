@@ -1,6 +1,12 @@
 import { Router } from 'express';
-import { ctrlWrapper } from "../utils/ctrlWrapper.js";
-import { createStoryController, getAllStoriesController, patchStoryController } from '../controllers/stories.js';
+import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+import {
+  createStoryController,
+  getAllStoriesController,
+  patchStoryController,
+} from '../controllers/stories.js';
+import { isValidId } from '../middlewares/isValidId.js';
+import { upload } from '../middlewares/multer.js';
 
 const router = Router();
 
@@ -9,7 +15,11 @@ router.get('/', ctrlWrapper(getAllStoriesController)); //створити пуб
 
 //приватний
 router.post('/', ctrlWrapper(createStoryController)); //створити приватний ендпоінт для СТВОРЕННЯ історії
-router.patch('/:id', ctrlWrapper(patchStoryController)); //створити приватний ендпоінт для РЕДАГУВАННЯ історії
-
+router.patch(
+  '/:storyId',
+  isValidId,
+  upload.single('storyImage'),
+  ctrlWrapper(patchStoryController),
+); //створити приватний ендпоінт для РЕДАГУВАННЯ історії
 
 export default router;
