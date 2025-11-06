@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-export const updateStorySchema = Joi.object({
+const updateStorySchema = Joi.object({
   title: Joi.string()
     .max(80)
     .messages({
@@ -27,3 +27,5 @@ export const updateStorySchema = Joi.object({
 
   storyImage: Joi.string().optional(),
 }).or('title', 'description', 'category', 'storyImage');
+
+export default updateStorySchema;

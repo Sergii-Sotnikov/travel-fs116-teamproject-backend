@@ -1,6 +1,6 @@
-import updateStorySchema from '../validation/story';
-import { updateStoryById } from '../services/stories';
-import { checkCategoryExists } from '../services/categories';
+import updateStorySchema from '../validation/story.js';
+import { updateStoryById } from '../services/stories.js';
+import { checkCategoryExists } from '../services/categories.js';
 import createHttpError from 'http-errors';
 import fs from 'node:fs/promises';
 

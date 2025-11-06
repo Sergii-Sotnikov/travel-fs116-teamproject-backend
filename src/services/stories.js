@@ -1,4 +1,4 @@
-import Story from '../db/models/story';
+import Story from '../db/models/story.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
 export async function updateStoryById(
