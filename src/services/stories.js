@@ -1,5 +1,4 @@
 
-import Story from '../db/models/story.js';
 import { TravellersCollection } from '../db/models/traveller.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
