@@ -11,6 +11,7 @@ import {
 } from '../controllers/stories.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import { upload } from '../middlewares/multer.js';
+import authenticate from '../middlewares/authenticate.js';
 
 
 const router = Router();
@@ -23,6 +24,7 @@ router.post('/', ctrlWrapper(createStoryController)); //створити при�
 router.delete('saved-stories/:storyId', /*authenticate middleware*/ ctrlWrapper(deleteMeSavedStoriesController)) //роутер для удаления истории
 router.patch(
   '/:storyId',
+  authenticate,
   isValidId,
   upload.single('storyImage'),
   ctrlWrapper(patchStoryController),
