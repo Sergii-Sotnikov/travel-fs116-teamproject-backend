@@ -48,6 +48,8 @@ export const updateUserAvatar = async (userId, avatarUrl) => {
     console.error('Error updating user avatar:', error);
     throw error;
   }
+}
+
 
 export const getUserById = async (userId) => {
   const user = await UsersCollection.findById(userId)
