@@ -1,38 +1,60 @@
-# docs/openapi.yaml
-
 openapi: 3.1.0
 info:
   version: 1.0.0
-  title: PhoneBook app
+  title: Contacts App
+  description: REST API documentation for the Contacts App
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  description:
-    This is a documentation of PhoneBook app
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+  - url: https://contacts-app-uz3k.onrender.com
+    description: Production server
+
 tags:
   - name: Contacts
-    description: Operations about users.
+    description: Operations related to managing user contacts (CRUD, favorites, photos)
   - name: Auth
-    description: Auth operations.
-servers:
-  - url: https://contacts-app-0bay.onrender.com
-  - url: http://localhost:3000
+    description: Authentication and authorization operations (login, logout, reset password)
+
 paths:
-  /contacts:
-    post: 
-      $ref: ../swagger/paths/contacts/post.yaml
-    get: 
-      $ref: ../swagger/paths/contacts/get.yaml
-  /contacts/{id}:
+  /users:
     get:
-      $ref: ../swagger/paths/contacts/{id}/get.yaml
-    delete:
-      $ref: '../swagger/paths/contacts/{id}/delete.yaml'
-    patch:
-      $ref: '../swagger/paths/contacts/{id}/patch.yaml'
+      $ref: '../swagger/paths/users/get.yaml'
+  #   post:
+  #     $ref: '../swagger/paths/users/post.yaml'
+  # /users/{Id}:
+  #   get:
+  #     $ref: '../swagger/paths/users/{Id}/get.yaml'
+  #   patch:
+  #     $ref: '../swagger/paths/users/{Id}/patch.yaml'
+  #   delete:
+  #     $ref: '../swagger/paths/users/{Id}/delete.yaml'
+
+  /auth/login:
+    post:
+      $ref: '../swagger/paths/auth/login.yaml'
+  /auth/register:
+    post:
+      $ref: '../swagger/paths/auth/register.yaml'
+  /auth/logout:
+    post:
+      $ref: '../swagger/paths/auth/logout.yaml'
+  /auth/refresh:
+    post:
+      $ref: '../swagger/paths/auth/refresh.yaml'
+  /auth/reset-pwd:
+    post:
+      $ref: '../swagger/paths/auth/reset-pwd.yaml'
+  /auth/send-reset-email:
+    post:
+      $ref: '../swagger/paths/auth/send-reset-email.yaml'
 
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
+      bearerFormat: JWT

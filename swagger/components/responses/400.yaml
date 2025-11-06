@@ -1,0 +1,19 @@
+description: Bad Request - validation or incorrect request parameters
+content:
+  application/json:
+    schema:
+      type: object
+      required:
+        - status
+        - message
+        - data
+      properties:
+        status:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: Invalid request parameters
+        data:
+          type: object
+          example: {}

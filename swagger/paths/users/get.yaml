@@ -1,0 +1,29 @@
+tags:
+  - Users
+summary: Get all users
+operationId: getUsers
+description: Retrieve a paginated list of users
+security:
+  - bearerAuth: []
+
+parameters:
+  - in: query
+    name: page
+    schema:
+      type: integer
+      example: 1
+    description: Page number for pagination
+  - in: query
+    name: perPage
+    schema:
+      type: integer
+      example: 10
+    description: Number of users per page
+
+responses:
+  '200':
+    $ref: '../../components/responses/200-users.yaml'
+  '401':
+    $ref: '../../components/responses/401-noAccess.yaml'
+  '500':
+    $ref: '../../components/responses/500.yaml'
