@@ -6,6 +6,5 @@ import users from './users.js';
 const router = Router();
 
 router.use('/auth', authRouter);
-// router.use('/stories', stories);
 router.use('/users', users);
 export default router;
