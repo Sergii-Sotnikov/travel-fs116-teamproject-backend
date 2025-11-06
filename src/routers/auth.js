@@ -1,22 +1,27 @@
-import { Router } from 'express';
+// import { Router } from 'express';
 
-const router = Router();
+// const router = Router();
 
-//публічні
+
+// //публічні
+
 // router.post('/register'); // створити публічний ендпоінт реєстрації користувача
 // router.post('/login'); // створити публічний ендпоінт логінізації користувача
 // router.post('/refresh');// рефреш токен
 
-//приватні
+// //приватні
 // router.post('/logout'); // створити приватний ендпоінт для логаута користувача
 
-//додаткове завдання
+// //додаткове завдання
+
 // router.post('/send-reset-email');
 // router.post('/reset-password');
 // router.get('/get-oauth-url');
 // router.post('/confirm-oauth');
+
 router.get('/', (req, res) => {
   res.json({ message: 'Auth router is working' });
 });
 
-export default router;
+
+// export default router;
