@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { getEnvVar } from './utils/getEnvVar.js';
 import router from './routers/index.js';
+import authRouter from './routers/auth.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import cookieParser from 'cookie-parser';
@@ -33,7 +34,7 @@ export async function setupServer() {
   });
 
   //Додаємо роутер як middleware
-  app.use(router);
+  app.use('/api', router);
 
   app.use((req, res) => {
     res.status(404).json({
