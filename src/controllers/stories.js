@@ -1,15 +1,23 @@
-import updateStorySchema from '../validation/traveller.js';
-import { updateStoryById } from '../services/stories.js';
+
+import updateStorySchema from '../validation/story.js';
+import { getAllStories, updateStoryById } from '../services/stories.js';
+
+
 import { checkCategoryExists } from '../services/categories.js';
 import createHttpError from 'http-errors';
 import fs from 'node:fs/promises';
 
 export const getAllStoriesController = async (req, res) => {
+  const result = await getAllStories(req.query);
+
   res.json({
     status: 200,
     message: 'Successfully found stories!',
+    ...result,
   });
 };
+
+
 
 export const createStoryController = async (req, res) => {
   res.status(201).json({
