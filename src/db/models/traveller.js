@@ -8,10 +8,12 @@ const travellersSchema = new Schema(
     },
     title: {
       type: String,
+      maxlength: 80,
       required: true,
     },
     article: {
       type: String,
+      maxlength: 2500,
       required: true,
     },
     category: {

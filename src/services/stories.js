@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Story from '../db/models/story.js';
+import { TravellersCollection } from '../db/models/traveller.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
 export async function updateStoryById(
@@ -19,7 +19,7 @@ export async function updateStoryById(
   const storyObjectId = new mongoose.Types.ObjectId(storyId);
   const ownerObjectId = new mongoose.Types.ObjectId(ownerId);
 
-  const rawResult = await Story.findOneAndUpdate(
+  const rawResult = await TravellersCollection.findOneAndUpdate(
     { _id: storyObjectId, ownerId: ownerObjectId },
     updateData,
     {

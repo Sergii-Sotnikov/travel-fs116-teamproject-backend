@@ -1,4 +1,4 @@
-import updateStorySchema from '../validation/story.js';
+import updateStorySchema from '../validation/traveller.js';
 import { updateStoryById } from '../services/stories.js';
 import { checkCategoryExists } from '../services/categories.js';
 import createHttpError from 'http-errors';
