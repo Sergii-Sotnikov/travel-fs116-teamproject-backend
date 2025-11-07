@@ -39,6 +39,21 @@ export const deleteSavedStory = async (userId, storyId) => {
 };
 
 
+export async function updateMe(userId, payload, options = {}) {
+  return UsersCollection.findOneAndUpdate(
+    { _id: userId },
+    { $set: payload },
+    {
+      new: true,
+      runValidators: true,
+      projection: '_id name description avatarUrl articlesAmount createdAt',
+      lean: true,
+      ...options,
+    },
+  );
+}
+
+
 export const updateUserAvatar = async (userId, avatarUrl) => {
   try {
     const updatedUser = await UsersCollection.findByIdAndUpdate(

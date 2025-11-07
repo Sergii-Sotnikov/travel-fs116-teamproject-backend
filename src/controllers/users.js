@@ -1,8 +1,7 @@
 
+import createHttpError from 'http-errors';
 import * as usersService from '../services/users.js';
-
-import { getAllUsers, getUserById, updateUserAvatar} from '../services/users.js';
-
+import { getAllUsers, getUserById, updateUserAvatar, updateMe} from '../services/users.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { deleteSavedStory } from '../services/users.js';
 import { uploadImageToCloudinary } from '../services/cloudinary.js';
@@ -26,6 +25,7 @@ export const getAllUsersController = async (req, res) => {
 export const getUsersByIdController = async (req, res) => {
   const { userId } = req.params;
   const data = await getUserById(userId);
+
   res.status(200).json({
     status: 200,
     message: `Successfully found users with id!`,
@@ -34,7 +34,9 @@ export const getUsersByIdController = async (req, res) => {
 };
 
 export const getMeProfileController = async (req, res) => {
+
   const user = req.user;
+
   res.status(200).json({
     status: 200,
     message: `Successfully found the user with id: ${user.userId}`,
@@ -50,6 +52,30 @@ export const createMeSavedStoriesController = async (req, res) => {
 };
 
 export const deleteMeSavedStoriesController = async (req, res) => {
+
+  res.status(204).send();
+};
+
+export const patchMeAvatarController = async (req, res) => {
+  res.json({
+    status: 200,
+    message: `Successfully patched a avatar!`,
+  });
+};
+
+export const patchMeController = async (req, res, next) => {
+  const userId = req.user?._id || req.user?.id;
+  const user = await updateMe(userId, req.body);
+
+  if (!user) {
+    return next(createHttpError(404, 'User not found'));
+  }
+
+  res.json({
+    status: 200,
+    message: `Successfully patched my profile!`,
+    data: user,
+
   const userId = req.user._id;
   const { storyId } = req.params;
 
@@ -107,7 +133,6 @@ export const patchMeController = async (req, res) => {
     status: 200,
     message: `Successfully patched my profile!`,
   });
-
 };
 
 
@@ -133,4 +158,3 @@ export const addSavedArticle = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
