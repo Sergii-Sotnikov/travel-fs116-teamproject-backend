@@ -1,4 +1,4 @@
-import { UsersCollection } from '../db/models/user.js';
+import { UserCollection } from '../db/models/user.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
 export const getAllUsers = async ({ page = 1, perPage = 12 }) => {
@@ -7,10 +7,10 @@ export const getAllUsers = async ({ page = 1, perPage = 12 }) => {
 
   try {
     // Підрахунок кількості користувачів
-    const usersCount = await UsersCollection.countDocuments();
+    const usersCount = await UserCollection.countDocuments();
 
     // Отримуємо користувачів без пароля
-    const users = await UsersCollection.find({}, '-password')
+    const users = await UserCollection.find({}, '-password')
       .skip(skip)
       .limit(limit)
       .lean();

@@ -2,11 +2,12 @@ import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
+
 import { getEnvVar } from './utils/getEnvVar.js';
 import router from './routers/index.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
-import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ const PORT = Number(getEnvVar('PORT', '3000'));
 export async function setupServer() {
   const app = express();
 
+  // Middleware
   app.use(express.json());
   app.use(cors());
   app.use(cookieParser());
@@ -26,32 +28,28 @@ export async function setupServer() {
     }),
   );
 
-  //Логування запитів
-  app.use((req, res, next) => {
+  // Логування запитів
+  app.use((req, _res, next) => {
     console.log(`Time: ${new Date().toLocaleString()}`);
     next();
   });
 
-  //Додаємо роутер як middleware
-  app.use(router);
+  // ✅ Підключаємо всі маршрути з префіксом /api
+  app.use('/api', router);
 
-  app.use((req, res) => {
-    res.status(404).json({
-      message: 'Not found',
-    });
-  });
+  // 404 для невідомих маршрутів
+  app.use(notFoundHandler);
 
-  app.use('', notFoundHandler);
-
+  // Глобальний обробник помилок
   app.use(errorHandler);
 
-  //запуск сервера
+  // Запуск сервера
   try {
     app.listen(PORT, (error) => {
       if (error) throw error;
+      console.log(`✅ Server is running on port ${PORT}`);
     });
-    console.log(`Server is running on port ${PORT}`);
   } catch (error) {
-    console.error(error);
+    console.error('❌ Server startup error:', error);
   }
 }

@@ -1,27 +1,55 @@
 import { Router } from 'express';
+import {
+  loginUserController,
+  registerUserController,
+  logoutUserController,
+  refreshUserSessionController,
+  sendResetEmailController,
+  resetPasswordController,
+  getGoogleOAuthUrlController,
+  loginWithGoogleOAuthController,
+} from '../controllers/auth.js';
+import {
+  registerUserSchema,
+  loginUserSchema,
+  requestResetEmailSchema,
+  resetPasswordSchema,
+  loginWithGoogleOAuthSchema,
+} from '../validation/auth.js';
+import { validateBody } from '../middlewares/validateBody.js';
 
-const router = Router();
+const authRouter = Router();
 
+authRouter.post(
+  '/register',
+  validateBody(registerUserSchema),
+  registerUserController,
+);
 
-// //публічні
+authRouter.post('/login', validateBody(loginUserSchema), loginUserController);
 
-// router.post('/register'); // створити публічний ендпоінт реєстрації користувача
-// router.post('/login'); // створити публічний ендпоінт логінізації користувача
-// router.post('/refresh');// рефреш токен
+authRouter.post('/logout', logoutUserController);
 
-// //приватні
-// router.post('/logout'); // створити приватний ендпоінт для логаута користувача
+authRouter.post('/refresh', refreshUserSessionController);
 
-// //додаткове завдання
+authRouter.post(
+  '/send-reset-email',
+  validateBody(requestResetEmailSchema),
+  sendResetEmailController,
+);
 
-// router.post('/send-reset-email');
-// router.post('/reset-password');
-// router.get('/get-oauth-url');
-// router.post('/confirm-oauth');
+authRouter.post(
+  '/reset-password',
+  validateBody(resetPasswordSchema),
+  resetPasswordController,
+);
 
-router.get('/', (req, res) => {
-  res.json({ message: 'Auth router is working' });
-});
+authRouter.get('/google/get-oauth-url', getGoogleOAuthUrlController);
 
+authRouter.post(
+  '/google/confirm-oauth',
+  validateBody(loginWithGoogleOAuthSchema),
+  loginWithGoogleOAuthController,
+);
 
-// export default router;
+export default authRouter;
