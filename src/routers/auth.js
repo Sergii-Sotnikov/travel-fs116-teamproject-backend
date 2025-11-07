@@ -15,20 +15,9 @@ import { resetPasswordController } from '../controllers/auth.js';
 
 const authRouter = Router();
 
-authRouter.post(
-  '/register',
-  validateBody(registerUserSchema),
-  ctrlWrapper(registerUserController),
-);
-
-authRouter.post(
-  '/login',
-  validateBody(loginUserSchema),
-  ctrlWrapper(loginUserController),
-);
-
+authRouter.post('/register', validateBody(registerUserSchema), ctrlWrapper(registerUserController));
+authRouter.post('/login',validateBody(loginUserSchema),ctrlWrapper(loginUserController));
 authRouter.post('/refresh', ctrlWrapper(refreshUserSessionController));
-
 authRouter.post('/logout', ctrlWrapper(logoutUserController));
 
 authRouter.post(

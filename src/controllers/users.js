@@ -113,10 +113,8 @@ export const patchMeAvatarController = async (req, res) => {
     data: {
       avatarUrl: updatedUser.avatarUrl,
     },
-
   });
 };
-
 
 
 export const addSavedArticle = async (req, res) => {
