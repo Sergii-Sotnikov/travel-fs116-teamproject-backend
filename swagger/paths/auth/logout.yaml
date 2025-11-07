@@ -1,0 +1,10 @@
+tags:
+  - Auth
+summary: Logout user
+operationId: logoutUser
+description: Log out user and invalidate access token
+security:
+  - bearerAuth: []
+responses:
+  '204':
+    $ref: '../../components/responses/204.yaml'

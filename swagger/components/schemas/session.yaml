@@ -1,0 +1,53 @@
+type: object
+required:
+  - _id
+  - userId
+  - accessToken
+  - refreshToken
+  - accessTokenValidUntil
+  - refreshTokenValidUntil
+
+properties:
+  _id:
+    type: string
+    description: "Session's unique identifier (MongoDB ObjectId)"
+    example: 65e4decdd286b30065d54af9
+
+  userId:
+    type: string
+    description: 'User ID associated with this session (MongoDB ObjectId)'
+    example: 650f1b2a3c5d6e7f8a9b0c1d
+
+  accessToken:
+    type: string
+    description: 'JWT access token used for authorized API requests'
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+
+  refreshToken:
+    type: string
+    description: 'Refresh token used to obtain a new access token'
+    example: 'd1f3a5a2-35e0-4a9a-85d2-5e54bc36a9de'
+
+  accessTokenValidUntil:
+    type: string
+    format: date-time
+    description: 'Expiration date and time for the access token'
+    example: '2025-11-06T19:45:00.000Z'
+
+  refreshTokenValidUntil:
+    type: string
+    format: date-time
+    description: 'Expiration date and time for the refresh token'
+    example: '2025-12-06T19:45:00.000Z'
+
+  createdAt:
+    type: string
+    format: date-time
+    description: 'Date and time when the session was created'
+    example: '2025-11-06T18:30:00.000Z'
+
+  updatedAt:
+    type: string
+    format: date-time
+    description: 'Date and time when the session was last updated'
+    example: '2025-11-06T18:45:00.000Z'

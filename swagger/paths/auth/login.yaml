@@ -1,0 +1,17 @@
+tags:
+  - Auth
+summary: Login user
+operationId: loginUser
+description: Authenticate a user and return access and refresh tokens
+security: []
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: '../../components/schemas/loginUser.yaml'
+responses:
+  '200':
+    $ref: '../../components/responses/200-login.yaml'
+  '401':
+    $ref: ../../components/responses/401-userNotFound.yaml

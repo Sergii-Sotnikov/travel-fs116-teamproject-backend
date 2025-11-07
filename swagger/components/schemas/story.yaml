@@ -1,0 +1,55 @@
+type: object
+required:
+  - _id
+  - img
+  - title
+  - article
+  - category
+  - ownerId
+  - date
+  - favoriteCount
+  - createdAt
+  - updatedAt
+properties:
+              _id:
+                type: string
+                example: 672b6cfea9f43a5e8f9f21a2
+              img:
+                type: string
+                example: https://example.com/images/story1.jpg
+              title:
+                type: string
+                example: My Travel Story
+              article:
+                type: string
+                example: A detailed story about my trip to Iceland...
+              category:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: 672a5fe1c31a4c67fdfb12f9
+
+              ownerId:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: 671f8a22b5e9a8e4c1d7f9b3
+
+              date:
+                type: string
+                format: date-time
+                example: 2025-10-25T12:00:00.000Z
+              favoriteCount:
+                type: integer
+                example: 4
+
+              createdAt:
+                type: string
+                format: date-time
+                example: 2025-10-08T18:21:10.157+00:00
+              updatedAt:
+                type: string
+                format: date-time
+                example: 2025-10-08T18:21:10.157+00:00

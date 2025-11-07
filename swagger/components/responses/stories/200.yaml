@@ -1,0 +1,30 @@
+description: Successful response with paginated stories list
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Successfully found stories!
+        page:
+          type: integer
+          example: 1
+        perPage:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 42
+        totalPages:
+          type: integer
+          example: 5
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              $ref: '../../schemas/story.yaml'

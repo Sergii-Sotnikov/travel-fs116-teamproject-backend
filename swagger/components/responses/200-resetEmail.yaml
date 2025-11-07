@@ -1,0 +1,15 @@
+description: Successfully sent reset password email
+content:
+  application/json:
+    schema:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Reset password email was successfully sent!

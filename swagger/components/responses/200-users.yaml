@@ -1,0 +1,78 @@
+description: Successfully retrieved users
+content:
+  application/json:
+    schema:
+      type: object
+      required:
+        - status
+        - message
+        - data
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Successfully found users!
+        data:
+          type: object
+          required:
+            - data
+            - page
+            - perPage
+            - totalItems
+            - totalPages
+            - hasPreviousPage
+            - hasNextPage
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                required:
+                  - _id
+                  - name
+                  - avatarUrl
+                  - articlesAmount
+                  - description
+                properties:
+                  _id:
+                    type: string
+                    example: '6881563901add19ee16fcff5'
+                  name:
+                    type: string
+                    example: 'Дмитро Романенко'
+                  avatarUrl:
+                    type: string
+                    format: uri
+                    example: 'https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp'
+                  articlesAmount:
+                    type: integer
+                    example: 13
+                  description:
+                    type: string
+                    example: 'Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці та ділитися ними. Світ повний дивовижних відкриттів!'
+            page:
+              type: integer
+              example: 1
+              description: Current page number
+            perPage:
+              type: integer
+              example: 10
+              description: Number of users per page
+            totalItems:
+              type: integer
+              example: 46
+              description: Total number of users
+            totalPages:
+              type: integer
+              example: 5
+              description: Total number of pages
+            hasPreviousPage:
+              type: boolean
+              example: false
+              description: Whether there is a previous page
+            hasNextPage:
+              type: boolean
+              example: true
+              description: Whether there is a next page

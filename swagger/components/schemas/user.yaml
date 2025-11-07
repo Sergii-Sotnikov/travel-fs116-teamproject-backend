@@ -1,0 +1,55 @@
+type: object
+required:
+  - _id
+  - name
+  - email
+  - password
+properties:
+  _id:
+    description: "User's unique identifier (MongoDB ObjectId)"
+    type: string
+    example: 65e4decdd286b30065d54af9
+
+  name:
+    description: "User's full name"
+    type: string
+    example: 'Serhii Gaievyi'
+
+  avatarUrl:
+    description: "Link to user's avatar image"
+    type: string
+    format: uri
+    example: 'https://res.cloudinary.com/demo/image/upload/avatar.png'
+
+  articlesAmount:
+    description: 'Number of articles created by the user'
+    type: integer
+    example: 12
+
+  description:
+    description: 'Short description or bio of the user'
+    type: string
+    example: 'Full Stack Developer from Ukraine'
+
+  email:
+    description: "User's email address"
+    type: string
+    format: email
+    example: 'gaevuha@gmail.com'
+
+  password:
+    description: "User's password (hashed in the database)"
+    type: string
+    example: '$2b$10$abcdefgHashedPasswordExample'
+
+  createdAt:
+    description: 'Date when the user was created'
+    type: string
+    format: date-time
+    example: '2025-11-06T18:32:41.123Z'
+
+  updatedAt:
+    description: 'Date when the user was last updated'
+    type: string
+    format: date-time
+    example: '2025-11-06T18:45:12.456Z'

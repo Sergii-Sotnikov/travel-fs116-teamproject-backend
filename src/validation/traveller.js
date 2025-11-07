@@ -17,3 +17,33 @@ export const createUserSchema = Joi.object({
     'any.required': 'Article is required',
   }),
 });
+
+const updateStorySchema = Joi.object({
+  title: Joi.string()
+    .max(80)
+    .messages({
+      'string.max': 'Title cannot exceed 80 characters',
+      'string.empty': 'Title cannot be empty',
+    })
+    .optional(),
+
+  article: Joi.string()
+    .max(2500)
+    .messages({
+      'string.max': 'Article cannot exceed 2500 characters',
+      'string.empty': 'Article cannot be empty',
+    })
+    .optional(),
+
+  category: Joi.string()
+    .hex()
+    .length(24)
+    .messages({
+      'any.invalid': 'Category must be a valid category ID',
+    })
+    .optional(),
+
+  storyImage: Joi.string().optional(),
+}).or('title', 'article', 'category', 'img');
+
+export default updateStorySchema;
