@@ -34,9 +34,7 @@ export const getUsersByIdController = async (req, res) => {
 };
 
 export const getMeProfileController = async (req, res) => {
-
   const user = req.user;
-
   res.status(200).json({
     status: 200,
     message: `Successfully found the user with id: ${user.userId}`,
@@ -52,30 +50,6 @@ export const createMeSavedStoriesController = async (req, res) => {
 };
 
 export const deleteMeSavedStoriesController = async (req, res) => {
-
-  res.status(204).send();
-};
-
-export const patchMeAvatarController = async (req, res) => {
-  res.json({
-    status: 200,
-    message: `Successfully patched a avatar!`,
-  });
-};
-
-export const patchMeController = async (req, res, next) => {
-  const userId = req.user?._id || req.user?.id;
-  const user = await updateMe(userId, req.body);
-
-  if (!user) {
-    return next(createHttpError(404, 'User not found'));
-  }
-
-  res.json({
-    status: 200,
-    message: `Successfully patched my profile!`,
-    data: user,
-
   const userId = req.user._id;
   const { storyId } = req.params;
 
@@ -94,6 +68,21 @@ export const patchMeController = async (req, res, next) => {
     data: updatedUser,
   });
 }
+
+export const patchMeController = async (req, res, next) => {
+  const userId = req.user?._id || req.user?.id;
+  const user = await updateMe(userId, req.body);
+
+  if (!user) {
+    return next(createHttpError(404, 'User not found'));
+  }
+
+  res.json({
+    status: 200,
+    message: `Successfully patched my profile!`,
+    data: user,
+  });
+};
 
 export const patchMeAvatarController = async (req, res) => {
   const { user } = req;
@@ -128,12 +117,6 @@ export const patchMeAvatarController = async (req, res) => {
   });
 };
 
-export const patchMeController = async (req, res) => {
-  res.json({
-    status: 200,
-    message: `Successfully patched my profile!`,
-  });
-};
 
 
 export const addSavedArticle = async (req, res) => {
