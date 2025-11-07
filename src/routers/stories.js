@@ -11,7 +11,7 @@ import {
 } from '../controllers/stories.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import { upload } from '../middlewares/multer.js';
-import authenticate from '../middlewares/authenticate.js';
+import {authenticate} from '../middlewares/authenticate.js';
 
 
 const router = Router();

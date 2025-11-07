@@ -3,7 +3,7 @@ import { randomBytes } from 'crypto';
 import { UsersCollection } from '../db/models/user.js';
 import createHttpError from 'http-errors';
 import { FIFTEEN_MINUTES, ONE_DAY, TEMPLATES_DIR } from '../constants/index.js';
-import { SessionsCollection } from '../db/models/session.js';
+import  SessionsCollection from '../db/models/session.js';
 import jwt from 'jsonwebtoken';
 import { SMTP } from '../constants/index.js';
 import { getEnvVar } from '../utils/getEnvVar.js';
