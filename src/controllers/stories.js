@@ -1,5 +1,5 @@
 
-import updateStorySchema from '../validation/story.js';
+import updateStorySchema from '../validation/traveller.js';
 import { getAllStories, updateStoryById } from '../services/stories.js';
 
 
