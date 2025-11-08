@@ -1,8 +1,4 @@
 import { Router } from 'express';
-
-
-
-import { deleteMeSavedStoriesController } from '../controllers/users.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import {
   createStoryController,
@@ -22,7 +18,6 @@ router.get('/', ctrlWrapper(getAllStoriesController)); //створити пуб
 //приватний
 router.use(authenticate);
 router.post('/', ctrlWrapper(createStoryController)); //створити приватний ендпоінт для СТВОРЕННЯ історії
-router.delete('/saved-stories/:storyId', ctrlWrapper(deleteMeSavedStoriesController)) //роутер для удаления истории
 router.patch(
   '/:storyId',
   isValidId,
