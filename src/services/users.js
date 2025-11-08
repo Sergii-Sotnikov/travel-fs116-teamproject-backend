@@ -9,10 +9,7 @@ export const getAllUsers = async ({ page = 1, perPage = 12 }) => {
 
   const usersCount = await UsersCollection.countDocuments();
 
-  const users = await UsersCollection.find({}, '-password')
-    .skip(skip)
-    .limit(limit)
-    .lean();
+  const users = await UsersCollection.find().skip(skip).limit(limit);
 
   const paginationData = calculatePaginationData(usersCount, perPage, page);
 
@@ -22,13 +19,12 @@ export const getAllUsers = async ({ page = 1, perPage = 12 }) => {
   };
 };
 
-
 export const deleteSavedStory = async (userId, storyId) => {
   try {
     const updatedUser = await UsersCollection.findByIdAndUpdate(
       userId,
       { $pull: { savedArticles: storyId } }, // исправил savedArticles было savedStory
-      { new: true }
+      { new: true },
     ).populate('savedArticles', '-__v'); // исправил savedArticles было savedStory
 
     return updatedUser;
@@ -37,7 +33,6 @@ export const deleteSavedStory = async (userId, storyId) => {
     throw error;
   }
 };
-
 
 export async function updateMe(userId, payload, options = {}) {
   return UsersCollection.findOneAndUpdate(
@@ -52,7 +47,6 @@ export async function updateMe(userId, payload, options = {}) {
     },
   );
 }
-
 
 export const updateUserAvatar = async (userId, avatarUrl) => {
   try {
@@ -71,9 +65,7 @@ export const updateUserAvatar = async (userId, avatarUrl) => {
     console.error('Error updating user avatar:', error);
     throw error;
   }
-}
-
-
+};
 
 export const getUserById = async (userId) => {
   const user = await UsersCollection.findById(userId)
@@ -96,7 +88,6 @@ export const getUserById = async (userId) => {
     articles,
     totalArticles: articles.length,
   };
-
 };
 
 export const addArticleToSaved = async (userId, articleId) => {
