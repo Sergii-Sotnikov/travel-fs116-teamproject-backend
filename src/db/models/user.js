@@ -5,23 +5,16 @@ const usersSchema = new Schema(
     name: { type: String, required: true },
 
     avatarUrl: { type: String },
-    articlesAmount: { type: Number },
+    articlesAmount: { type: Number, default: 0 },
     description: { type: String },
-
 
     email: { type: String, unique: true },
     password: { type: String },
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'users',
-    },
 
-    savedArticles: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'articles', // або 'traveller', якщо статті зберігаються там
-      },
-    ], // почему не savedStory key?
+    savedStory: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'travellers' }],
+      default: [],
+    },
   },
 
   { timestamps: true, versionKey: false },
