@@ -14,16 +14,27 @@ const usersSchema = new Schema(
     articles: {
       type: [{ type: Schema.Types.ObjectId, ref: 'travellers' }],
       default: [],
+      select: false,
     },
   },
 
   { timestamps: true, versionKey: false },
 );
 
-usersSchema.methods.toJSON = function () {
-  const obj = this.toObject();
-  delete obj.password;
-  return obj;
-};
+usersSchema.set('toObject', {
+  transform: function (doc, ret) {
+    delete ret.email;
+    delete ret.password;
+    return ret;
+  },
+});
+
+usersSchema.set('toJSON', {
+  transform: function (doc, ret) {
+    delete ret.email;
+    delete ret.password;
+    return ret;
+  },
+});
 
 export const UsersCollection = model('users', usersSchema);
