@@ -39,7 +39,7 @@ export const getUsersByIdController = async (req, res) => {
 };
 
 export const getMeProfileController = async (req, res) => {
-    const userId = req.user._id;        // з authenticate
+    const userId = req.user._id;
     const user = await getMeProfile(userId);
 
     res.status(200).json({
