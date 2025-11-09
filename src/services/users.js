@@ -40,8 +40,6 @@ export async function updateMe(userId, payload, options = {}) {
     { $set: payload },
     {
       new: true,
-      returnDocument: 'after',
-      runValidators: true,
       ...options,
     },
   )

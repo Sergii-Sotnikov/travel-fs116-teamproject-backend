@@ -73,8 +73,15 @@ export const deleteMeSavedStoriesController = async (req, res) => {
 };
 
 export const patchMeController = async (req, res, next) => {
-  const userId = req.user?._id || req.user?.id;
-  const updatedUser = await updateMe(userId, req.body);
+  const userId = req.user._id;
+  const update = { ...req.body };
+
+  if (req.file) {
+    const avatarUrl = await uploadImageToCloudinary(req.file);
+    update.avatarUrl = avatarUrl;
+  }
+
+  const updatedUser = await updateMe(userId, update);
 
   if (!updatedUser) {
     return next(createHttpError(404, 'User not found'));
