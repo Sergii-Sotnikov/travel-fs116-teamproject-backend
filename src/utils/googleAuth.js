@@ -13,13 +13,13 @@ const googleOAuthClient = new OAuth2Client({
   redirectUri,
 });
 
-/**
- * Генерує посилання для авторизації Google OAuth2
- */
+
+
+// GET GOOGLE AUTH (PUBLIC)
 export const generateOAuthUrl = () =>
   googleOAuthClient.generateAuthUrl({
-    access_type: 'offline',  
-    prompt: 'consent', 
+    access_type: 'offline',
+    prompt: 'consent',
     scope: [
       'openid',
       'https://www.googleapis.com/auth/userinfo.email',

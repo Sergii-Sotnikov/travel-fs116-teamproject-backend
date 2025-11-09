@@ -5,6 +5,9 @@ import { checkCategoryExists } from '../services/categories.js';
 import createHttpError from 'http-errors';
 import fs from 'node:fs/promises';
 
+
+
+// GET ALL STORIES (PUBLIC)
 export const getAllStoriesController = async (req, res) => {
   const result = await getAllStories(req.query);
 
@@ -15,14 +18,16 @@ export const getAllStoriesController = async (req, res) => {
   });
 };
 
+
+// POST STORIE (PRIVATE)
 export const createStoryController = async (req, res) => {
   const { _id: userId } = req.user;
   const img = req.file || null;
-  
-  
+
+
   const story = await addStory(req.body, userId, img);
 
-  
+
   res.status(201).json({
     status: 201,
     message: 'Story created successfully',
@@ -30,6 +35,8 @@ export const createStoryController = async (req, res) => {
   });
 };
 
+
+// PATCH UPDATE STORY
 export const patchStoryController = async (req, res) => {
   const { storyId } = req.params;
   const ownerId = req.user._id;
@@ -72,8 +79,8 @@ export const patchStoryController = async (req, res) => {
   const updatedStory = await updateStoryById(
     storyId,
     ownerId,
-    updateFields, // req.body (title, description, category)
-    storyImageFile, // req.file
+    updateFields,
+    storyImageFile,
   );
 
   if (!updatedStory) {

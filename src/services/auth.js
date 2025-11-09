@@ -5,7 +5,6 @@ import path from 'node:path';
 import jwt from 'jsonwebtoken';
 import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-
 import {
   getFullNameFromGoogleTokenPayload,
   validateCode,
@@ -33,14 +32,14 @@ export const findUser = (query) => UsersCollection.findOne(query);
 const jwtSecret = getEnvVar('JWT_SECRET');
 const appDomain = getEnvVar('APP_DOMAIN');
 
-/** Register (пароль хэширует pre('save') в модели User) */
+
+// POST REGISTER USER
 export const registerUser = async (data) => {
   const { email } = data;
 
   const existingUser = await UsersCollection.findOne({ email });
   if (existingUser) throw createHttpError(409, 'Email already in use');
 
-  // НЕ хэшируем здесь — это сделает pre('save') хук
   const newUser = await UsersCollection.create(data);
   return {
     id: newUser._id,
@@ -49,7 +48,8 @@ export const registerUser = async (data) => {
   };
 };
 
-/** Login */
+
+// POST LOGIN USER
 export const loginUser = async ({ email, password }) => {
   const user = await UsersCollection.findOne({ email }).select('+password');
   if (!user) throw createHttpError(401, 'User not found');
@@ -71,7 +71,8 @@ export const loginUser = async ({ email, password }) => {
   };
 };
 
-/** Refresh session */
+
+// POST REFRESH USER (PUBLIC)
 export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
   const oldSession = await findSession({ _id: sessionId, refreshToken });
   if (!oldSession) throw createHttpError(401, 'Session not found');
@@ -89,12 +90,14 @@ export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
   return newSession;
 };
 
-/** Logout */
+
+// POST LOGOUT (PRIVATE)
 export const logoutUser = async (sessionId) => {
   await SessionsCollection.deleteOne({ _id: sessionId });
 };
 
-/** Send password reset email */
+
+// POST SEND RESET EMAIL (PUBLICK)
 export const sendResetToken = async (email) => {
   const user = await UsersCollection.findOne({ email });
   if (!user) throw createHttpError(404, 'User not found');
@@ -136,6 +139,8 @@ export const sendResetToken = async (email) => {
   });
 };
 
+
+// POST RESET PASSWORD (PUBLIC)
 export const resetPassword = async ({ token, password }) => {
   let payload;
   try {
@@ -157,7 +162,8 @@ export const resetPassword = async ({ token, password }) => {
   );
 };
 
-/** Google OAuth */
+
+// POST GOOGLE CONFIRME
 export const loginWithGoogleOAuth = async (code) => {
   const loginTicket = await validateCode(code);
   const payload = loginTicket.getPayload();

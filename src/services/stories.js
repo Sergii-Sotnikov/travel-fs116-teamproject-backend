@@ -4,20 +4,8 @@ import { parseFilterParams } from '../utils/parseFilterParams.js';
 import mongoose from 'mongoose';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
-export const addStory = async (payload, userId, photo) => {
-  let photoUrl = null;
-  if (photo) {
-    photoUrl = await saveFileToCloudinary(photo);
-  }
 
-  return await TravellersCollection.create({
-    ...payload,
-    img: photoUrl,
-    ownerId: userId,
-    date: new Date(),
-  });
-};
-
+// GET ALL STORIES (PUBLIC)
 export const getAllStories = async (query) => {
   const { page, perPage } = parsePaginationParams(query);
   const filter = parseFilterParams(query);
@@ -42,6 +30,24 @@ export const getAllStories = async (query) => {
   };
 };
 
+
+// POST STORIE (PRIVATE)
+export const addStory = async (payload, userId, photo) => {
+  let photoUrl = null;
+  if (photo) {
+    photoUrl = await saveFileToCloudinary(photo);
+  }
+
+  return await TravellersCollection.create({
+    ...payload,
+    img: photoUrl,
+    ownerId: userId,
+    date: new Date(),
+  });
+};
+
+
+// PATCH UPDATE STORY
 export async function updateStoryById(
   storyId,
   ownerId,

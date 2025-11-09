@@ -8,7 +8,7 @@ import {
   getUsersByIdController,
   patchMeAvatarController,
   patchMeController,
-  addSavedArticle,
+  addSavedArticleController,
 } from '../controllers/users.js';
 import { authenticate } from '../middlewares/authenticate.js';
 import { validateBody } from '../middlewares/validateBody.js';
@@ -23,7 +23,7 @@ router.get('/:userId', ctrlWrapper(getUsersByIdController)); // створити
 //Приватні
 router.use(authenticate);
 router.get('/me/profile', ctrlWrapper(getMeProfileController)); // створити приватний ендпоінт на отримання інформації про поточного користувача
-router.post('/me/saved/:storyId', ctrlWrapper(addSavedArticle)); // створити приватний ендпоінт для додавання статті до збережених статей користувача
+router.post('/me/saved/:storyId', ctrlWrapper(addSavedArticleController)); // створити приватний ендпоінт для додавання статті до збережених статей користувача
 router.delete(
   '/me/saved/:storyId',
   ctrlWrapper(deleteMeSavedStoriesController),
