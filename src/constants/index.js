@@ -6,8 +6,8 @@ export const SORT_ORDER = {
   DESC: 'desc',
 };
 
-export const FIFTEEN_MINUTES = 15 * 60 * 1000;
-export const ONE_DAY = 24 * 60 * 60 * 1000;
+export const accessTokenLifeTime = 1000 * 60 * 15; // 15 хвилин
+export const refreshTokenLifeTime = 1000 * 60 * 60 * 24 * 7; // 7 днів
 
 export const CLOUDINARY = {
   CLOUD_NAME: 'CLOUDINARY_CLOUD_NAME',
