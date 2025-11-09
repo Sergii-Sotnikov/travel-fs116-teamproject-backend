@@ -6,8 +6,14 @@ import jwt from 'jsonwebtoken';
 import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 
-import { getFullNameFromGoogleTokenPayload, validateCode } from '../utils/googleAuth.js';
-import { accessTokenLifeTime, refreshTokenLifeTime } from '../constants/index.js';
+import {
+  getFullNameFromGoogleTokenPayload,
+  validateCode,
+} from '../utils/googleAuth.js';
+import {
+  accessTokenLifeTime,
+  refreshTokenLifeTime,
+} from '../constants/index.js';
 import { SMTP, TEMPLATES_DIR } from '../constants/index.js';
 import { SessionsCollection } from '../db/models/session.js';
 import { UsersCollection } from '../db/models/user.js';
@@ -45,7 +51,7 @@ export const registerUser = async (data) => {
 
 /** Login */
 export const loginUser = async ({ email, password }) => {
-  const user = await UsersCollection.findOne({ email });
+  const user = await UsersCollection.findOne({ email }).select('+password');
   if (!user) throw createHttpError(401, 'User not found');
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -54,7 +60,10 @@ export const loginUser = async ({ email, password }) => {
   await SessionsCollection.deleteMany({ userId: user._id });
 
   const session = createSession();
-  const newSession = await SessionsCollection.create({ userId: user._id, ...session });
+  const newSession = await SessionsCollection.create({
+    userId: user._id,
+    ...session,
+  });
 
   return {
     user: { id: user._id, name: user.name, email: user.email },
@@ -73,7 +82,10 @@ export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
   await SessionsCollection.deleteOne({ _id: oldSession._id });
 
   const session = createSession();
-  const newSession = await SessionsCollection.create({ userId: oldSession.userId, ...session });
+  const newSession = await SessionsCollection.create({
+    userId: oldSession.userId,
+    ...session,
+  });
   return newSession;
 };
 
@@ -87,10 +99,18 @@ export const sendResetToken = async (email) => {
   const user = await UsersCollection.findOne({ email });
   if (!user) throw createHttpError(404, 'User not found');
 
-  const resetToken = jwt.sign({ sub: user._id, email }, jwtSecret, { expiresIn: '15m' });
+  const resetToken = jwt.sign({ sub: user._id, email }, jwtSecret, {
+    expiresIn: '15m',
+  });
 
-  const resetPasswordTemplatePath = path.join(TEMPLATES_DIR, 'reset-password-email.html');
-  const resetTemplateSource = await readFile(resetPasswordTemplatePath, 'utf-8');
+  const resetPasswordTemplatePath = path.join(
+    TEMPLATES_DIR,
+    'reset-password-email.html',
+  );
+  const resetTemplateSource = await readFile(
+    resetPasswordTemplatePath,
+    'utf-8',
+  );
   const template = handlebars.compile(resetTemplateSource);
 
   const logoCid = 'plantains-app-logo';
@@ -116,7 +136,6 @@ export const sendResetToken = async (email) => {
   });
 };
 
-
 export const resetPassword = async ({ token, password }) => {
   let payload;
   try {
@@ -125,11 +144,17 @@ export const resetPassword = async ({ token, password }) => {
     throw createHttpError(401, 'Invalid or expired reset token');
   }
 
-  const user = await UsersCollection.findOne({ _id: payload.sub, email: payload.email });
+  const user = await UsersCollection.findOne({
+    _id: payload.sub,
+    email: payload.email,
+  });
   if (!user) throw createHttpError(404, 'User not found');
 
   const newPasswordHash = await bcrypt.hash(password, 10);
-  await UsersCollection.updateOne({ _id: user._id }, { password: newPasswordHash });
+  await UsersCollection.updateOne(
+    { _id: user._id },
+    { password: newPasswordHash },
+  );
 };
 
 /** Google OAuth */
@@ -153,7 +178,10 @@ export const loginWithGoogleOAuth = async (code) => {
   await SessionsCollection.deleteMany({ userId: user._id });
 
   const session = createSession();
-  const newSession = await SessionsCollection.create({ userId: user._id, ...session });
+  const newSession = await SessionsCollection.create({
+    userId: user._id,
+    ...session,
+  });
 
   return {
     user: { id: user._id, name: user.name, email: user.email },

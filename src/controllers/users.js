@@ -1,5 +1,6 @@
 import createHttpError from 'http-errors';
-import * as usersService from '../services/users.js';
+import { UsersCollection } from '../db/models/user.js';
+import { TravellersCollection } from '../db/models/traveller.js';
 import {
   getAllUsers,
   getUserById,
@@ -127,24 +128,26 @@ export const patchMeAvatarController = async (req, res) => {
 };
 
 export const addSavedArticle = async (req, res) => {
-  try {
-    const userId = req.user._id; // з authMiddleware
-    const { articleId } = req.body;
+  const { storyId } = req.params;
+  const userId = req.user._id;
 
-    if (!articleId) {
-      return res.status(400).json({ message: 'articleId is required' });
-    }
-
-    const savedArticles = await usersService.addArticleToSaved(
-      userId,
-      articleId,
-    );
-
-    res.status(200).json({
-      message: 'Article added to saved list',
-      savedArticles,
-    });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+  const story = await TravellersCollection.findById(storyId);
+  if (!story) {
+    throw createHttpError(404, 'Story not found');
   }
+
+  const result = await UsersCollection.updateOne(
+    { _id: userId },
+    { $addToSet: { articles: storyId } },
+  );
+
+  const alreadySaved = result.modifiedCount === 0;
+
+  res.status(alreadySaved ? 200 : 201).json({
+    status: alreadySaved ? 200 : 201,
+    message: alreadySaved
+      ? 'Article already in saved list'
+      : 'Article added to saved list',
+    data: { storyId },
+  });
 };

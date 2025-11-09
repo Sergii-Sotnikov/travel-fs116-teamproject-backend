@@ -100,20 +100,21 @@ export const getUserById = async (userId) => {
   };
 };
 
-export const addArticleToSaved = async (userId, articleId) => {
-  const user = await UsersCollection.findById(userId);
-
+export const addArticleToSaved = async (userId, storyId) => {
+  const user = await UsersCollection.findById(userId).select('+articles');
   if (!user) {
     throw new Error('User not found');
   }
 
-  // перевіряємо, чи вже є стаття в списку
-  if (user.savedArticles.includes(articleId)) {
-    throw new Error('Article already saved');
+  const alreadySaved = user.articles.some(
+    (id) => id.toString() === storyId.toString()
+  );
+  if (alreadySaved) {
+    return user.articles;
   }
 
-  user.savedArticles.push(articleId);
+  user.articles.push(new mongoose.Types.ObjectId(storyId));
   await user.save();
 
-  return user.savedArticles;
+  return user.articles;
 };
