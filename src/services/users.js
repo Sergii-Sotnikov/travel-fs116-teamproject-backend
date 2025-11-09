@@ -126,5 +126,19 @@ export const addArticleToSaved = async (userId, storyId) => {
 };
 
 
+export async function getMeProfile(userId) {
+
+  const user = await UsersCollection.findById(userId)
+    .select('-password')
+    .populate({
+      path: 'articles',
+      options: { sort: { createdAt: -1 } },
+    })
+    .lean();
+
+  if (!user) throw createHttpError(404, 'User not found');
+  return user;
+}
+
 
 

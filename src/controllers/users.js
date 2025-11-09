@@ -5,6 +5,7 @@ import {
   updateUserAvatar,
   updateMe,
   addArticleToSaved,
+  getMeProfile,
 } from '../services/users.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { deleteSavedStory } from '../services/users.js';
@@ -38,13 +39,15 @@ export const getUsersByIdController = async (req, res) => {
 };
 
 export const getMeProfileController = async (req, res) => {
-  const user = req.user;
-  res.status(200).json({
-    status: 200,
-    message: `Successfully found the user with id: ${user._id}`,
-    data: user,
-  });
-};
+    const userId = req.user._id;        // з authenticate
+    const user = await getMeProfile(userId);
+
+    res.status(200).json({
+      status: 200,
+      message: `Successfully found the user with id: ${userId}`,
+      data: user,
+    });
+  }
 
 export const createMeSavedStoriesController = async (req, res) => {
   res.status(201).json({
