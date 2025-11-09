@@ -1,20 +1,19 @@
 import { Router } from 'express';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { uploadAvatar } from '../middlewares/uploadAvatar.js';
+import { isValidId } from '../middlewares/isValidId.js';
 import {
   getAllUsersController,
-
   deleteMeSavedStoriesController,
   getMeProfileController,
   getUsersByIdController,
   patchMeAvatarController,
   patchMeController,
-  addSavedArticle,
+  createMeSavedStoriesController,
 } from '../controllers/users.js';
 import { authenticate } from '../middlewares/authenticate.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { UpdateUserSchema } from '../validation/user.js';
-
 
 const router = Router();
 
@@ -25,9 +24,21 @@ router.get('/:userId', ctrlWrapper(getUsersByIdController)); // створити
 //Приватні
 router.use(authenticate);
 router.get('/me/profile', ctrlWrapper(getMeProfileController)); // створити приватний ендпоінт на отримання інформації про поточного користувача
-router.post('/me/saved/:storyId', ctrlWrapper(addSavedArticle)); // створити приватний ендпоінт для додавання статті до збережених статей користувача
-router.delete('/me/saved/:storyId', ctrlWrapper(deleteMeSavedStoriesController)); // створити приватний ендпоінт для видалення статті зі збережених статей користувача
+router.post('/me/saved/:storyId', ctrlWrapper(createMeSavedStoriesController));
+router.post(
+  '/me/saved/:storyId',
+  isValidId, // перевірити ObjectId
+  ctrlWrapper(createMeSavedStoriesController),
+); // створити приватний ендпоінт для додавання статті до збережених статей користувача
+router.delete(
+  '/me/saved/:storyId',
+  ctrlWrapper(deleteMeSavedStoriesController),
+); // створити приватний ендпоінт для видалення статті зі збережених статей користувача
 router.patch('/me/avatar', uploadAvatar, ctrlWrapper(patchMeAvatarController)); // створити приватний ендпоінт для оновлення аватару корситувача
-router.patch('/me', validateBody(UpdateUserSchema), ctrlWrapper(patchMeController)); //створити приватний ендпоінт для оновлення даних користувача
+router.patch(
+  '/me',
+  validateBody(UpdateUserSchema),
+  ctrlWrapper(patchMeController),
+); //створити приватний ендпоінт для оновлення даних користувача
 
 export default router;

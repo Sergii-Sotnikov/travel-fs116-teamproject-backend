@@ -16,6 +16,11 @@ const usersSchema = new Schema(
       default: [],
       select: false,
     },
+
+    savedArticles: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'travellers' }],
+      default: [],
+    },
   },
 
   { timestamps: true, versionKey: false },

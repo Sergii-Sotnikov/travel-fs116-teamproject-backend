@@ -119,25 +119,18 @@ export const patchMeAvatarController = async (req, res) => {
   });
 };
 
-export const addSavedArticle = async (req, res) => {
+export const addSavedArticleController = async (req, res, next) => {
+  const userId = req.user._id;
+  const { storyId } = req.params;
+
   try {
-    const userId = req.user._id; // з authMiddleware
-    const { articleId } = req.body;
-
-    if (!articleId) {
-      return res.status(400).json({ message: 'articleId is required' });
-    }
-
-    const savedArticles = await usersService.addArticleToSaved(
-      userId,
-      articleId,
-    );
-
+    const savedArticles = await usersService.addArticleToSaved(userId, storyId);
     res.status(200).json({
+      status: 200,
       message: 'Article added to saved list',
-      savedArticles,
+      data: savedArticles,
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(error);
   }
 };
