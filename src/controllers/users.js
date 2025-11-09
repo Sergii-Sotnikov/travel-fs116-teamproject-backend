@@ -1,15 +1,15 @@
 import createHttpError from 'http-errors';
-import { UsersCollection } from '../db/models/user.js';
-import { TravellersCollection } from '../db/models/traveller.js';
 import {
   getAllUsers,
   getUserById,
   updateUserAvatar,
   updateMe,
+  addArticleToSaved,
 } from '../services/users.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { deleteSavedStory } from '../services/users.js';
 import { uploadImageToCloudinary } from '../services/cloudinary.js';
+import { UsersCollection } from '../db/models/user.js';
 
 export const getAllUsersController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
@@ -128,26 +128,31 @@ export const patchMeAvatarController = async (req, res) => {
 };
 
 export const addSavedArticle = async (req, res) => {
-  const { storyId } = req.params;
   const userId = req.user._id;
+  const { storyId } = req.params;
 
-  const story = await TravellersCollection.findById(storyId);
-  if (!story) {
-    throw createHttpError(404, 'Story not found');
-  }
+  console.log('userId:', req.user._id);
+console.log('storyId:', req.params.storyId);
 
-  const result = await UsersCollection.updateOne(
-    { _id: userId },
-    { $addToSet: { articles: storyId } },
-  );
+  const { alreadySaved } = await addArticleToSaved(userId, storyId);
 
-  const alreadySaved = result.modifiedCount === 0;
+  const user = await UsersCollection.findById(userId)
+    .select('-password')
+    .populate({
+      path: 'articles',
+      options: { sort: { createdAt: -1 } },
+    })
+    .lean();
+
+  if (!user) throw createHttpError(404, 'User not found');
 
   res.status(alreadySaved ? 200 : 201).json({
     status: alreadySaved ? 200 : 201,
     message: alreadySaved
       ? 'Article already in saved list'
       : 'Article added to saved list',
-    data: { storyId },
+    data: {
+      user, // весь пользователь без пароля
+    },
   });
 };

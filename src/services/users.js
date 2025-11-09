@@ -101,20 +101,30 @@ export const getUserById = async (userId) => {
 };
 
 export const addArticleToSaved = async (userId, storyId) => {
-  const user = await UsersCollection.findById(userId).select('+articles');
-  if (!user) {
-    throw new Error('User not found');
+
+  if (!mongoose.isValidObjectId(userId)) {
+    throw createHttpError(400, 'Invalid userId');
+  }
+  if (!mongoose.isValidObjectId(storyId)) {
+    throw createHttpError(400, 'Invalid storyId');
   }
 
-  const alreadySaved = user.articles.some(
-    (id) => id.toString() === storyId.toString()
-  );
-  if (alreadySaved) {
-    return user.articles;
+  const traveller = await TravellersCollection.findById(storyId).lean();
+  if (!traveller) throw createHttpError(404, 'Story not found');
+
+  const updatedUser = await UsersCollection.findByIdAndUpdate(
+  userId,
+  { $addToSet: { articles: storyId } },
+  { new: true, select: '+articles' }
+);
+
+  if (updatedUser.matchedCount === 0) {
+    throw createHttpError(404, 'User not found');
   }
 
-  user.articles.push(new mongoose.Types.ObjectId(storyId));
-  await user.save();
-
-  return user.articles;
+  return { alreadySaved: updatedUser.modifiedCount === 0, storyId}
 };
+
+
+
+
