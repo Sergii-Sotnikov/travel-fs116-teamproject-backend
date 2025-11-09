@@ -16,7 +16,7 @@ router.get('/', ctrlWrapper(getAllStoriesController)); //створити пуб
 
 //приватний
 router.use(authenticate);
-router.post('/', ctrlWrapper(createStoryController)); //створити приватний ендпоінт для СТВОРЕННЯ історії
+router.post('/', authenticate, upload.single('img'), ctrlWrapper(createStoryController)); //створити приватний ендпоінт для СТВОРЕННЯ історії
 router.patch(
   '/:storyId',
   isValidId,

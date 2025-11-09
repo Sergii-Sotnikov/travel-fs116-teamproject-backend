@@ -1,0 +1,283 @@
+{
+    "info": {
+        "name": "Travel Backend API",
+        "description": "Postman collection for testing Auth & Stories endpoints (updated to match feature/auth-clean branch)",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Auth - Public",
+            "item": [
+                {
+                    "name": "Register User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"TestUser\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"testpassword123\"\n}"
+                        },
+                        "url": "{{baseUrl}}/api/auth/register"
+                    }
+                },
+                {
+                    "name": "Login User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"testpassword123\"\n}"
+                        },
+                        "url": "{{baseUrl}}/api/auth/login"
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.session) {",
+                                    "  pm.environment.set('accessToken', jsonData.session.accessToken);",
+                                    "  pm.environment.set('sessionId', jsonData.session._id);",
+                                    "  console.log('Access token set:', jsonData.session.accessToken);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Refresh Session",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"sessionId\": \"{{sessionId}}\",\n  \"refreshToken\": \"<insert-refresh-token>\"\n}"
+                        },
+                        "url": "{{baseUrl}}/api/auth/refresh"
+                    }
+                },
+                {
+                    "name": "Send Reset Email",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"testuser@example.com\"\n}"
+                        },
+                        "url": "{{baseUrl}}/api/auth/send-reset-email"
+                    }
+                },
+                {
+                    "name": "Reset Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"token\": \"<insert-reset-token>\",\n  \"password\": \"newpassword123\"\n}"
+                        },
+                        "url": "{{baseUrl}}/api/auth/reset-password"
+                    }
+                },
+                {
+                    "name": "Get Google OAuth URL",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseUrl}}/api/auth/google/get-oauth-url"
+                    }
+                },
+                {
+                    "name": "Login With Google OAuth",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"code\": \"<insert-google-code>\"\n}"
+                        },
+                        "url": "{{baseUrl}}/api/auth/google/confirm-oauth"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Auth - Private",
+            "item": [
+                {
+                    "name": "Logout User",
+                    "request": {
+                        "method": "POST",
+                        "url": "{{baseUrl}}/api/auth/logout",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Stories",
+            "item": [
+                {
+                    "name": "Create Story",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "title",
+                                    "value": "My First Trip",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "article",
+                                    "value": "Short description of my trip",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "category",
+                                    "value": "672bfa4e27b1e5a7e67f9c1a",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "img",
+                                    "type": "file",
+                                    "src": "/Users/yourname/Desktop/travel-photo.jpg"
+                                }
+                            ]
+                        },
+                        "url": "{{baseUrl}}/api/stories"
+                    }
+                },
+                {
+                    "name": "Get All Stories",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseUrl}}/api/stories"
+                    }
+                },
+                {
+                    "name": "Get Story By ID",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{baseUrl}}/api/stories/{{storyId}}"
+                    }
+                },
+                {
+                    "name": "Update Story (PATCH)",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "title",
+                                    "value": "Updated Vilnius trip",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "article",
+                                    "value": "Updated short description",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "category",
+                                    "value": "672bfa4e27b1e5a7e67f9c1a",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "img",
+                                    "type": "file",
+                                    "src": "/Users/yourname/Desktop/updated-photo.png"
+                                }
+                            ]
+                        },
+                        "url": "{{baseUrl}}/api/stories/{{storyId}}"
+                    }
+                },
+                {
+                    "name": "Delete Story",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": "{{baseUrl}}/api/stories/{{storyId}}"
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:3000"
+        },
+        {
+            "key": "accessToken",
+            "value": ""
+        },
+        {
+            "key": "sessionId",
+            "value": ""
+        },
+        {
+            "key": "storyId",
+            "value": ""
+        }
+    ]
+}

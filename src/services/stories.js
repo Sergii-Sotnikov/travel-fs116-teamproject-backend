@@ -4,6 +4,20 @@ import { parseFilterParams } from '../utils/parseFilterParams.js';
 import mongoose from 'mongoose';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
+export const addStory = async (payload, userId, photo) => {
+  let photoUrl = null;
+  if (photo) {
+    photoUrl = await saveFileToCloudinary(photo);
+  }
+
+  return await TravellersCollection.create({
+    ...payload,
+    img: photoUrl,
+    ownerId: userId,
+    date: new Date(),
+  });
+};
+
 export const getAllStories = async (query) => {
   const { page, perPage } = parsePaginationParams(query);
   const filter = parseFilterParams(query);

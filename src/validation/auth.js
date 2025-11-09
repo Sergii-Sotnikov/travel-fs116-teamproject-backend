@@ -1,25 +1,30 @@
 import Joi from 'joi';
+import { emailRegexp } from '../constants/index.js';
 
-// Реєстрація
 export const registerUserSchema = Joi.object({
-  name: Joi.string().min(1).max(32).required(),
-  email: Joi.string().email().max(64).required(),
+  name: Joi.string().min(2).max(32).required(),
+  email: Joi.string().pattern(emailRegexp).max(64).required(),
   password: Joi.string().min(8).max(128).required(),
 });
 
-// Логін
 export const loginUserSchema = Joi.object({
-  email: Joi.string().email().max(64).required(),
+  email: Joi.string().pattern(emailRegexp).max(64).required(),
   password: Joi.string().min(8).max(128).required(),
 });
 
-// Скидання пароля: email
 export const requestResetEmailSchema = Joi.object({
-  email: Joi.string().email().max(64).required(),
+  email: Joi.string().pattern(emailRegexp).max(64).required(),
 });
 
-// Скидання пароля: новий пароль + токен
 export const resetPasswordSchema = Joi.object({
   password: Joi.string().min(8).max(128).required(),
   token: Joi.string().required(),
+});
+
+export const loginWithGoogleOAuthSchema = Joi.object({
+  code: Joi.string().required(),
+});
+
+export const onboardingCompletedSchema = Joi.object({
+  bio: Joi.string().min(0).max(256),
 });

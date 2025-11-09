@@ -1,5 +1,5 @@
 import updateStorySchema from '../validation/traveller.js';
-import { getAllStories, updateStoryById } from '../services/stories.js';
+import { getAllStories, updateStoryById, addStory } from '../services/stories.js';
 
 import { checkCategoryExists } from '../services/categories.js';
 import createHttpError from 'http-errors';
@@ -16,9 +16,17 @@ export const getAllStoriesController = async (req, res) => {
 };
 
 export const createStoryController = async (req, res) => {
+  const { _id: userId } = req.user;
+  const img = req.file || null;
+  
+  
+  const story = await addStory(req.body, userId, img);
+
+  
   res.status(201).json({
     status: 201,
-    message: 'Successfully created a story!',
+    message: 'Story created successfully',
+    data: story,
   });
 };
 
