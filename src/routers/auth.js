@@ -1,46 +1,55 @@
 import { Router } from 'express';
-import { ctrlWrapper } from '../utils/ctrlWrapper.js';
-import { loginUserSchema, registerUserSchema } from '../validation/auth.js';
 import {
   loginUserController,
-  refreshUserSessionController,
   registerUserController,
+  logoutUserController,
+  refreshUserSessionController,
+  sendResetEmailController,
+  resetPasswordController,
+  getGoogleOAuthUrlController,
+  loginWithGoogleOAuthController,
 } from '../controllers/auth.js';
+import {
+  registerUserSchema,
+  loginUserSchema,
+  requestResetEmailSchema,
+  resetPasswordSchema,
+  loginWithGoogleOAuthSchema,
+} from '../validation/auth.js';
 import { validateBody } from '../middlewares/validateBody.js';
-import { logoutUserController } from '../controllers/auth.js';
-import { requestResetEmailSchema } from '../validation/auth.js';
-import { requestResetEmailController } from '../controllers/auth.js';
-import { resetPasswordSchema } from '../validation/auth.js';
-import { resetPasswordController } from '../controllers/auth.js';
 
 const authRouter = Router();
 
-authRouter.post('/register', validateBody(registerUserSchema), ctrlWrapper(registerUserController));
-authRouter.post('/login',validateBody(loginUserSchema),ctrlWrapper(loginUserController));
-authRouter.post('/refresh', ctrlWrapper(refreshUserSessionController));
-authRouter.post('/logout', ctrlWrapper(logoutUserController));
+authRouter.post(
+  '/register',
+  validateBody(registerUserSchema),
+  registerUserController,
+);
+
+authRouter.post('/login', validateBody(loginUserSchema), loginUserController);
+
+authRouter.post('/logout', logoutUserController);
+
+authRouter.post('/refresh', refreshUserSessionController);
 
 authRouter.post(
   '/send-reset-email',
   validateBody(requestResetEmailSchema),
-  ctrlWrapper(requestResetEmailController),
+  sendResetEmailController,
 );
 
 authRouter.post(
-  '/reset-pwd',
+  '/reset-password',
   validateBody(resetPasswordSchema),
-  ctrlWrapper(resetPasswordController),
+  resetPasswordController,
 );
 
-// GET для перевірки через браузер
-authRouter.get('/login', (req, res) => {
-  res.send('Login page — тут відправляється форма або повідомлення'); /*DELETE*/
-});
+authRouter.get('/google/get-oauth-url', getGoogleOAuthUrlController);
 
-authRouter.get('/register', (req, res) => {
-  res.send(
-    'Register page — тут відправляється форма або повідомлення',
-  ); /*DELETE*/
-});
+authRouter.post(
+  '/google/confirm-oauth',
+  validateBody(loginWithGoogleOAuthSchema),
+  loginWithGoogleOAuthController,
+);
 
 export default authRouter;
