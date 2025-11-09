@@ -25,15 +25,20 @@ export const createStoryController = async (req, res) => {
 export const patchStoryController = async (req, res) => {
   const { storyId } = req.params;
   const ownerId = req.user._id;
-  const updateFields = req.body;
+  const updateFields = req.body || {};
   const storyImageFile = req.file;
 
-  const hasUpdates = Object.keys(updateFields).length > 0 || storyImageFile;
-  if (!hasUpdates) {
-    throw createHttpError(400, 'There are no fields to update.');
+  const hasTextFields = Object.keys(updateFields).length > 0;
+  const hasFile = !!storyImageFile;
+
+  if (!hasTextFields && !hasFile) {
+    throw createHttpError(
+      400,
+      'At least one field or file must be provided for update.',
+    );
   }
 
-  if (Object.keys(updateFields).length > 0) {
+  if (hasTextFields) {
     const { error } = updateStorySchema.validate(updateFields);
     if (error) {
       if (storyImageFile) {
