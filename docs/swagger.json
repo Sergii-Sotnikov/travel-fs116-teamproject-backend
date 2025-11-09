@@ -27,6 +27,10 @@
     {
       "name": "Auth",
       "description": "Authentication and authorization operations (login, logout, reset password)"
+    },
+    {
+      "name": "Stories",
+      "description": "Operations related to managing travel stories (CRUD, images, categories)"
     }
   ],
   "paths": {
@@ -237,6 +241,144 @@
           }
         }
       }
+    },
+    "/stories": {
+      "get": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Get list of stories",
+        "operationId": "getStories",
+        "description": "Get list of stories with pagination and category filtering. This is a public endpoint that does not require authentication.",
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "example": 1,
+            "description": "Page number for pagination"
+          },
+          {
+            "in": "query",
+            "name": "perPage",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 10
+            },
+            "example": 10,
+            "description": "Number of stories per page"
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$"
+            },
+            "example": "68fb50c80ae91338641121f2",
+            "description": "Optional. Filter stories by category ID (MongoDB ObjectId)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/stories/{storyId}": {
+      "patch": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Update a story",
+        "operationId": "patchStory",
+        "description": "Update an existing story by its ID. Allows updating title, article, category fields and uploading a new image. Requires authentication and ownership of the story.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "storyId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "672b6cfea9f43a5e8f9f21a2"
+            },
+            "description": "The ID of the story to update (MongoDB ObjectId)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 80,
+                    "example": "My Updated Travel Story",
+                    "description": "Optional. Story title (max 80 characters)"
+                  },
+                  "article": {
+                    "type": "string",
+                    "maxLength": 2500,
+                    "example": "A detailed updated story about my trip to Kyiv...",
+                    "description": "Optional. Story article/content (max 2500 characters)"
+                  },
+                  "category": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{24}$",
+                    "example": "672a5fe1c31a4c67fdfb12f9",
+                    "description": "Optional. Category ID (MongoDB ObjectId, 24 character hex string)"
+                  },
+                  "img": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Optional. New story image file"
+                  }
+                },
+                "minProperties": 1,
+                "description": "At least one field (title, article, category) or file (img) must be provided"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200-updateStory"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -248,8 +390,127 @@
       }
     },
     "responses": {
+      "200": {
+        "description": "Successful response with paginated stories list",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully found stories!"
+                },
+                "page": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "perPage": {
+                  "type": "integer",
+                  "example": 10
+                },
+                "total": {
+                  "type": "integer",
+                  "example": 42
+                },
+                "totalPages": {
+                  "type": "integer",
+                  "example": 5
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/story"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "204": {
         "description": "Successfully deleted contact"
+      },
+      "400": {
+        "description": "Bad Request - validation or incorrect request parameters",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 400
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Invalid request parameters"
+                },
+                "data": {
+                  "type": "object",
+                  "example": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Unauthorized Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Story not found or user is not the owner",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "The story cannot be found, or you are not its author."
+                }
+              }
+            }
+          }
+        }
       },
       "409": {
         "description": "Conflict - Duplicate resource",
@@ -663,6 +924,34 @@
             }
           }
         }
+      },
+      "200-updateStory": {
+        "description": "Successfully updated story",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully patched a story!"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/story"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "schemas": {
@@ -803,6 +1092,76 @@
           "email": {
             "type": "string",
             "example": "john@example.com"
+          }
+        }
+      },
+      "story": {
+        "type": "object",
+        "required": [
+          "_id",
+          "img",
+          "title",
+          "article",
+          "category",
+          "ownerId",
+          "date",
+          "favoriteCount",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "672b6cfea9f43a5e8f9f21a2"
+          },
+          "img": {
+            "type": "string",
+            "example": "https://example.com/images/story1.jpg"
+          },
+          "title": {
+            "type": "string",
+            "example": "My Travel Story"
+          },
+          "article": {
+            "type": "string",
+            "example": "A detailed story about my trip to Iceland..."
+          },
+          "category": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "672a5fe1c31a4c67fdfb12f9"
+              }
+            }
+          },
+          "ownerId": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "671f8a22b5e9a8e4c1d7f9b3"
+              }
+            }
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-10-25T12:00:00.000Z"
+          },
+          "favoriteCount": {
+            "type": "integer",
+            "example": 4
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-10-08T18:21:10.157+00:00"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-10-08T18:21:10.157+00:00"
           }
         }
       }

@@ -2,28 +2,37 @@ tags:
   - Stories
 summary: Get list of stories
 operationId: getStories
-description: 'Get list of stories with this endpoint'
-security:
-  - bearerAuth: []
+description: 'Get list of stories with pagination and category filtering. This is a public endpoint that does not require authentication.'
+security: []
 parameters:
   - in: query
     name: page
     schema:
       type: integer
+      minimum: 1
+      default: 1
     example: 1
+    description: Page number for pagination
   - in: query
     name: perPage
     schema:
       type: integer
-      example: 10
+      minimum: 1
+      default: 10
+    example: 10
+    description: Number of stories per page
   - in: query
     name: category
     schema:
-      type: Schema.Types.ObjectId
-      example: '68fb50c80ae91338641121f2'
+      type: string
+      pattern: '^[0-9a-fA-F]{24}$'
+    example: '68fb50c80ae91338641121f2'
+    description: Optional. Filter stories by category ID (MongoDB ObjectId)
 
 responses:
   '200':
     $ref: '../../components/responses/stories/200.yaml'
-  '401':
-    $ref: '../../components/responses/401.yaml'
+  '400':
+    $ref: '../../components/responses/400.yaml'
+  '500':
+    $ref: '../../components/responses/500.yaml'

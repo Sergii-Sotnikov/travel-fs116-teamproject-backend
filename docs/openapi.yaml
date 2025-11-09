@@ -19,6 +19,8 @@ tags:
     description: Operations related to managing user contacts (CRUD, favorites, photos)
   - name: Auth
     description: Authentication and authorization operations (login, logout, reset password)
+  - name: Stories
+    description: Operations related to managing travel stories (CRUD, images, categories)
 
 paths:
 
@@ -53,6 +55,14 @@ paths:
   /auth/send-reset-email:
     post:
       $ref: '../swagger/paths/auth/send-reset-email.yaml'
+
+  /stories:
+    get:
+      $ref: '../swagger/paths/stories/get.yaml'
+
+  /stories/{storyId}:
+    patch:
+      $ref: '../swagger/paths/stories/{storyId}/patch.yaml'
 
 components:
   securitySchemes:

@@ -1,0 +1,55 @@
+tags:
+  - Stories
+summary: Update a story
+operationId: patchStory
+description: Update an existing story by its ID. Allows updating title, article, category fields and uploading a new image. Requires authentication and ownership of the story.
+security:
+  - bearerAuth: []
+parameters:
+  - in: path
+    name: storyId
+    required: true
+    schema:
+      type: string
+      pattern: '^[0-9a-fA-F]{24}$'
+      example: '672b6cfea9f43a5e8f9f21a2'
+    description: The ID of the story to update (MongoDB ObjectId)
+requestBody:
+  required: true
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        properties:
+          title:
+            type: string
+            maxLength: 80
+            example: My Updated Travel Story
+            description: Optional. Story title (max 80 characters)
+          article:
+            type: string
+            maxLength: 2500
+            example: A detailed updated story about my trip to Kyiv...
+            description: Optional. Story article/content (max 2500 characters)
+          category:
+            type: string
+            pattern: '^[0-9a-fA-F]{24}$'
+            example: '672a5fe1c31a4c67fdfb12f9'
+            description: Optional. Category ID (MongoDB ObjectId, 24 character hex string)
+          img:
+            type: string
+            format: binary
+            description: Optional. New story image file
+        minProperties: 1
+        description: At least one field (title, article, category) or file (img) must be provided
+responses:
+  '200':
+    $ref: '../../../components/responses/stories/200-updateStory.yaml'
+  '400':
+    $ref: '../../../components/responses/400.yaml'
+  '401':
+    $ref: '../../../components/responses/401.yaml'
+  '404':
+    $ref: '../../../components/responses/stories/404.yaml'
+  '500':
+    $ref: '../../../components/responses/500.yaml'
