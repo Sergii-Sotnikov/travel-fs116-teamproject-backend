@@ -1,36 +1,49 @@
 import createHttpError from 'http-errors';
+import { findSession, findUser } from '../services/auth.js';
 
-import SessionsCollection from '../db/models/session.js';
-import { UsersCollection } from '../db/models/user.js';
+// import SessionsCollection from '../db/models/session.js';
+// import { UsersCollection } from '../db/models/user.js';
 
 export const authenticate = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw createHttpError(401, 'No access token provided');
+    const authHeader = req.get('Authorization');
+
+    // 1️⃣ Перевірка наявності заголовка
+    if (!authHeader) {
+      return next(createHttpError(401, 'Authorization header is missing'));
     }
 
-    const accessToken = authHeader.split(' ')[1];
+    const [scheme, accessToken] = authHeader.split(' ');
 
-    const session = await SessionsCollection.findOne({ accessToken });
+    // 2️⃣ Формат повинен бути "Bearer <token>"
+    if (scheme !== 'Bearer' || !accessToken) {
+      return next(createHttpError(401, 'Invalid Authorization format'));
+    }
 
+    // 3️⃣ Пошук сесії в базі
+    const session = await findSession({ accessToken });
     if (!session) {
-      throw createHttpError(401, 'Invalid access token');
+      return next(createHttpError(401, 'Session not found or invalid token'));
     }
 
-    if (new Date() > session.accessTokenValidUntil) {
-      throw createHttpError(401, 'Access token expired');
+    // 4️⃣ Перевірка терміну дії токена
+    if (new Date(session.accessTokenValidUntil) < new Date()) {
+      return next(createHttpError(401, 'Access token has expired'));
     }
 
-    const user = await UsersCollection.findById(session.userId);
+    // 5️⃣ Перевірка існування користувача
+    const user = await findUser({ _id: session.userId });
     if (!user) {
-      throw createHttpError(401, 'User not found');
+      return next(createHttpError(401, 'User not found'));
     }
 
+    // ✅ Все гаразд — додаємо користувача в req
     req.user = user;
-    next();
+
+    return next();
   } catch (error) {
-    next(error);
+    console.error('❌ Auth error:', error.message);
+    return next(createHttpError(500, 'Authentication failed'));
   }
 };
 
