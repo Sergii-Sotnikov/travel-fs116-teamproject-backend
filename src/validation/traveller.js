@@ -42,6 +42,10 @@ const updateStorySchema = Joi.object({
       'any.invalid': 'Category must be a valid category ID',
     })
     .optional(),
-}).or('title', 'article', 'category');
+})
+  .min(1)
+  .messages({
+    'object.min': 'At least one field must be provided for update',
+  });
 
 export default updateStorySchema;
