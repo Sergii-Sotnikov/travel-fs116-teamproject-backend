@@ -2,6 +2,7 @@ import { TravellersCollection } from '../db/models/traveller.js';
 import { UsersCollection } from '../db/models/user.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 import createHttpError from 'http-errors';
+import mongoose from 'mongoose';
 
 export const getAllUsers = async ({ page = 1, perPage = 12 }) => {
   const limit = perPage;
@@ -21,11 +22,21 @@ export const getAllUsers = async ({ page = 1, perPage = 12 }) => {
 
 export const deleteSavedStory = async (userId, storyId) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(storyId)) {
+      throw new Error('Invalid storyId format');
+    }
+
+    const storyObjectId = new mongoose.Types.ObjectId(String(storyId));
+
     const updatedUser = await UsersCollection.findByIdAndUpdate(
       userId,
-      { $pull: { articles: storyId } }, // исправил articles было savedArticles
+      { $pull: { articles: storyObjectId } },
       { new: true },
-    ).populate('articles', '-__v'); // articles было savedArticles
+    ).populate('articles', '-__v');
+
+    if (!updatedUser) {
+      throw new Error('User not found');
+    }
 
     return updatedUser;
   } catch (error) {
