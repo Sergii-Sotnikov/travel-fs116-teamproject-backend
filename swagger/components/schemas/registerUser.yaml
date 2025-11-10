@@ -6,10 +6,10 @@ required:
 properties:
   name:
     type: string
-    example: John Doe
+    example: Brad Pitt
   email:
     type: string
-    example: john@example.com
+    example: brad@example.com
   password:
     type: string
-    example: myStrongPassword123
+    example: secret12345
