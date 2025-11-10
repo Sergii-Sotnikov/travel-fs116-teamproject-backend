@@ -17,47 +17,60 @@ const PORT = Number(getEnvVar('PORT', '3000'));
 export async function setupServer() {
   const app = express();
 
+  // Парсинг JSON
   app.use(express.json());
-  app.use(cors());
+
+  // ✅ CORS з підтримкою cookies
+  app.use(
+    cors({
+      origin: [
+        'http://localhost:3000', // твій фронт під час розробки
+        'https://travelstories.vercel.app', // прод-домен
+      ],
+      credentials: true, // дозволяє передавати cookies
+    })
+  );
+
+  // ✅ Cookie parser
   app.use(cookieParser());
+
+  // Логи pino
   app.use(
     pino({
       transport: {
         target: 'pino-pretty',
       },
-    }),
+    })
   );
 
-  //Логування запитів
+  // Логування часу запиту
   app.use((req, res, next) => {
     console.log(`Time: ${new Date().toLocaleString()}`);
     next();
   });
 
+  // Swagger docs
   app.use('/api-docs', swaggerDocs());
 
-  //Додаємо роутер як middleware
+  // Основні роутери
   app.use('/api', router);
 
+  // Статичні файли
   app.use('/uploads', express.static(UPLOAD_DIR));
 
-  app.use((req, res) => {
-    res.status(404).json({
-      message: 'Not found',
-    });
-  });
+  // Обробка 404
+  app.use(notFoundHandler);
 
-  app.use('', notFoundHandler);
-
+  // Глобальний error handler
   app.use(errorHandler);
 
-  //запуск сервера
+  // Запуск сервера
   try {
     app.listen(PORT, (error) => {
       if (error) throw error;
+      console.log(`🚀 Server is running on port ${PORT}`);
     });
-    console.log(`Server is running on port ${PORT}`);
   } catch (error) {
-    console.error(error);
+    console.error('❌ Server startup error:', error);
   }
 }

@@ -26,14 +26,34 @@ export const registerUserController = async (req, res) => {
 export const loginUserController = async (req, res) => {
   const { user, session } = await loginUser(req.body);
 
-  setSessionCookies(res, session);
+  res.cookie('refreshToken', session.refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'None',
+    maxAge: 7 * 24 * 60 * 60 * 1000, 
+  });
 
+  res.cookie('sessionId', session._id.toString(), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'None',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  res.cookie('accessToken', session.accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'None',
+    maxAge: 15 * 60 * 1000,
+  });
+
+  // JSON відповідь для фронта
   res.json({
     status: 200,
     message: 'User successfully logged in',
     data: {
       user,
-      accessToken: session.accessToken,
+      accessToken: session.accessToken, 
       accessTokenValidUntil: session.accessTokenValidUntil,
       sessionId: session._id,
     },
@@ -111,24 +131,51 @@ export const getGoogleOAuthUrlController = async (_req, res) => {
 };
 
 
-// POST GOOGLE CONFIRME
+// POST GOOGLE CONFIRM
 export const loginWithGoogleOAuthController = async (req, res) => {
   const result = await loginWithGoogleOAuth(req.body.code);
 
-  if (result.session) {
-    setSessionCookies(res, result.session);
+  if (!result || !result.session) {
+    return res.status(401).json({
+      status: 401,
+      message: 'Google authentication failed',
+      data: {},
+    });
   }
 
+  // 🧩 Встановлюємо ті ж кукі, що і при звичайному логіні
+  const session = result.session;
+
+  res.cookie('refreshToken', session.refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'None',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 днів
+  });
+
+  res.cookie('sessionId', session._id.toString(), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'None',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  res.cookie('accessToken', session.accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'None',
+    maxAge: 15 * 60 * 1000, // 15 хвилин
+  });
+
+  // 🔙 Відповідь JSON (для фронта)
   res.json({
     status: 200,
     message: 'Successfully logged in with Google',
     data: {
       user: result.user,
-      accessToken: result.accessToken ?? result.session?.accessToken,
-      accessTokenValidUntil:
-        result.accessTokenValidUntil ??
-        result.session?.accessTokenValidUntil,
-      sessionId: result.session?._id,
+      accessToken: session.accessToken,
+      accessTokenValidUntil: session.accessTokenValidUntil,
+      sessionId: session._id,
     },
   });
 };

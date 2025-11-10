@@ -1,0 +1,10 @@
+tags:
+  - Auth
+summary: Sign in with Google
+operationId: authGoogle
+description: Redirects the user to Google OAuth 2.0 consent screen to start authentication.
+responses:
+  '302':
+    description: Redirect to Google OAuth 2.0 login page.
+  '500':
+    $ref: '../../../components/responses/500.yaml'
