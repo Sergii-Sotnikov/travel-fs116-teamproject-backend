@@ -181,13 +181,12 @@ export const loginWithGoogleOAuthController = async (req, res) => {
 };
 
 
-// SESSION
+/// SESSION
 const setSessionCookies = (res, session) => {
   const isProd = process.env.NODE_ENV === 'production';
 
   const common = {
     httpOnly: true,
-    expires: session.refreshTokenValidUntil,
     path: '/',
   };
 
@@ -195,10 +194,22 @@ const setSessionCookies = (res, session) => {
     ? { secure: true, sameSite: 'none' }
     : { secure: false, sameSite: 'lax' };
 
-  res.cookie('refreshToken', session.refreshToken, { ...common, ...prodOnly });
+  res.cookie('refreshToken', session.refreshToken, {
+    ...common,
+    ...prodOnly,
+    expires: new Date(session.refreshTokenValidUntil),
+  });
+
   res.cookie('sessionId', session._id?.toString?.() ?? session._id, {
     ...common,
     ...prodOnly,
+    expires: new Date(session.refreshTokenValidUntil),
+  });
+
+  res.cookie('accessToken', session.accessToken, {
+    ...common,
+    ...prodOnly,
+    expires: new Date(session.accessTokenValidUntil),
   });
 };
 
@@ -208,6 +219,7 @@ const clearSessionCookies = (res) => {
     ? { httpOnly: true, secure: true, sameSite: 'none', path: '/' }
     : { httpOnly: true, secure: false, sameSite: 'lax', path: '/' };
 
-  res.clearCookie('sessionId', opts);
+  res.clearCookie('accessToken', opts);
   res.clearCookie('refreshToken', opts);
+  res.clearCookie('sessionId', opts);
 };
