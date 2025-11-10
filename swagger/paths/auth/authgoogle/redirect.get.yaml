@@ -1,51 +1,51 @@
-tags:
-  - Auth
-summary: Google OAuth redirect handler
-operationId: authGoogleRedirect
-description: Handles Google's OAuth callback, exchanges authorization code for tokens, and returns a JWT for the authenticated user.
-parameters:
-  - in: query
-    name: code
-    required: true
-    schema:
-      type: string
-    description: Authorization code returned by Google after user consent.
-responses:
-  '200':
-    description: Successfully authenticated via Google OAuth.
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            status:
-              type: integer
-              example: 200
-            message:
-              type: string
-              example: Successfully logged in with Google
-            data:
-              type: object
-              properties:
-                user:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      example: 672a5fe1c31a4c67fdfb12f9
-                    name:
-                      type: string
-                      example: John Doe
-                    email:
-                      type: string
-                      example: johndoe@gmail.com
-                accessToken:
-                  type: string
-                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-                sessionId:
-                  type: string
-                  example: 12f4c9a2-8d10-4b5f-b6f0-4f13a6b23efc
-  '400':
-    $ref: '../../../components/responses/400.yaml'
-  '500':
-    $ref: '../../../components/responses/500.yaml'
+# tags:
+#   - Auth
+# summary: Google OAuth redirect handler
+# operationId: authGoogleRedirect
+# description: Handles Google's OAuth callback, exchanges authorization code for tokens, and returns a JWT for the authenticated user.
+# parameters:
+#   - in: query
+#     name: code
+#     required: true
+#     schema:
+#       type: string
+#     description: Authorization code returned by Google after user consent.
+# responses:
+#   '200':
+#     description: Successfully authenticated via Google OAuth.
+#     content:
+#       application/json:
+#         schema:
+#           type: object
+#           properties:
+#             status:
+#               type: integer
+#               example: 200
+#             message:
+#               type: string
+#               example: Successfully logged in with Google
+#             data:
+#               type: object
+#               properties:
+#                 user:
+#                   type: object
+#                   properties:
+#                     id:
+#                       type: string
+#                       example: 672a5fe1c31a4c67fdfb12f9
+#                     name:
+#                       type: string
+#                       example: John Doe
+#                     email:
+#                       type: string
+#                       example: johndoe@gmail.com
+#                 accessToken:
+#                   type: string
+#                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+#                 sessionId:
+#                   type: string
+#                   example: 12f4c9a2-8d10-4b5f-b6f0-4f13a6b23efc
+#   '400':
+#     $ref: '../../../components/responses/400.yaml'
+#   '500':
+#     $ref: '../../../components/responses/500.yaml'

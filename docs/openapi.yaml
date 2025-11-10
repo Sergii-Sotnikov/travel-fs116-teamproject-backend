@@ -1,72 +1,86 @@
-openapi: 3.1.0
-info:
-  version: 1.0.0
-  title: Travel Stories API
-  description: REST API documentation for the travel platform
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
+# openapi: 3.1.0
+# info:
+#   version: 1.0.0
+#   title: Travel Stories API
+#   description: REST API documentation for the travel platform
+#   license:
+#     name: Apache 2.0
+#     url: http://www.apache.org/licenses/LICENSE-2.0.html
 
-servers:
-  - url: http://localhost:3000/api
-    description: Local development server
+# servers:
+#   - url: http://localhost:3000/api
+#     description: Local development server
 
-tags:
-  - name: Auth
-    description: Authentication and authorization operations (login, logout, reset password)
-  - name: Users
-    description: Operations related to traveller profiles and saved stories
-  - name: Stories
-    description: Operations related to managing travel stories (CRUD, images, categories)
+# tags:
+#   - name: Auth
+#     description: Authentication and authorization operations (login, logout, reset password)
+#   - name: Users
+#     description: Operations related to traveller profiles and saved stories
+#   - name: Stories
+#     description: Operations related to managing travel stories (CRUD, images, categories)
 
-paths:
-  /users:
-    get:
-      $ref: '../swagger/paths/users/get.yaml'
-  /users/me/avatar:
-    patch:
-      $ref: '../swagger/paths/users/me-avatar.patch.yaml'
+# paths:
+#   /users:
+#     get:
+#       $ref: '../swagger/paths/users/get.yaml'
+#   /users/{userId}:
+#     get:
+#       $ref: '../swagger/paths/users/{userId}/get.yaml'
+#   /users/me/profile:
+#     get:
+#       $ref: '../swagger/paths/users/me/profile/get.yaml'
+#   /users/me/saved/{id}:
+#     post:
+#       $ref: '../swagger/paths/users/me/saved/{storyId}/post.yaml'
+#     delete:
+#       $ref: '../swagger/paths/users/me/saved/{storyId}/delete.yaml'
+#   /users/me-avatar:
+#     patch:
+#       $ref: '../swagger/paths/users/me-avatar/patch.yaml'
+#   /users/me:
+#     patch:
+#       $ref: '../swagger/paths/users/me/patch.yaml'
 
-  /auth/login:
-    post:
-      $ref: '../swagger/paths/auth/login.yaml'
-  /auth/register:
-    post:
-      $ref: '../swagger/paths/auth/register.yaml'
-  /auth/logout:
-    post:
-      $ref: '../swagger/paths/auth/logout.yaml'
-  /auth/refresh:
-    post:
-      $ref: '../swagger/paths/auth/refresh.yaml'
-  /auth/reset-pwd:
-    post:
-      $ref: '../swagger/paths/auth/reset-pwd.yaml'
-  /auth/send-reset-email:
-    post:
-      $ref: '../swagger/paths/auth/send-reset-email.yaml'  
-  /auth/authgoogle:
-    get:
-      $ref: '../swagger/paths/auth/authgoogle/get.yaml'
+#   /auth/login:
+#     post:
+#       $ref: '../swagger/paths/auth/login.yaml'
+#   /auth/register:
+#     post:
+#       $ref: '../swagger/paths/auth/register.yaml'
+#   /auth/logout:
+#     post:
+#       $ref: '../swagger/paths/auth/logout.yaml'
+#   /auth/refresh:
+#     post:
+#       $ref: '../swagger/paths/auth/refresh.yaml'
+#   /auth/reset-pwd:
+#     post:
+#       $ref: '../swagger/paths/auth/reset-pwd.yaml'
+#   /auth/send-reset-email:
+#     post:
+#       $ref: '../swagger/paths/auth/send-reset-email.yaml'
+#   /auth/authgoogle:
+#     get:
+#       $ref: '../swagger/paths/auth/authgoogle/get.yaml'
 
-  /auth/authgoogle/redirect:
-    get:
-      $ref: '../swagger/paths/auth/authgoogle/redirect.get.yaml'
+#   /auth/authgoogle/redirect:
+#     get:
+#       $ref: '../swagger/paths/auth/authgoogle/redirect.get.yaml'
 
-  /stories:
-    get:
-      $ref: '../swagger/paths/stories/get.yaml'
-      post:
-    $ref: '../swagger/paths/stories/post.yaml'
+#   /stories:
+#     get:
+#       $ref: '../swagger/paths/stories/get.yaml'
+#       post:
+#     $ref: '../swagger/paths/stories/post.yaml'
 
 
-  /stories/{storyId}:
-    patch:
-      $ref: '../swagger/paths/stories/{storyId}/patch.yaml'
+#   /stories/{storyId}:
+#     patch:
+#       $ref: '../swagger/paths/stories/{storyId}/patch.yaml'
 
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+# components:
+#   securitySchemes:
+#     bearerAuth:
+#       type: http
+#       scheme: bearer
+#       bearerFormat: JWT
