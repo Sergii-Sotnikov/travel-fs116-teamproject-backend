@@ -1,41 +1,31 @@
 openapi: 3.1.0
 info:
   version: 1.0.0
-  title: Contacts App
-  description: REST API documentation for the Contacts App
+  title: Travel Stories API
+  description: REST API documentation for the travel platform
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 
-
 servers:
   - url: http://localhost:3000/api
     description: Local development server
-  - url: https://contacts-app-uz3k.onrender.com
-    description: Production server
 
 tags:
-  - name: Contacts
-    description: Operations related to managing user contacts (CRUD, favorites, photos)
   - name: Auth
     description: Authentication and authorization operations (login, logout, reset password)
+  - name: Users
+    description: Operations related to traveller profiles and saved stories
   - name: Stories
     description: Operations related to managing travel stories (CRUD, images, categories)
 
 paths:
-
   /users:
     get:
       $ref: '../swagger/paths/users/get.yaml'
-  #   post:
-  #     $ref: '../swagger/paths/users/post.yaml'
-  # /users/{Id}:
-  #   get:
-  #     $ref: '../swagger/paths/users/{Id}/get.yaml'
-  #   patch:
-  #     $ref: '../swagger/paths/users/{Id}/patch.yaml'
-  #   delete:
-  #     $ref: '../swagger/paths/users/{Id}/delete.yaml'
+  /users/me/avatar:
+    patch:
+      $ref: '../swagger/paths/users/me-avatar.patch.yaml'
 
   /auth/login:
     post:
