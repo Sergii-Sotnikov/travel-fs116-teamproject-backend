@@ -1,4 +1,4 @@
-description: Successfully created a new story
+description: Story successfully created
 content:
   application/json:
     schema:
@@ -9,6 +9,6 @@ content:
           example: 201
         message:
           type: string
-          example: Story successfully created
+          example: "Story created successfully"
         data:
           $ref: '../../schemas/story.yaml'

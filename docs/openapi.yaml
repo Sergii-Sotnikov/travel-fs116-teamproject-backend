@@ -49,6 +49,9 @@ paths:
   /stories:
     get:
       $ref: '../swagger/paths/stories/get.yaml'
+      post:
+    $ref: '../swagger/paths/stories/post.yaml'
+
 
   /stories/{storyId}:
     patch:

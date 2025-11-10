@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "version": "1.0.0",
-    "title": "Contacts App",
-    "description": "REST API documentation for the Contacts App",
+    "title": "Travel Stories API",
+    "description": "REST API documentation for the travel platform",
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -13,20 +13,16 @@
     {
       "url": "http://localhost:3000/api",
       "description": "Local development server"
-    },
-    {
-      "url": "https://contacts-app-uz3k.onrender.com",
-      "description": "Production server"
     }
   ],
   "tags": [
     {
-      "name": "Contacts",
-      "description": "Operations related to managing user contacts (CRUD, favorites, photos)"
-    },
-    {
       "name": "Auth",
       "description": "Authentication and authorization operations (login, logout, reset password)"
+    },
+    {
+      "name": "Users",
+      "description": "Operations related to traveller profiles and saved stories"
     },
     {
       "name": "Stories",
@@ -70,6 +66,82 @@
         "responses": {
           "200": {
             "$ref": "#/components/responses/200-users"
+          },
+          "401": {
+            "$ref": "#/components/responses/401-noAccess"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/users/me/avatar": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update current user avatar",
+        "operationId": "patchMyAvatar",
+        "description": "Update the authenticated user's avatar image. Requires authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "avatarUrl"
+                ],
+                "properties": {
+                  "avatarUrl": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "New avatar image file"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Avatar successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully updated avatar!"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "avatarUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "example": "https://res.cloudinary.com/demo/image/upload/v1700000000/avatars/new-avatar.png"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
           },
           "401": {
             "$ref": "#/components/responses/401-noAccess"
@@ -244,6 +316,7 @@
     },
     "/stories": {
       "get": {
+        "post": null,
         "tags": [
           "Stories"
         ],
@@ -291,6 +364,70 @@
           },
           "400": {
             "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Create a new story",
+        "operationId": "createStory",
+        "description": "Create a new travel story. Requires authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "article",
+                  "category"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 80,
+                    "example": "Моя подорож до Італії"
+                  },
+                  "article": {
+                    "type": "string",
+                    "maxLength": 2500,
+                    "example": "Це був незабутній день у Римі..."
+                  },
+                  "category": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{24}$",
+                    "example": "672a5fe1c31a4c67fdfb12f9"
+                  },
+                  "img": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Optional image file for the story"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/201-create"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
           },
           "500": {
             "$ref": "#/components/responses/500"
@@ -919,6 +1056,29 @@
                 "message": {
                   "type": "string",
                   "example": "Reset password email was successfully sent!"
+                }
+              }
+            }
+          }
+        }
+      },
+      "201-create": {
+        "description": "Story successfully created",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Story created successfully"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/story"
                 }
               }
             }
