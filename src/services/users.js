@@ -25,9 +25,17 @@ export const getAllUsers = async ({ page = 1, perPage = 12 }) => {
 
 // GET USER BY ID (PUBLIC)
 export const getUserById = async (userId) => {
-  const user = await UsersCollection.findById(userId)
-    .select('_id name avatarUrl articlesAmount description createdAt')
-    .lean();
+
+  const [user, articlesCount, articles] = await Promise.all([
+    UsersCollection.findById(userId)
+      .select('_id name avatarUrl description createdAt articlesAmount')
+      .lean(),
+    TravellersCollection.countDocuments({ ownerId: userId }),
+    TravellersCollection.find({ ownerId: userId })
+      .select('_id title img date favoriteCount')
+      .sort({ date: -1 })
+      .lean(),
+  ]);
 
   if (!user) {
     const error = new Error('User not found');
@@ -35,106 +43,85 @@ export const getUserById = async (userId) => {
     throw error;
   }
 
-  const articles = await TravellersCollection.find({ ownerId: userId })
-    .select('_id title img date favoriteCount')
-    .sort({ date: -1 })
-    .lean();
+  if (user.articlesAmount !== articlesCount) {
+    await UsersCollection.updateOne(
+      { _id: userId },
+      { $set: { articlesAmount: articlesCount } },
+    );
+    user.articlesAmount = articlesCount;
+  }
 
-  return {
-    user,
-    articles,
-    totalArticles: articles.length,
-  };
+  return { user, articles };
 };
 
 
 // GET USER (PRIVATE)
 export async function getMeProfile(userId) {
+
   const user = await UsersCollection.findById(userId)
-    .select('-password')
-    .populate({
-      path: 'articles',
-      options: { sort: { createdAt: -1 } },
-    })
+    .select('_id name avatarUrl articlesAmount createdAt updatedAt')
+    .lean();
+  if (!user) throw createHttpError(404, 'User not found');
+
+  const articles = await TravellersCollection.find({ ownerId: userId })
+    .select('_id title img date favoriteCount createdAt')
+    .sort({ createdAt: -1 })
     .lean();
 
-  if (!user) throw createHttpError(404, 'User not found');
-  return user;
+  return { ...user, articles };
 }
 
 
 // POST ARTICLE BY ID (PRIVATE)
 export const addArticleToSaved = async (userId, storyId) => {
 
-  if (!mongoose.isValidObjectId(userId)) throw createHttpError(400, 'Invalid userId');
-  if (!mongoose.isValidObjectId(storyId)) throw createHttpError(400, 'Invalid storyId');
-
-
-  const traveller = await TravellersCollection.exists({ _id: storyId });
-  if (!traveller) throw createHttpError(404, 'Story not found');
-
-  const userObjectId = new mongoose.Types.ObjectId(userId);
-  const storyObjectId = new mongoose.Types.ObjectId(storyId);
-// ----- 200 -----\\
-  const alreadySaved = await UsersCollection.exists({ _id: userObjectId, articles: storyObjectId });
-  if (alreadySaved) {
-    const user200 = await UsersCollection.findById(userObjectId)
-      .select('-password +articles')
-      .populate({
-        path: 'articles',
-        select: '_id title img category date favoriteCount',
-        options: { sort: { createdAt: -1 } },
-      })
-      .lean();
-
-    return { alreadySaved: true, user: user200 };
+ if (!mongoose.Types.ObjectId.isValid(storyId)) {
+    throw createHttpError(400, 'Invalid storyId');
   }
-  // ----- 201 -----\\
-  const result = await UsersCollection.updateOne(
-    { _id: userObjectId },
-    { $addToSet: { articles: storyObjectId } }
+  const storyExists = await TravellersCollection.exists({ _id: storyId });
+  if (!storyExists) throw createHttpError(404, 'Story not found');
+
+  const res = await UsersCollection.updateOne(
+    { _id: userId, savedStories: { $ne: storyId } },
+    { $addToSet: { savedStories: storyId }, $inc: { savedAmount: 1 } }
   );
-  if (result.matchedCount === 0) throw createHttpError(404, 'User not found');
+  const created = res.modifiedCount > 0;
 
-  const user201 = await UsersCollection.findById(userObjectId)
-    .select('-password +articles')
-    .populate({
-      path: 'articles',
-      select: '_id title img category date favoriteCount',
-      options: { sort: { createdAt: -1 } },
-    })
-    .lean();
+  if (created) {
+    await TravellersCollection.updateOne(
+      { _id: storyId },
+      { $inc: { favoriteCount: 1 } }
+    );
+  }
 
-  return { alreadySaved: false, user: user201 };
-};
+  return { created };
+}
+
+
+
 
 
 // DELETE ARTICLE BY ID (PRIVATE)
 export const deleteSavedStory = async (userId, storyId) => {
-  try {
-    if (!mongoose.Types.ObjectId.isValid(storyId)) {
-      throw new Error('Invalid storyId format');
-    }
-
-    const storyObjectId = new mongoose.Types.ObjectId(String(storyId));
-
-    const updatedUser = await UsersCollection.findByIdAndUpdate(
-      userId,
-      { $pull: { articles: storyObjectId } },
-      { new: true },
-    ).populate('articles', '-__v');
-
-    if (!updatedUser) {
-      throw new Error('User not found');
-    }
-
-    return updatedUser;
-  } catch (error) {
-    console.error('Error deleting saved story:', error);
-    throw error;
+  if (!mongoose.Types.ObjectId.isValid(storyId)) {
+    throw createHttpError(400, 'Invalid storyId');
   }
-};
 
+  const res = await UsersCollection.updateOne(
+    { _id: userId, savedStories: storyId, savedAmount: { $gt: 0 } },
+    { $pull: { savedStories: storyId }, $inc: { savedAmount: -1 } }
+  );
+
+  const removed = res.modifiedCount > 0;
+  if (removed) {
+    await TravellersCollection.updateOne(
+      { _id: storyId, favoriteCount: { $gt: 0 } },
+      { $inc: { favoriteCount: -1 } }
+    );
+  }
+
+  return { removed };
+}
 
 //PATCH AVATAR (PRIVATE)
 export const updateUserAvatar = async (userId, avatarUrl) => {

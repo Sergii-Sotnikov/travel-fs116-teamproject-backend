@@ -5,16 +5,19 @@ const travellersSchema = new Schema(
     img: {
       type: String,
       required: true,
+      trim:true,
     },
     title: {
       type: String,
       maxlength: 80,
       required: true,
+      trim:true,
     },
     article: {
       type: String,
       maxlength: 2500,
       required: true,
+      trim:true,
     },
     category: {
       type: Schema.Types.ObjectId,
@@ -33,6 +36,7 @@ const travellersSchema = new Schema(
     favoriteCount: {
       type: Number,
       default: 0,
+      min:0
     },
   },
   {

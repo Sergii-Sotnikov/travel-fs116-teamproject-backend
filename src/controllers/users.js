@@ -10,6 +10,7 @@ import {
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { deleteSavedStory } from '../services/users.js';
 import { uploadImageToCloudinary } from '../services/cloudinary.js';
+import { UsersCollection } from '../db/models/user.js';
 
 
 // GET ALL USERS (PUBLIC)
@@ -55,23 +56,23 @@ export const getMeProfileController = async (req, res) => {
 
 
 // POST ARTICLE BY ID (PRIVATE)
-export const addSavedArticleController = async (req, res, next) => {
-  try {
-    const userId = req.user._id;
-    const { storyId } = req.params;
+export const addSavedArticleController = async (req, res) => {
+  const userId = req.user._id;
+  const { storyId } = req.params;
 
-    const { alreadySaved, user } = await addArticleToSaved(userId, storyId);
+  const { created } = await addArticleToSaved(userId, storyId);
+  const status = created ? 201 : 200;
 
-    res.status(alreadySaved ? 200 : 201).json({
-      status: alreadySaved ? 200 : 201,
-      message: alreadySaved
-        ? 'Article already in saved list'
-        : 'Article added to saved list',
-      data: { user },
-    });
-  } catch (e) {
-    next(e);
-  }
+
+  const user = await UsersCollection.findById(userId)
+    .select('+savedStories')
+    .lean();
+
+  res.status(status).json({
+    status,
+    message: created ? 'Story saved' : 'Story already in saved',
+    data: { user: { savedStories: (user.savedStories || []).map(String) } },
+  });
 };
 
 
@@ -80,19 +81,16 @@ export const deleteMeSavedStoriesController = async (req, res) => {
   const userId = req.user._id;
   const { storyId } = req.params;
 
-  const updatedUser = await deleteSavedStory(userId, storyId);
+  const { removed } = await deleteSavedStory(userId, storyId);
 
-  if (!updatedUser) {
-    return res.status(404).json({
-      status: 404,
-      message: 'User or saved story not found!',
-    });
-  }
+  const user = await UsersCollection.findById(userId)
+    .select('+savedStories')
+    .lean();
 
-  return res.status(200).json({
+  res.status(200).json({
     status: 200,
-    message: 'Successfully deleted saved story!',
-    data: updatedUser,
+    message: removed ? 'Story removed from saved' : 'Story was not in saved',
+    data: { user: { savedStories: (user.savedStories || []).map(String) } },
   });
 };
 

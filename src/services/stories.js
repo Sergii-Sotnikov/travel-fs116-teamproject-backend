@@ -3,6 +3,7 @@ import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
 import mongoose from 'mongoose';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { UsersCollection } from '../db/models/user.js';
 
 
 // GET ALL STORIES (PUBLIC)
@@ -33,19 +34,24 @@ export const getAllStories = async (query) => {
 
 // POST STORIE (PRIVATE)
 export const addStory = async (payload, userId, photo) => {
-  let photoUrl = null;
-  if (photo) {
-    photoUrl = await saveFileToCloudinary(photo);
-  }
+  let photoUrl = payload?.img || null;
+  if (photo) photoUrl = await saveFileToCloudinary(photo);
 
-  return await TravellersCollection.create({
+
+  const story = await TravellersCollection.create({
     ...payload,
     img: photoUrl,
     ownerId: userId,
     date: new Date(),
   });
-};
 
+  await UsersCollection.updateOne(
+    { _id: userId },
+    { $inc: { articlesAmount: 1 } }
+  );
+
+  return story;
+};
 
 // PATCH UPDATE STORY
 export async function updateStoryById(
