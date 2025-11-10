@@ -1,23 +1,23 @@
-# openapi: 3.1.0
-# info:
-#   version: 1.0.0
-#   title: Travel Stories API
-#   description: REST API documentation for the travel platform
-#   license:
-#     name: Apache 2.0
-#     url: http://www.apache.org/licenses/LICENSE-2.0.html
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Travel Stories API
+  description: REST API documentation for the travel platform
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
 
-# servers:
-#   - url: http://localhost:3000/api
-#     description: Local development server
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
 
-# tags:
-#   - name: Auth
-#     description: Authentication and authorization operations (login, logout, reset password)
-#   - name: Users
-#     description: Operations related to traveller profiles and saved stories
-#   - name: Stories
-#     description: Operations related to managing travel stories (CRUD, images, categories)
+tags:
+  - name: Auth
+    description: Authentication and authorization operations (login, logout, reset password)
+  - name: Users
+    description: Operations related to traveller profiles and saved stories
+  - name: Stories
+    description: Operations related to managing travel stories (CRUD, images, categories)
 
 # paths:
 #   /users:
@@ -78,9 +78,9 @@
 #     patch:
 #       $ref: '../swagger/paths/stories/{storyId}/patch.yaml'
 
-# components:
-#   securitySchemes:
-#     bearerAuth:
-#       type: http
-#       scheme: bearer
-#       bearerFormat: JWT
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
