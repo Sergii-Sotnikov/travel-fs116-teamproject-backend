@@ -12,6 +12,6 @@ requestBody:
         $ref: '../../components/schemas/loginUser.yaml'
 responses:
   '200':
-    $ref: '../../components/responses/200-login.yaml'
+    $ref: ../../components/responses/auth/200-login.yaml
   '401':
     $ref: ../../components/responses/401-userNotFound.yaml

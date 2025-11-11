@@ -30,10 +30,25 @@ paths:
     post:
       $ref: '../swagger/paths/auth/login.yaml'
 
+  /auth/logout:
+    post:
+      $ref: '../swagger/paths/auth/logout.yaml'
 
+  /auth/refresh:
+    post:
+      $ref: '../swagger/paths/auth/refresh.yaml'
+  /auth/reset-pwd:
+    post:
+      $ref: '../swagger/paths/auth/reset-pwd.yaml'
+  /auth/send-reset-email:
+    post:
+      $ref: '../swagger/paths/auth/send-reset-email.yaml'
   /users:
     get:
       $ref: '../swagger/paths/users/get.yaml'
+
+
+
 
   /users/{userId}:
     get:
@@ -80,18 +95,9 @@ paths:
 
 
 
-  # /auth/logout:
-  #   post:
-  #     $ref: '../swagger/paths/auth/logout.yaml'
-  # /auth/refresh:
-  #   post:
-  #     $ref: '../swagger/paths/auth/refresh.yaml'
-  # /auth/reset-pwd:
-  #   post:
-  #     $ref: '../swagger/paths/auth/reset-pwd.yaml'
-  # /auth/send-reset-email:
-  #   post:
-  #     $ref: '../swagger/paths/auth/send-reset-email.yaml'
+
+
+
   # /auth/authgoogle:
   #   get:
   #     $ref: '../swagger/paths/auth/authgoogle/get.yaml'
