@@ -92,7 +92,7 @@ export const addSavedArticleController = async (req, res) => {
 
     return res.status(status).json({
       status,
-      message: created ? 'Story saved' : 'Story already in saved',
+      message: created ? 'Story saved' : 'Story alrady in saved',
       data: { user: { savedStories: (user.savedStories || []).map(String) } },
     });
   } catch (err) {
