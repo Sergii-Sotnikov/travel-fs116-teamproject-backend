@@ -1,0 +1,107 @@
+tags:
+  - Users
+summary: Get current user's profile
+operationId: getMeProfile
+description: Retrieve the authenticated user's profile with their articles (private endpoint)
+security:
+  - bearerAuth: []
+
+responses:
+  '200':
+    description: Successfully retrieved current user profile
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [status, message, data]
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: 'Successfully found the user with id: 6912543ed3b94d5c0eae6420'
+            data:
+              type: object
+              required: [_id, name, avatarUrl, articlesAmount, createdAt, updatedAt, articles]
+              properties:
+                _id:
+                  type: string
+                  example: '6912543ed3b94d5c0eae6420'
+                name:
+                  type: string
+                  example: 'Djon Pui'
+                avatarUrl:
+                  type: string
+                  format: uri
+                  example: 'https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg'
+                articlesAmount:
+                  type: integer
+                  minimum: 0
+                  example: 8
+                createdAt:
+                  type: string
+                  format: date-time
+                  example: '2025-11-10T21:08:14.553Z'
+                updatedAt:
+                  type: string
+                  format: date-time
+                  example: '2025-11-10T23:49:42.964Z'
+                articles:
+                  type: array
+                  items:
+                    $ref: '../../../../components/schemas/articleCard.yaml'
+        examples:
+          ok:
+            value:
+              status: 200
+              message: 'Successfully found the user with id: 6912543ed3b94d5c0eae6420'
+              data:
+                _id: '6912543ed3b94d5c0eae6420'
+                name: 'Martin Game'
+                avatarUrl: 'https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg'
+                articlesAmount: 8
+                createdAt: '2025-11-10T21:08:14.553Z'
+                updatedAt: '2025-11-10T23:49:42.964Z'
+                articles:
+                  - _id: '6912703e9afd9812a62a9d4c'
+                    img: 'https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg'
+                    title: 'Hello World'
+                    date: '2025-11-10T23:07:42.866Z'
+                    favoriteCount: 0
+                    createdAt: '2025-11-10T23:07:42.867Z'
+  '401':
+    description: Unauthorized (missing or invalid token)
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status: { type: integer, example: 401 }
+            message: { type: string, example: 'Unauthorized' }
+  '404':
+    description: User not found
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [status, message, data]
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: User not found
+            data:
+              oneOf:
+                - type: object
+                - type: 'null'
+        examples:
+          not-found:
+            value:
+              status: 404
+              message: User not found
+              data: null
+  '500':
+    $ref: '../../../../components/responses/500.yaml'

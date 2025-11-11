@@ -1,0 +1,26 @@
+type: object
+required: [status, message, data]
+properties:
+  status:
+    type: integer
+    example: 201
+  message:
+    type: string
+    example: Story saved
+  data:
+    type: object
+    required: [user]
+    properties:
+      user:
+        type: object
+        required: [savedStories]
+        properties:
+          savedStories:
+            type: array
+            items:
+              type: string
+              pattern: '^[a-f0-9]{24}$'
+            example:
+              - '68498236a100312bea079008'
+              - '68498236a100312bea079011'
+              - '6912703e9afd9812a62a9d4c'

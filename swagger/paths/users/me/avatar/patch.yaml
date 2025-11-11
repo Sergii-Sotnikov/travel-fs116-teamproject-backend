@@ -1,8 +1,8 @@
 tags:
   - Users
-summary: Update current user's profile
-operationId: patchMe
-description: Update profile fields and optionally upload an avatar (multipart/form-data)
+summary: Update current user's avatar
+operationId: patchMeAvatar
+description: Upload a new avatar image for the authenticated user (multipart/form-data)
 security:
   - bearerAuth: []
 
@@ -12,15 +12,8 @@ requestBody:
     multipart/form-data:
       schema:
         type: object
+        required: [avatar]
         properties:
-          name:
-            type: string
-            maxLength: 100
-            example: 'Test8'
-          description:
-            type: string
-            maxLength: 1000
-            example: 'Hello Sergiy'
           avatar:
             type: string
             format: binary
@@ -32,7 +25,7 @@ requestBody:
 
 responses:
   '200':
-    description: Successfully patched my profile
+    description: Avatar updated successfully
     content:
       application/json:
         schema:
@@ -40,46 +33,52 @@ responses:
           required: [status, message, data]
           properties:
             status: { type: integer, example: 200 }
-            message: { type: string, example: Successfully patched my profile! }
+            message: { type: string, example: Avatar updated successfully }
             data:
               type: object
-              required: [_id, name, avatarUrl, articlesAmount, createdAt]
+              required: [user]
               properties:
-                _id:
-                  type: string
-                  example: '69134925a9c11877caa26fd9'
-                name:
-                  type: string
-                  example: 'Test8'
-                avatarUrl:
-                  type: string
-                  format: uri
-                  example: 'https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png'
-                articlesAmount:
-                  type: integer
-                  example: 1
-                createdAt:
-                  type: string
-                  format: date-time
-                  example: '2025-11-11T14:33:09.641Z'
-                description:
-                  type: string
-                  example: 'Hello Sergiy'
+                user:
+                  type: object
+                  required: [_id, name, avatarUrl, articlesAmount, createdAt, updatedAt]
+                  properties:
+                    _id:
+                      type: string
+                      example: '6912543ed3b94d5c0eae6420'
+                    name:
+                      type: string
+                      example: 'Test7'
+                    avatarUrl:
+                      type: string
+                      format: uri
+                      example: 'https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg'
+                    articlesAmount:
+                      type: integer
+                      example: 8
+                    createdAt:
+                      type: string
+                      format: date-time
+                      example: '2025-11-10T21:08:14.553Z'
+                    updatedAt:
+                      type: string
+                      format: date-time
+                      example: '2025-11-11T09:12:31.001Z'
         examples:
           ok:
             value:
               status: 200
-              message: Successfully patched my profile!
+              message: Avatar updated successfully
               data:
-                _id: '69134925a9c11877caa26fd9'
-                name: 'Test8'
-                avatarUrl: 'https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png'
-                articlesAmount: 1
-                createdAt: '2025-11-11T14:33:09.641Z'
-                description: 'Hello Sergiy'
+                user:
+                  _id: '6912543ed3b94d5c0eae6420'
+                  name: 'Test7'
+                  avatarUrl: 'https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg'
+                  articlesAmount: 8
+                  createdAt: '2025-11-10T21:08:14.553Z'
+                  updatedAt: '2025-11-11T09:12:31.001Z'
 
   '400':
-    description: Bad request (no fields provided or invalid file)
+    description: Bad request (missing or invalid avatar file)
     content:
       application/json:
         schema:
@@ -87,7 +86,7 @@ responses:
           required: [status, message]
           properties:
             status: { type: integer, example: 400 }
-            message: { type: string, example: Invalid payload }
+            message: { type: string, example: Avatar file is required }
             data:
               type: object
               properties:
@@ -95,13 +94,11 @@ responses:
                   type: array
                   items: { type: string }
         examples:
-          no-fields:
+          missing-file:
             value:
               status: 400
-              message: Invalid payload
-              data:
-                details:
-                  - 'At least one field is required: name, description, or avatar'
+              message: Avatar file is required
+              data: null
           invalid-type:
             value:
               status: 400
@@ -114,12 +111,6 @@ responses:
               message: Avatar file is too large
               data:
                 details: ['Max size: 5MB']
-          missing-buffer:
-            value:
-              status: 400
-              message: Invalid avatar file
-              data:
-                details: ['File buffer is required']
 
   '401':
     description: Unauthorized (missing/invalid token or session)

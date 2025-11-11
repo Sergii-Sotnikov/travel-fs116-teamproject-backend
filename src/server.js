@@ -49,14 +49,17 @@ export async function setupServer() {
     next();
   });
 
-  // Swagger docs
-  app.use('/api-docs', swaggerDocs());
+
+
 
   // Основні роутери
   app.use('/api', router);
 
   // Статичні файли
   app.use('/uploads', express.static(UPLOAD_DIR));
+
+   // Swagger docs
+  app.use('/api-docs', swaggerDocs());
 
   // Обробка 404
   app.use(notFoundHandler);

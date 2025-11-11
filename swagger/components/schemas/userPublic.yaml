@@ -1,0 +1,20 @@
+type: object
+required: [_id, name, avatarUrl, articlesAmount]
+properties:
+  _id:
+    type: string
+    example: '6881563901add19ee16fcff5'
+  name:
+    type: string
+    example: 'Дмитро Романенко'
+  avatarUrl:
+    type: string
+    format: uri
+    example: 'https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp'
+  articlesAmount:
+    type: integer
+    minimum: 0
+    example: 13
+  description:
+    type: [string, "null"]
+    example: "Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці та ділитися ними."

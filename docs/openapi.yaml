@@ -9,7 +9,7 @@ info:
 
 servers:
   - url: http://localhost:3000/api
-    description: Local development server
+  - url: https://travel-fs116-teamproject-backend.onrender.com
 
 tags:
   - name: Auth
@@ -19,7 +19,32 @@ tags:
   - name: Stories
     description: Operations related to managing travel stories (CRUD, images, categories)
 
-# paths:
+paths:
+  /users:
+    get:
+      $ref: '../swagger/paths/users/get.yaml'
+
+  /users/{userId}:
+    get:
+      $ref: '../swagger/paths/users/{userId}/get.yaml'
+
+  /users/me:
+    patch:
+      $ref: '../swagger/paths/users/me/patch.yaml'
+
+  /users/me/avatar:
+    patch:
+      $ref: '../swagger/paths/users/me/avatar/patch.yaml'
+
+  /users/me/profile:
+    get:
+      $ref: '../swagger/paths/users/me/profile/get.yaml'
+
+  /users/me/saved/{storyId}:
+    post:
+      $ref: '../swagger/paths/users/me/saved/{storyId}/post.yaml'
+    delete:
+      $ref: '../swagger/paths/users/me/saved/{storyId}/delete.yaml'
 #   /users:
 #     get:
 #       $ref: '../swagger/paths/users/get.yaml'
@@ -41,27 +66,27 @@ tags:
 #     patch:
 #       $ref: '../swagger/paths/users/me/patch.yaml'
 
-#   /auth/login:
-#     post:
-#       $ref: '../swagger/paths/auth/login.yaml'
-#   /auth/register:
-#     post:
-#       $ref: '../swagger/paths/auth/register.yaml'
-#   /auth/logout:
-#     post:
-#       $ref: '../swagger/paths/auth/logout.yaml'
-#   /auth/refresh:
-#     post:
-#       $ref: '../swagger/paths/auth/refresh.yaml'
-#   /auth/reset-pwd:
-#     post:
-#       $ref: '../swagger/paths/auth/reset-pwd.yaml'
-#   /auth/send-reset-email:
-#     post:
-#       $ref: '../swagger/paths/auth/send-reset-email.yaml'
-#   /auth/authgoogle:
-#     get:
-#       $ref: '../swagger/paths/auth/authgoogle/get.yaml'
+  # /auth/login:
+  #   post:
+  #     $ref: '../swagger/paths/auth/login.yaml'
+  # /auth/register:
+  #   post:
+  #     $ref: '../swagger/paths/auth/register.yaml'
+  # /auth/logout:
+  #   post:
+  #     $ref: '../swagger/paths/auth/logout.yaml'
+  # /auth/refresh:
+  #   post:
+  #     $ref: '../swagger/paths/auth/refresh.yaml'
+  # /auth/reset-pwd:
+  #   post:
+  #     $ref: '../swagger/paths/auth/reset-pwd.yaml'
+  # /auth/send-reset-email:
+  #   post:
+  #     $ref: '../swagger/paths/auth/send-reset-email.yaml'
+  # /auth/authgoogle:
+  #   get:
+  #     $ref: '../swagger/paths/auth/authgoogle/get.yaml'
 
 #   /auth/authgoogle/redirect:
 #     get:
@@ -84,3 +109,17 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  responses:
+    '401':
+      $ref: '../swagger/components/responses/401.yaml'
+    '404':
+      $ref: '../swagger/components/responses/404-contact.yaml'
+    '500':
+      $ref: '../swagger/components/responses/500.yaml'
+
+  schemas:
+    user:
+      $ref: '../swagger/components/schemas/user.yaml'
+    articleCard:
+      $ref: '../swagger/components/schemas/articleCard.yaml'

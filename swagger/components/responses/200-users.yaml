@@ -21,7 +21,7 @@ responses:
                 users:
                   type: array
                   items:
-                    $ref: '#/components/schemas/UserPublic'
+                    $ref: '../schemas/userPublic.yaml'
                 page:
                   type: integer
                   example: 1
@@ -49,9 +49,9 @@ responses:
                 users:
                   - _id: '6881563901add19ee16fcff5'
                     name: 'Дмитро Романенко'
-                    avatarUrl: 'https://ftp.goit.study/img/.../user.webp'
+                    avatarUrl: 'https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp'
                     articlesAmount: 13
-                    description: 'Привіт! Я Дмитро...'
+                    description: "Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці та ділитися ними. Світ повний дивовижних відкриттів!"
                 page: 1
                 perPage: 10
                 totalItems: 46

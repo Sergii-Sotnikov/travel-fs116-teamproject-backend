@@ -1,0 +1,25 @@
+# components/schemas/articleCard.yaml
+type: object
+required: [_id, img, title, date, favoriteCount]
+properties:
+  _id:
+    type: string
+    example: 68498236a100312bea078fee
+  img:
+    type: string
+    format: uri
+    example: https://ftp.goit.study/img/travel-blog/4185d68f321c49b591f7e879ek.webp
+  title:
+    type: string
+    example: 'Грузія на смак: винні підвали та гірські села'
+  date:
+    type: string
+    example: '2025-06-13'
+  favoriteCount:
+    type: integer
+    minimum: 0
+    example: 22
+  createdAt:
+    type: string
+    format: date-time
+    example: '2025-11-11T14:34:40.845Z'

@@ -3,27 +3,118 @@ tags:
 summary: Get all users
 operationId: getUsers
 description: Retrieve a paginated list of users
-security:
-  - bearerAuth: []
-
+security: []
 parameters:
   - in: query
     name: page
     schema:
       type: integer
+      minimum: 1
+      default: 1
       example: 1
     description: Page number for pagination
   - in: query
     name: perPage
     schema:
       type: integer
-      example: 10
+      minimum: 1
+      maximum: 100
+      default: 12
+      example: 12
     description: Number of users per page
 
 responses:
   '200':
-    $ref: '../../components/responses/200-users.yaml'
-  '401':
-    $ref: '../../components/responses/401-noAccess.yaml'
+    description: Successfully retrieved users
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [status, message, data]
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully found users!
+            data:
+              type: object
+              required:
+                [users, page, perPage, totalItems, totalPages, hasPreviousPage, hasNextPage]
+              properties:
+                users:
+                  type: array
+                  items:
+                    $ref: '../../components/schemas/userPublic.yaml'
+                page:
+                  type: integer
+                  example: 1
+                perPage:
+                  type: integer
+                  example: 12
+                totalItems:
+                  type: integer
+                  example: 63
+                totalPages:
+                  type: integer
+                  example: 6
+                hasPreviousPage:
+                  type: boolean
+                  example: false
+                hasNextPage:
+                  type: boolean
+                  example: true
+        examples:
+          ok:
+            value:
+              status: 200
+              message: Successfully found users!
+              data:
+                users:
+                  - _id: '6881563901add19ee16fcff5'
+                    name: 'Дмитро Романенко'
+                    avatarUrl: 'https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp'
+                    articlesAmount: 13
+                    description: 'Привіт! Я Дмитро...'
+                page: 1
+                perPage: 12
+                totalItems: 63
+                totalPages: 6
+                hasPreviousPage: false
+                hasNextPage: true
+
+  '400':
+    description: Bad request
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [status, message]
+          properties:
+            status: { type: integer, example: 400 }
+            message: { type: string, example: 'Invalid query params' }
+            data:
+              type: object
+              properties:
+                details:
+                  type: array
+                  items: { type: string }
+        examples:
+          invalid-page:
+            value:
+              status: 400
+              message: Invalid query params
+              data:
+                details:
+                  - '"page" must be >= 1'
+          invalid-perPage:
+            value:
+              status: 400
+              message: Invalid query params
+              data:
+                details:
+                  - '"perPage" must be between 1 and 100'
+
   '500':
     $ref: '../../components/responses/500.yaml'

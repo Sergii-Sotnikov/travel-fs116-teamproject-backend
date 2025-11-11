@@ -1,0 +1,141 @@
+tags:
+  - Users
+summary: Save a story for the current user
+operationId: saveStoryForMe
+description: Add a story to the authenticated user's saved list (idempotent)
+security:
+  - bearerAuth: []
+
+parameters:
+  - $ref: '../../../../../components/schemas/storyId.yaml'
+
+responses:
+  '201':
+    description: Story saved
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../../components/schemas/SavedStoriesResponse.yaml'
+        examples:
+          created:
+            value:
+              status: 201
+              message: Story saved
+              data:
+                user:
+                  savedStories:
+                    - '68498236a100312bea079008'
+                    - '68498236a100312bea079011'
+                    - '6912703e9afd9812a62a9d4c'
+
+  '200':
+    description: Story already in saved (idempotent POST)
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../../components/schemas/SavedStoriesResponse.yaml'
+        examples:
+          already:
+            value:
+              status: 200
+              message: Story already in saved
+              data:
+                user:
+                  savedStories:
+                    - '68498236a100312bea079008'
+                    - '68498236a100312bea079011'
+                    - '6912703e9afd9812a62a9d4c'
+
+  '400':
+    description: Bad request
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [status, message]
+          properties:
+            status: { type: integer, example: 400 }
+            message: { type: string, example: 'Invalid storyId' }
+            data:
+              type: object
+              properties:
+                details:
+                  type: array
+                  items: { type: string }
+        examples:
+          invalid-storyid:
+            value:
+              status: 400
+              message: Invalid storyId
+              data:
+                details:
+                  - '"storyId" must match /^[a-f0-9]{24}$/'
+
+  '401':
+    description: Unauthorized. Access token is missing, invalid, or expired
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 401
+            message:
+              type: string
+              example: UnauthorizedError
+            data:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  example: No access token provided
+        examples:
+          missing-token:
+            summary: No token provided
+            value:
+              status: 401
+              message: UnauthorizedError
+              data:
+                message: No access token provided
+          invalid-token:
+            summary: Invalid token
+            value:
+              status: 401
+              message: UnauthorizedError
+              data:
+                message: Invalid or expired access token
+
+  '404':
+    description: Story not found
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [status, message]
+          properties:
+            status: { type: integer, example: 404 }
+            message: { type: string, example: 'Story not found' }
+            data:
+              type: object
+              properties:
+                details:
+                  type: array
+                  items: { type: string }
+        examples:
+          not-found:
+            value:
+              status: 404
+              message: Story not found
+              data:
+                details:
+                  - "Story with given id doesn't exist"
+
+  '500':
+    $ref: ../../../../../components/responses/500.yaml

@@ -26,32 +26,36 @@ export const getAllUsers = async ({ page = 1, perPage = 12 }) => {
 // GET USER BY ID (PUBLIC)
 export const getUserById = async (userId) => {
 
-  const [user, articlesCount, articles] = await Promise.all([
-    UsersCollection.findById(userId)
-      .select('_id name avatarUrl description createdAt articlesAmount')
-      .lean(),
-    TravellersCollection.countDocuments({ ownerId: userId }),
-    TravellersCollection.find({ ownerId: userId })
-      .select('_id title img date favoriteCount')
-      .sort({ date: -1 })
-      .lean(),
-  ]);
-
-  if (!user) {
-    const error = new Error('User not found');
-    error.status = 404;
-    throw error;
+  if (!mongoose.isValidObjectId(userId)) {
+    throw createHttpError(400, 'Invalid "userId"', {
+      data: { details: ['"userId" must match /^[a-f0-9]{24}$/'] },
+    });
   }
 
-  if (user.articlesAmount !== articlesCount) {
-    await UsersCollection.updateOne(
-      { _id: userId },
-      { $set: { articlesAmount: articlesCount } },
-    );
-    user.articlesAmount = articlesCount;
+  const userDoc = await UsersCollection.findById(userId)
+    .select('_id name avatarUrl description createdAt articlesAmount')
+    .select('+savedStories')
+    .populate({
+      path: 'savedStories',
+      select: '_id title img date favoriteCount createdAt',
+      options: { sort: { date: -1 } },
+    })
+    .lean();
+
+  if (!userDoc) {
+    throw createHttpError(404, 'User not found', {
+      data: { details: ["User with given id doesn't exist"] },
+    });
   }
 
-  return { user, articles };
+
+  const articles = await TravellersCollection.find({ ownerId: userId })
+    .select('_id title img date favoriteCount createdAt')
+    .sort({ date: -1 })
+    .lean();
+
+  const { savedStories: savedArticles = [], ...user } = userDoc;
+  return { user, articles, savedArticles };
 };
 
 
@@ -74,12 +78,18 @@ export async function getMeProfile(userId) {
 
 // POST ARTICLE BY ID (PRIVATE)
 export const addArticleToSaved = async (userId, storyId) => {
-
- if (!mongoose.Types.ObjectId.isValid(storyId)) {
-    throw createHttpError(400, 'Invalid storyId');
+  if (!mongoose.Types.ObjectId.isValid(storyId)) {
+    throw createHttpError(400, 'Invalid storyId', {
+      data: { details: ['"storyId" must match /^[a-f0-9]{24}$/'] },
+    });
   }
+
   const storyExists = await TravellersCollection.exists({ _id: storyId });
-  if (!storyExists) throw createHttpError(404, 'Story not found');
+  if (!storyExists) {
+    throw createHttpError(404, 'Story not found', {
+      data: { details: ["Story with given id doesn't exist"] },
+    });
+  }
 
   const res = await UsersCollection.updateOne(
     { _id: userId, savedStories: { $ne: storyId } },
@@ -95,7 +105,7 @@ export const addArticleToSaved = async (userId, storyId) => {
   }
 
   return { created };
-}
+};
 
 
 

@@ -10,7 +10,7 @@ properties:
     type: string
     description: User's unique identifier (MongoDB ObjectId)
     pattern: '^[a-f0-9]{24}$'
-    example: 65e4decdd286b30065d54af9
+    example: '65e4decdd286b30065d54af9'
   name:
     type: string
     example: 'Brad Pitt'
@@ -20,9 +20,10 @@ properties:
     example: 'https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png'
   articlesAmount:
     type: integer
+    minimum: 0
     example: 2
   description:
-    type: string
+    type: [string, "null"]
     example: 'The best traveler in the World'
   createdAt:
     type: string

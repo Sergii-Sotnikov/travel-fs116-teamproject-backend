@@ -45,14 +45,22 @@ export const getAllUsersController = async (req, res) => {
 
 // GET USER BY ID (PUBLIC)
 export const getUsersByIdController = async (req, res) => {
-  const { userId } = req.params;
-  const data = await getUserById(userId);
 
-  res.status(200).json({
-    status: 200,
-    message: `Successfully found users with id!`,
-    data,
-  });
+  try {
+    const { userId } = req.params;
+    const { user, articles, savedArticles } = await getUserById(userId);
+
+    return res.status(200).json({
+      status: 200,
+      message: 'Successfully found user by id!',
+      data: { user, articles, savedArticles },
+    });
+  } catch (err) {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || 'Something went wrong';
+    const payload = err.data ?? null;
+    return res.status(status).json({ status, message, data: payload });
+  }
 };
 
 
@@ -71,22 +79,29 @@ export const getMeProfileController = async (req, res) => {
 
 // POST ARTICLE BY ID (PRIVATE)
 export const addSavedArticleController = async (req, res) => {
-  const userId = req.user._id;
-  const { storyId } = req.params;
+  try {
+    const userId = req.user._id;
+    const { storyId } = req.params;
 
-  const { created } = await addArticleToSaved(userId, storyId);
-  const status = created ? 201 : 200;
+    const { created } = await addArticleToSaved(userId, storyId);
+    const status = created ? 201 : 200;
 
+    const user = await UsersCollection.findById(userId)
+      .select('+savedStories')
+      .lean();
 
-  const user = await UsersCollection.findById(userId)
-    .select('+savedStories')
-    .lean();
+    return res.status(status).json({
+      status,
+      message: created ? 'Story saved' : 'Story already in saved',
+      data: { user: { savedStories: (user.savedStories || []).map(String) } },
+    });
+  } catch (err) {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || 'Something went wrong';
+    const payload = err.data ?? null;
 
-  res.status(status).json({
-    status,
-    message: created ? 'Story saved' : 'Story already in saved',
-    data: { user: { savedStories: (user.savedStories || []).map(String) } },
-  });
+    return res.status(status).json({ status, message, data: payload });
+  }
 };
 
 
