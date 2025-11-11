@@ -68,11 +68,7 @@ responses:
                     title: 'Йорданія: шлях у Петру'
                     date: '2025-01-10'
                     favoriteCount: 6
-                  - _id: '68498236a100312bea079011'
-                    img: 'https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg'
-                    title: 'Швейцарія: Альпи і вершина Юнгфрау'
-                    date: '2024-10-26'
-                    favoriteCount: 28
+
 
   '400':
     description: Bad request
