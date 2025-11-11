@@ -118,7 +118,7 @@ export const deleteMeSavedStoriesController = async (req, res) => {
 
   res.status(200).json({
     status: 200,
-    message: removed ? 'Story removed from saved' : 'Story was not in saved',
+    message: removed ? 'Story removed from saved' : 'Stoy was not in saved',
     data: { user: { savedStories: (user.savedStories || []).map(String) } },
   });
 };
