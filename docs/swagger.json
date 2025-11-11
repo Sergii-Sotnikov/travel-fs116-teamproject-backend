@@ -90,6 +90,110 @@
         }
       }
     },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logout user",
+        "operationId": "logoutUser",
+        "description": "Log out user and invalidate access token",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Refresh access token",
+        "operationId": "refreshUserSession",
+        "description": "Refresh access token using a valid refresh token",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/refreshToken"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200-refresh"
+          }
+        }
+      }
+    },
+    "/auth/reset-pwd": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Reset password",
+        "operationId": "resetPassword",
+        "description": "Reset the user's password using a token from email",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/resetPassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200-resetPwd"
+          },
+          "404": {
+            "$ref": "#/components/responses/404-user"
+          }
+        }
+      }
+    },
+    "/auth/send-reset-email": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Request password reset",
+        "operationId": "requestResetEmail",
+        "description": "Send password reset email to the user",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/requestResetEmail"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200-resetEmail"
+          },
+          "404": {
+            "$ref": "#/components/responses/404-user"
+          }
+        }
+      }
+    },
     "/users": {
       "get": {
         "tags": [
@@ -1937,6 +2041,9 @@
       }
     },
     "responses": {
+      "204": {
+        "description": "Successfully deleted contact"
+      },
       "401": {
         "description": "Unauthorized Error",
         "content": {
@@ -2048,7 +2155,7 @@
         }
       },
       "200-login": {
-        "description": "Successfully logged in user",
+        "description": "User successfully logged in",
         "content": {
           "application/json": {
             "schema": {
@@ -2065,18 +2172,74 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Successfully logged in an user!"
+                  "example": "User successfully logged in"
                 },
                 "data": {
                   "type": "object",
                   "required": [
-                    "accessToken"
+                    "user",
+                    "accessToken",
+                    "accessTokenValidUntil",
+                    "sessionId"
                   ],
                   "properties": {
+                    "user": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "name",
+                        "email"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "User unique identifier (MongoDB ObjectId)",
+                          "example": "69134925a9c11877caa26fd9"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "brad@example.com"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "example": "secret12345"
+                        }
+                      }
+                    },
                     "accessToken": {
                       "type": "string",
-                      "example": "EXelG/M5d9DRudgt0oFOqaiV3uHRbxdz/TltoUrI"
+                      "example": "4ckstboS7vKzyuV6I7IwZvBlb5Ix+/2Du5kcnNdn"
+                    },
+                    "accessTokenValidUntil": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-11-11T18:12:16.511Z"
+                    },
+                    "sessionId": {
+                      "type": "string",
+                      "description": "ID of the active user session",
+                      "example": "691378fc4b198ed004979a7c"
                     }
+                  }
+                }
+              }
+            },
+            "examples": {
+              "success": {
+                "summary": "Successful login",
+                "value": {
+                  "status": 200,
+                  "message": "User successfully logged in",
+                  "data": {
+                    "user": {
+                      "id": "69134925a9c11877caa26fd9",
+                      "name": "Brad Pitt",
+                      "email": "brad@example.com"
+                    },
+                    "accessToken": "4ckstboS7vKzyuV6I7IwZvBlb5Ix+/2Du5kcnNdn",
+                    "accessTokenValidUntil": "2025-11-11T18:12:16.511Z",
+                    "sessionId": "691378fc4b198ed004979a7c"
                   }
                 }
               }
@@ -2115,6 +2278,120 @@
                       "example": "User not found"
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      },
+      "200-refresh": {
+        "description": "Successfully refreshed a session",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully refreshed a session!"
+                },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "accessToken"
+                  ],
+                  "properties": {
+                    "accessToken": {
+                      "type": "string",
+                      "example": "fuxTEoxM6DQy2e2wMuCGCSjUqseBa7fGhOONH5sQ"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "200-resetPwd": {
+        "description": "Successfully reset user password",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Password was successfully reset!"
+                }
+              }
+            }
+          }
+        }
+      },
+      "404-user": {
+        "description": "Contact not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User not found"
+                },
+                "data": {
+                  "type": "object",
+                  "example": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "200-resetEmail": {
+        "description": "Successfully sent reset password email",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Reset password email was successfully sent!"
                 }
               }
             }
@@ -2276,6 +2553,47 @@
           "password": {
             "type": "string",
             "example": "secret12345"
+          }
+        }
+      },
+      "refreshToken": {
+        "type": "object",
+        "required": [
+          "refreshToken"
+        ],
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        }
+      },
+      "resetPassword": {
+        "type": "object",
+        "required": [
+          "token",
+          "newPassword"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "NewStrongPassword123"
+          }
+        }
+      },
+      "requestResetEmail": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
           }
         }
       },
