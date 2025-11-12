@@ -1,12 +1,18 @@
 tags:
   - Users
 summary: Get user by id
-operationId: getUser
-description: 'Get user by id'
-security:
-  - bearerAuth: []
+operationId: getUserById
+description: Get user profile by ID including their articles. This is a public endpoint.
+security: []
 parameters:
-  - $ref: '../../../components/schemas/userId.yaml'
+  - in: path
+    name: userId
+    required: true
+    schema:
+      type: string
+      pattern: '^[0-9a-fA-F]{24}$'
+      example: '672b6cfea9f43a5e8f9f21a2'
+    description: The ID of the user to retrieve (MongoDB ObjectId)
 responses:
   '200':
     description: 'Get user by id'
@@ -33,13 +39,15 @@ responses:
                 - totalArticles
               properties:
                 user:
-                  $ref: ../../../components/schemas/user.yaml
+                  $ref: '../../../components/schemas/user.yaml'
                 articles:
                   type: array
                   items:
-                    $ref: '../../../components/schemas/Story.yaml'
+                    $ref: '../../../components/schemas/story.yaml'
                 totalArticles:
                   type: integer
                   example: 10
-  "404":
-    description: "Contact not found"
+  '404':
+    $ref: '../../../components/responses/404-user.yaml'
+  '500':
+    $ref: '../../../components/responses/500.yaml'

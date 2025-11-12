@@ -1,0 +1,57 @@
+tags:
+  - Auth
+summary: Confirm Google OAuth login
+operationId: loginWithGoogleOAuth
+description: Complete Google OAuth authentication by providing the authorization code received from Google
+security: []
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - code
+        properties:
+          code:
+            type: string
+            description: Authorization code received from Google OAuth redirect
+            example: "4/0AeanS..."
+responses:
+  '200':
+    description: Successfully logged in with Google
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully logged in with Google
+            data:
+              type: object
+              properties:
+                user:
+                  $ref: '../../../components/schemas/user.yaml'
+                accessToken:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                accessTokenValidUntil:
+                  type: string
+                  format: date-time
+                  example: "2025-01-20T12:00:00.000Z"
+                sessionId:
+                  type: string
+                  example: "672b6cfea9f43a5e8f9f21a2"
+  '401':
+    $ref: '../../../components/responses/401.yaml'
+  '500':
+    $ref: '../../../components/responses/500.yaml'
+

@@ -18,7 +18,7 @@
   "tags": [
     {
       "name": "Auth",
-      "description": "Authentication and authorization operations (login, logout, reset password)"
+      "description": "Authentication and authorization operations (login, logout, reset password, Google OAuth)"
     },
     {
       "name": "Users",
@@ -30,6 +30,300 @@
     }
   ],
   "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Register a new user",
+        "operationId": "registerUser",
+        "description": "Create a new user account",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/registerUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/201-register"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login user",
+        "operationId": "loginUser",
+        "description": "Authenticate a user and return access and refresh tokens",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/loginUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200-login"
+          },
+          "401": {
+            "$ref": "#/components/responses/401-userNotFound"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logout user",
+        "operationId": "logoutUser",
+        "description": "Log out user and invalidate access token",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/204"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Refresh access token",
+        "operationId": "refreshUserSession",
+        "description": "Refresh access token using refresh token and session ID from cookies. This is a public endpoint.",
+        "security": [],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200-refresh"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/auth/send-reset-email": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Request password reset",
+        "operationId": "requestResetEmail",
+        "description": "Send password reset email to the user",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/requestResetEmail"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200-resetEmail"
+          },
+          "404": {
+            "$ref": "#/components/responses/404-user"
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Reset password",
+        "operationId": "resetPassword",
+        "description": "Reset the user's password using a token from email",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/resetPassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200-resetPwd"
+          },
+          "404": {
+            "$ref": "#/components/responses/404-user"
+          }
+        }
+      }
+    },
+    "/auth/google/get-oauth-url": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Get Google OAuth URL",
+        "operationId": "getGoogleOAuthUrl",
+        "description": "Get the Google OAuth 2.0 authorization URL to start authentication. This is a public endpoint.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successfully generated Google OAuth URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully generated Google OAuth URL"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "example": "https://accounts.google.com/o/oauth2/v2/auth?client_id=..."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/auth/google/confirm-oauth": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Confirm Google OAuth login",
+        "operationId": "loginWithGoogleOAuth",
+        "description": "Complete Google OAuth authentication by providing the authorization code received from Google",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "code"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "Authorization code received from Google OAuth redirect",
+                    "example": "4/0AeanS..."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully logged in with Google",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully logged in with Google"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/user"
+                        },
+                        "accessToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        },
+                        "accessTokenValidUntil": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2025-01-20T12:00:00.000Z"
+                        },
+                        "sessionId": {
+                          "type": "string",
+                          "example": "672b6cfea9f43a5e8f9f21a2"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/users": {
       "get": {
         "tags": [
@@ -37,12 +331,8 @@
         ],
         "summary": "Get all users",
         "operationId": "getUsers",
-        "description": "Retrieve a paginated list of users",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "description": "Retrieve a paginated list of users. This is a public endpoint.",
+        "security": [],
         "parameters": [
           {
             "in": "query",
@@ -76,6 +366,227 @@
         }
       }
     },
+    "/users/{userId}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get user by id",
+        "operationId": "getUserById",
+        "description": "Get user profile by ID including their articles. This is a public endpoint.",
+        "security": [],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "672b6cfea9f43a5e8f9f21a2"
+            },
+            "description": "The ID of the user to retrieve (MongoDB ObjectId)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get user by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully found users with id!"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "user",
+                        "articles",
+                        "totalArticles"
+                      ],
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/user"
+                        },
+                        "articles": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/story"
+                          }
+                        },
+                        "totalArticles": {
+                          "type": "integer",
+                          "example": 10
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404-user"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/users/me/profile": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get current user profile",
+        "operationId": "getMeProfile",
+        "description": "Get the authenticated user's profile information including saved stories",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved user profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully found the user with id: 672b6cfea9f43a5e8f9f21a2"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update current user profile",
+        "operationId": "patchMe",
+        "description": "Update the authenticated user's profile information. Can update name, description, and optionally upload a new avatar.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 20,
+                    "example": "John Doe",
+                    "description": "Optional. User's name"
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 3000,
+                    "example": "Travel enthusiast and photographer",
+                    "description": "Optional. User's bio/description"
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Optional. New avatar image file"
+                  }
+                },
+                "minProperties": 1,
+                "description": "At least one field must be provided"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully updated user profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully patched my profile!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404-user"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
     "/users/me/avatar": {
       "patch": {
         "tags": [
@@ -96,10 +607,10 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "avatarUrl"
+                  "avatar"
                 ],
                 "properties": {
-                  "avatarUrl": {
+                  "avatar": {
                     "type": "string",
                     "format": "binary",
                     "description": "New avatar image file"
@@ -144,7 +655,7 @@
             "$ref": "#/components/responses/400"
           },
           "401": {
-            "$ref": "#/components/responses/401-noAccess"
+            "$ref": "#/components/responses/401"
           },
           "500": {
             "$ref": "#/components/responses/500"
@@ -152,212 +663,44 @@
         }
       }
     },
-    "/auth/login": {
+    "/users/me/saved/{storyId}": {
       "post": {
         "tags": [
-          "Auth"
+          "Users"
         ],
-        "summary": "Login user",
-        "operationId": "loginUser",
-        "description": "Authenticate a user and return access and refresh tokens",
-        "security": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/loginUser"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/200-login"
-          },
-          "401": {
-            "$ref": "#/components/responses/401-userNotFound"
-          }
-        }
-      }
-    },
-    "/auth/register": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Register a new user",
-        "operationId": "registerUser",
-        "description": "Create a new user account",
-        "security": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/registerUser"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "$ref": "#/components/responses/201-register"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          }
-        }
-      }
-    },
-    "/auth/logout": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Logout user",
-        "operationId": "logoutUser",
-        "description": "Log out user and invalidate access token",
+        "summary": "Add story to saved",
+        "operationId": "addSavedArticle",
+        "description": "Add a story to the authenticated user's saved stories list",
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "responses": {
-          "204": {
-            "$ref": "#/components/responses/204"
-          }
-        }
-      }
-    },
-    "/auth/refresh": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Refresh access token",
-        "operationId": "refreshUserSession",
-        "description": "Refresh access token using a valid refresh token",
-        "security": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/refreshToken"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/200-refresh"
-          }
-        }
-      }
-    },
-    "/auth/reset-pwd": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Reset password",
-        "operationId": "resetPassword",
-        "description": "Reset the user's password using a token from email",
-        "security": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/resetPassword"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/200-resetPwd"
-          },
-          "404": {
-            "$ref": "#/components/responses/404-user"
-          }
-        }
-      }
-    },
-    "/auth/send-reset-email": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Request password reset",
-        "operationId": "requestResetEmail",
-        "description": "Send password reset email to the user",
-        "security": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/requestResetEmail"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/200-resetEmail"
-          },
-          "404": {
-            "$ref": "#/components/responses/404-user"
-          }
-        }
-      }
-    },
-    "/auth/authgoogle": {
-      "get": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Sign in with Google",
-        "operationId": "authGoogle",
-        "description": "Redirects the user to Google OAuth 2.0 consent screen to start authentication.",
-        "responses": {
-          "302": {
-            "description": "Redirect to Google OAuth 2.0 login page."
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/auth/authgoogle/redirect": {
-      "get": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Google OAuth redirect handler",
-        "operationId": "authGoogleRedirect",
-        "description": "Handles Google's OAuth callback, exchanges authorization code for tokens, and returns a JWT for the authenticated user.",
         "parameters": [
           {
-            "in": "query",
-            "name": "code",
+            "in": "path",
+            "name": "storyId",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "672b6cfea9f43a5e8f9f21a2"
             },
-            "description": "Authorization code returned by Google after user consent."
+            "description": "The ID of the story to save (MongoDB ObjectId)"
           }
         ],
         "responses": {
           "200": {
-            "description": "Successfully authenticated via Google OAuth.",
+            "description": "Story already in saved list",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
                   "properties": {
                     "status": {
                       "type": "integer",
@@ -365,7 +708,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully logged in with Google"
+                      "example": "Story already in saved"
                     },
                     "data": {
                       "type": "object",
@@ -373,27 +716,56 @@
                         "user": {
                           "type": "object",
                           "properties": {
-                            "id": {
-                              "type": "string",
-                              "example": "672a5fe1c31a4c67fdfb12f9"
-                            },
-                            "name": {
-                              "type": "string",
-                              "example": "John Doe"
-                            },
-                            "email": {
-                              "type": "string",
-                              "example": "johndoe@gmail.com"
+                            "savedStories": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "example": "672b6cfea9f43a5e8f9f21a2"
+                              }
                             }
                           }
-                        },
-                        "accessToken": {
-                          "type": "string",
-                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                        },
-                        "sessionId": {
-                          "type": "string",
-                          "example": "12f4c9a2-8d10-4b5f-b6f0-4f13a6b23efc"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Story successfully saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story saved"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "savedStories": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "example": "672b6cfea9f43a5e8f9f21a2"
+                              }
+                            }
+                          }
                         }
                       }
                     }
@@ -405,6 +777,88 @@
           "400": {
             "$ref": "#/components/responses/400"
           },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Remove story from saved",
+        "operationId": "deleteSavedStory",
+        "description": "Remove a story from the authenticated user's saved stories list",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "storyId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "672b6cfea9f43a5e8f9f21a2"
+            },
+            "description": "The ID of the story to remove from saved (MongoDB ObjectId)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Story removed from saved or was not in saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story removed from saved"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "savedStories": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "example": "672b6cfea9f43a5e8f9f21a2"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
           "500": {
             "$ref": "#/components/responses/500"
           }
@@ -413,7 +867,6 @@
     },
     "/stories": {
       "get": {
-        "post": null,
         "tags": [
           "Stories"
         ],
@@ -473,7 +926,7 @@
         ],
         "summary": "Create a new story",
         "operationId": "createStory",
-        "description": "Create a new travel story. Requires authentication.",
+        "description": "Create a new travel story. Requires authentication. Image is optional but title, article, and category are required.",
         "security": [
           {
             "bearerAuth": []
@@ -493,18 +946,23 @@
                 "properties": {
                   "title": {
                     "type": "string",
+                    "minLength": 5,
                     "maxLength": 80,
-                    "example": "Моя подорож до Італії"
+                    "example": "Моя подорож до Італії",
+                    "description": "Story title (5-80 characters)"
                   },
                   "article": {
                     "type": "string",
+                    "minLength": 5,
                     "maxLength": 2500,
-                    "example": "Це був незабутній день у Римі..."
+                    "example": "Це був незабутній день у Римі...",
+                    "description": "Story content/article (5-2500 characters)"
                   },
                   "category": {
                     "type": "string",
                     "pattern": "^[0-9a-fA-F]{24}$",
-                    "example": "672a5fe1c31a4c67fdfb12f9"
+                    "example": "672a5fe1c31a4c67fdfb12f9",
+                    "description": "Category ID (MongoDB ObjectId, 24 hex characters)"
                   },
                   "img": {
                     "type": "string",
@@ -621,6 +1079,191 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "registerUser": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Brad Pitt"
+          },
+          "email": {
+            "type": "string",
+            "example": "brad@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "secret12345"
+          }
+        }
+      },
+      "user": {
+        "type": "object",
+        "required": [
+          "_id",
+          "name",
+          "avatarUrl",
+          "articlesAmount",
+          "createdAt"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "User's unique identifier (MongoDB ObjectId)",
+            "pattern": "^[a-f0-9]{24}$",
+            "example": "65e4decdd286b30065d54af9"
+          },
+          "name": {
+            "type": "string",
+            "example": "Brad Pitt"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png"
+          },
+          "articlesAmount": {
+            "type": "integer",
+            "example": 2
+          },
+          "description": {
+            "type": "string",
+            "example": "The best traveler in the World"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-06T18:32:41.123Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-11-06T18:45:12.456Z"
+          }
+        }
+      },
+      "loginUser": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "brad@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "secret12345"
+          }
+        }
+      },
+      "requestResetEmail": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          }
+        }
+      },
+      "resetPassword": {
+        "type": "object",
+        "required": [
+          "token",
+          "newPassword"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "NewStrongPassword123"
+          }
+        }
+      },
+      "story": {
+        "type": "object",
+        "required": [
+          "_id",
+          "img",
+          "title",
+          "article",
+          "category",
+          "ownerId",
+          "date",
+          "favoriteCount",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "672b6cfea9f43a5e8f9f21a2"
+          },
+          "img": {
+            "type": "string",
+            "example": "https://example.com/images/story1.jpg"
+          },
+          "title": {
+            "type": "string",
+            "example": "My Travel Story"
+          },
+          "article": {
+            "type": "string",
+            "example": "A detailed story about my trip to Iceland..."
+          },
+          "category": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "672a5fe1c31a4c67fdfb12f9"
+              }
+            }
+          },
+          "ownerId": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "671f8a22b5e9a8e4c1d7f9b3"
+              }
+            }
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-10-25T12:00:00.000Z"
+          },
+          "favoriteCount": {
+            "type": "integer",
+            "example": 4
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-10-08T18:21:10.157+00:00"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-10-08T18:21:10.157+00:00"
+          }
+        }
       }
     },
     "responses": {
@@ -801,6 +1444,222 @@
           }
         }
       },
+      "201-register": {
+        "description": "Successfully created a new contact",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully registered a contact!"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          }
+        }
+      },
+      "200-login": {
+        "description": "Successfully logged in user",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully logged in an user!"
+                },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "accessToken"
+                  ],
+                  "properties": {
+                    "accessToken": {
+                      "type": "string",
+                      "example": "EXelG/M5d9DRudgt0oFOqaiV3uHRbxdz/TltoUrI"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "401-userNotFound": {
+        "description": "Unauthorized. User not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "UnauthorizedError"
+                },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "200-refresh": {
+        "description": "Successfully refreshed a session",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully refreshed a session!"
+                },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "accessToken"
+                  ],
+                  "properties": {
+                    "accessToken": {
+                      "type": "string",
+                      "example": "fuxTEoxM6DQy2e2wMuCGCSjUqseBa7fGhOONH5sQ"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "200-resetEmail": {
+        "description": "Successfully sent reset password email",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Reset password email was successfully sent!"
+                }
+              }
+            }
+          }
+        }
+      },
+      "404-user": {
+        "description": "Contact not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User not found"
+                },
+                "data": {
+                  "type": "object",
+                  "example": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "200-resetPwd": {
+        "description": "Successfully reset user password",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Password was successfully reset!"
+                }
+              }
+            }
+          }
+        }
+      },
       "200-users": {
         "description": "Successfully retrieved users",
         "content": {
@@ -943,222 +1802,6 @@
           }
         }
       },
-      "200-login": {
-        "description": "Successfully logged in user",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 200
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Successfully logged in an user!"
-                },
-                "data": {
-                  "type": "object",
-                  "required": [
-                    "accessToken"
-                  ],
-                  "properties": {
-                    "accessToken": {
-                      "type": "string",
-                      "example": "EXelG/M5d9DRudgt0oFOqaiV3uHRbxdz/TltoUrI"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "401-userNotFound": {
-        "description": "Unauthorized. User not found",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 401
-                },
-                "message": {
-                  "type": "string",
-                  "example": "UnauthorizedError"
-                },
-                "data": {
-                  "type": "object",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "User not found"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "201-register": {
-        "description": "Successfully created a new contact",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 201
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Successfully registered a contact!"
-                },
-                "data": {
-                  "$ref": "#/components/schemas/user"
-                }
-              }
-            }
-          }
-        }
-      },
-      "200-refresh": {
-        "description": "Successfully refreshed a session",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 200
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Successfully refreshed a session!"
-                },
-                "data": {
-                  "type": "object",
-                  "required": [
-                    "accessToken"
-                  ],
-                  "properties": {
-                    "accessToken": {
-                      "type": "string",
-                      "example": "fuxTEoxM6DQy2e2wMuCGCSjUqseBa7fGhOONH5sQ"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "200-resetPwd": {
-        "description": "Successfully reset user password",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 200
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Password was successfully reset!"
-                }
-              }
-            }
-          }
-        }
-      },
-      "404-user": {
-        "description": "Contact not found",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 404
-                },
-                "message": {
-                  "type": "string",
-                  "example": "User not found"
-                },
-                "data": {
-                  "type": "object",
-                  "example": {}
-                }
-              }
-            }
-          }
-        }
-      },
-      "200-resetEmail": {
-        "description": "Successfully sent reset password email",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 200
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Reset password email was successfully sent!"
-                }
-              }
-            }
-          }
-        }
-      },
       "201-create": {
         "description": "Story successfully created",
         "content": {
@@ -1207,218 +1850,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "schemas": {
-      "loginUser": {
-        "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
-        "properties": {
-          "email": {
-            "type": "string",
-            "example": "john@example.com"
-          },
-          "password": {
-            "type": "string",
-            "example": "myStrongPassword123"
-          }
-        }
-      },
-      "registerUser": {
-        "type": "object",
-        "required": [
-          "name",
-          "email",
-          "password"
-        ],
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "John Doe"
-          },
-          "email": {
-            "type": "string",
-            "example": "john@example.com"
-          },
-          "password": {
-            "type": "string",
-            "example": "myStrongPassword123"
-          }
-        }
-      },
-      "user": {
-        "type": "object",
-        "required": [
-          "_id",
-          "name",
-          "email",
-          "password"
-        ],
-        "properties": {
-          "_id": {
-            "description": "User's unique identifier (MongoDB ObjectId)",
-            "type": "string",
-            "example": "65e4decdd286b30065d54af9"
-          },
-          "name": {
-            "description": "User's full name",
-            "type": "string",
-            "example": "Serhii Gaievyi"
-          },
-          "avatarUrl": {
-            "description": "Link to user's avatar image",
-            "type": "string",
-            "format": "uri",
-            "example": "https://res.cloudinary.com/demo/image/upload/avatar.png"
-          },
-          "articlesAmount": {
-            "description": "Number of articles created by the user",
-            "type": "integer",
-            "example": 12
-          },
-          "description": {
-            "description": "Short description or bio of the user",
-            "type": "string",
-            "example": "Full Stack Developer from Ukraine"
-          },
-          "email": {
-            "description": "User's email address",
-            "type": "string",
-            "format": "email",
-            "example": "gaevuha@gmail.com"
-          },
-          "password": {
-            "description": "User's password (hashed in the database)",
-            "type": "string",
-            "example": "$2b$10$abcdefgHashedPasswordExample"
-          },
-          "createdAt": {
-            "description": "Date when the user was created",
-            "type": "string",
-            "format": "date-time",
-            "example": "2025-11-06T18:32:41.123Z"
-          },
-          "updatedAt": {
-            "description": "Date when the user was last updated",
-            "type": "string",
-            "format": "date-time",
-            "example": "2025-11-06T18:45:12.456Z"
-          }
-        }
-      },
-      "refreshToken": {
-        "type": "object",
-        "required": [
-          "refreshToken"
-        ],
-        "properties": {
-          "refreshToken": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-          }
-        }
-      },
-      "resetPassword": {
-        "type": "object",
-        "required": [
-          "token",
-          "newPassword"
-        ],
-        "properties": {
-          "token": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-          },
-          "newPassword": {
-            "type": "string",
-            "example": "NewStrongPassword123"
-          }
-        }
-      },
-      "requestResetEmail": {
-        "type": "object",
-        "required": [
-          "email"
-        ],
-        "properties": {
-          "email": {
-            "type": "string",
-            "example": "john@example.com"
-          }
-        }
-      },
-      "story": {
-        "type": "object",
-        "required": [
-          "_id",
-          "img",
-          "title",
-          "article",
-          "category",
-          "ownerId",
-          "date",
-          "favoriteCount",
-          "createdAt",
-          "updatedAt"
-        ],
-        "properties": {
-          "_id": {
-            "type": "string",
-            "example": "672b6cfea9f43a5e8f9f21a2"
-          },
-          "img": {
-            "type": "string",
-            "example": "https://example.com/images/story1.jpg"
-          },
-          "title": {
-            "type": "string",
-            "example": "My Travel Story"
-          },
-          "article": {
-            "type": "string",
-            "example": "A detailed story about my trip to Iceland..."
-          },
-          "category": {
-            "type": "object",
-            "properties": {
-              "_id": {
-                "type": "string",
-                "example": "672a5fe1c31a4c67fdfb12f9"
-              }
-            }
-          },
-          "ownerId": {
-            "type": "object",
-            "properties": {
-              "_id": {
-                "type": "string",
-                "example": "671f8a22b5e9a8e4c1d7f9b3"
-              }
-            }
-          },
-          "date": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2025-10-25T12:00:00.000Z"
-          },
-          "favoriteCount": {
-            "type": "integer",
-            "example": 4
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2025-10-08T18:21:10.157+00:00"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2025-10-08T18:21:10.157+00:00"
           }
         }
       }

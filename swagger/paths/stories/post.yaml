@@ -1,44 +1,48 @@
-post:
-  tags:
-    - Stories
-  summary: Create a new story
-  operationId: createStory
-  description: Create a new travel story. Requires authentication.
-  security:
-    - bearerAuth: []
-  requestBody:
-    required: true
-    content:
-      multipart/form-data:
-        schema:
-          type: object
-          required:
-            - title
-            - article
-            - category
-          properties:
-            title:
-              type: string
-              maxLength: 80
-              example: "Моя подорож до Італії"
-            article:
-              type: string
-              maxLength: 2500
-              example: "Це був незабутній день у Римі..."
-            category:
-              type: string
-              pattern: '^[0-9a-fA-F]{24}$'
-              example: '672a5fe1c31a4c67fdfb12f9'
-            img:
-              type: string
-              format: binary
-              description: Optional image file for the story
-  responses:
-    '201':
-      $ref: '../../components/responses/stories/201-create.yaml'
-    '400':
-      $ref: '../../components/responses/400.yaml'
-    '401':
-      $ref: '../../components/responses/401.yaml'
-    '500':
-      $ref: '../../components/responses/500.yaml'
+tags:
+  - Stories
+summary: Create a new story
+operationId: createStory
+description: Create a new travel story. Requires authentication. Image is optional but title, article, and category are required.
+security:
+  - bearerAuth: []
+requestBody:
+  required: true
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        required:
+          - title
+          - article
+          - category
+        properties:
+          title:
+            type: string
+            minLength: 5
+            maxLength: 80
+            example: "Моя подорож до Італії"
+            description: Story title (5-80 characters)
+          article:
+            type: string
+            minLength: 5
+            maxLength: 2500
+            example: "Це був незабутній день у Римі..."
+            description: Story content/article (5-2500 characters)
+          category:
+            type: string
+            pattern: '^[0-9a-fA-F]{24}$'
+            example: '672a5fe1c31a4c67fdfb12f9'
+            description: Category ID (MongoDB ObjectId, 24 hex characters)
+          img:
+            type: string
+            format: binary
+            description: Optional image file for the story
+responses:
+  '201':
+    $ref: '../../components/responses/stories/201-create.yaml'
+  '400':
+    $ref: '../../components/responses/400.yaml'
+  '401':
+    $ref: '../../components/responses/401.yaml'
+  '500':
+    $ref: '../../components/responses/500.yaml'

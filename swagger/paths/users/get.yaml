@@ -2,9 +2,8 @@ tags:
   - Users
 summary: Get all users
 operationId: getUsers
-description: Retrieve a paginated list of users
-security:
-  - bearerAuth: []
+description: Retrieve a paginated list of users. This is a public endpoint.
+security: []
 
 parameters:
   - in: query

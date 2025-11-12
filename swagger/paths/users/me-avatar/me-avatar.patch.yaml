@@ -12,9 +12,9 @@ requestBody:
       schema:
         type: object
         required:
-          - avatarUrl
+          - avatar
         properties:
-          avatarUrl:
+          avatar:
             type: string
             format: binary
             description: New avatar image file
@@ -40,9 +40,9 @@ responses:
                   format: uri
                   example: https://res.cloudinary.com/demo/image/upload/v1700000000/avatars/new-avatar.png
   '400':
-    $ref: '../../components/responses/400.yaml'
+    $ref: '../../../components/responses/400.yaml'
   '401':
-    $ref: '../../components/responses/401-noAccess.yaml'
+    $ref: '../../../components/responses/401.yaml'
   '500':
-    $ref: '../../components/responses/500.yaml'
+    $ref: '../../../components/responses/500.yaml'
 

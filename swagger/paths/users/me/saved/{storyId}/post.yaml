@@ -1,0 +1,82 @@
+tags:
+  - Users
+summary: Add story to saved
+operationId: addSavedArticle
+description: Add a story to the authenticated user's saved stories list
+security:
+  - bearerAuth: []
+parameters:
+  - in: path
+    name: storyId
+    required: true
+    schema:
+      type: string
+      pattern: '^[0-9a-fA-F]{24}$'
+      example: '672b6cfea9f43a5e8f9f21a2'
+    description: The ID of the story to save (MongoDB ObjectId)
+responses:
+  '200':
+    description: Story already in saved list
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Story already in saved
+            data:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    savedStories:
+                      type: array
+                      items:
+                        type: string
+                        example: '672b6cfea9f43a5e8f9f21a2'
+  '201':
+    description: Story successfully saved
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 201
+            message:
+              type: string
+              example: Story saved
+            data:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    savedStories:
+                      type: array
+                      items:
+                        type: string
+                        example: '672b6cfea9f43a5e8f9f21a2'
+  '400':
+    $ref: '../../../../../components/responses/400.yaml'
+  '401':
+    $ref: '../../../../../components/responses/401.yaml'
+  '404':
+    $ref: '../../../../../components/responses/stories/404.yaml'
+  '500':
+    $ref: '../../../../../components/responses/500.yaml'
+

@@ -2,14 +2,12 @@ tags:
   - Auth
 summary: Refresh access token
 operationId: refreshUserSession
-description: Refresh access token using a valid refresh token
+description: Refresh access token using refresh token and session ID from cookies. This is a public endpoint.
 security: []
-requestBody:
-  required: true
-  content:
-    application/json:
-      schema:
-        $ref: '../../components/schemas/refreshToken.yaml'
 responses:
   '200':
     $ref: '../../components/responses/200-refresh.yaml'
+  '401':
+    $ref: '../../components/responses/401.yaml'
+  '500':
+    $ref: '../../components/responses/500.yaml'

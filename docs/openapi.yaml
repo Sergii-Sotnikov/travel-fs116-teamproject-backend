@@ -13,70 +13,83 @@ servers:
 
 tags:
   - name: Auth
-    description: Authentication and authorization operations (login, logout, reset password)
+    description: Authentication and authorization operations (login, logout, reset password, Google OAuth)
   - name: Users
     description: Operations related to traveller profiles and saved stories
   - name: Stories
     description: Operations related to managing travel stories (CRUD, images, categories)
 
-# paths:
-#   /users:
-#     get:
-#       $ref: '../swagger/paths/users/get.yaml'
-#   /users/{userId}:
-#     get:
-#       $ref: '../swagger/paths/users/{userId}/get.yaml'
-#   /users/me/profile:
-#     get:
-#       $ref: '../swagger/paths/users/me/profile/get.yaml'
-#   /users/me/saved/{id}:
-#     post:
-#       $ref: '../swagger/paths/users/me/saved/{storyId}/post.yaml'
-#     delete:
-#       $ref: '../swagger/paths/users/me/saved/{storyId}/delete.yaml'
-#   /users/me-avatar:
-#     patch:
-#       $ref: '../swagger/paths/users/me-avatar/patch.yaml'
-#   /users/me:
-#     patch:
-#       $ref: '../swagger/paths/users/me/patch.yaml'
+paths:
+  # ========== AUTH ENDPOINTS ==========
+  /auth/register:
+    post:
+      $ref: '../swagger/paths/auth/register.yaml'
+  
+  /auth/login:
+    post:
+      $ref: '../swagger/paths/auth/login.yaml'
+  
+  /auth/logout:
+    post:
+      $ref: '../swagger/paths/auth/logout.yaml'
+  
+  /auth/refresh:
+    post:
+      $ref: '../swagger/paths/auth/refresh.yaml'
+  
+  /auth/send-reset-email:
+    post:
+      $ref: '../swagger/paths/auth/send-reset-email.yaml'
+  
+  /auth/reset-password:
+    post:
+      $ref: '../swagger/paths/auth/reset-pwd.yaml'
+  
+  /auth/google/get-oauth-url:
+    get:
+      $ref: '../swagger/paths/auth/authgoogle/get.yaml'
+  
+  /auth/google/confirm-oauth:
+    post:
+      $ref: '../swagger/paths/auth/google/confirm-oauth.yaml'
 
-#   /auth/login:
-#     post:
-#       $ref: '../swagger/paths/auth/login.yaml'
-#   /auth/register:
-#     post:
-#       $ref: '../swagger/paths/auth/register.yaml'
-#   /auth/logout:
-#     post:
-#       $ref: '../swagger/paths/auth/logout.yaml'
-#   /auth/refresh:
-#     post:
-#       $ref: '../swagger/paths/auth/refresh.yaml'
-#   /auth/reset-pwd:
-#     post:
-#       $ref: '../swagger/paths/auth/reset-pwd.yaml'
-#   /auth/send-reset-email:
-#     post:
-#       $ref: '../swagger/paths/auth/send-reset-email.yaml'
-#   /auth/authgoogle:
-#     get:
-#       $ref: '../swagger/paths/auth/authgoogle/get.yaml'
+  # ========== USERS ENDPOINTS ==========
+  /users:
+    get:
+      $ref: '../swagger/paths/users/get.yaml'
+  
+  /users/{userId}:
+    get:
+      $ref: '../swagger/paths/users/{userId}/get.yaml'
+  
+  /users/me/profile:
+    get:
+      $ref: '../swagger/paths/users/me/profile/get.yaml'
+  
+  /users/me:
+    patch:
+      $ref: '../swagger/paths/users/me/patch.yaml'
+  
+  /users/me/avatar:
+    patch:
+      $ref: '../swagger/paths/users/me-avatar/me-avatar.patch.yaml'
+  
+  /users/me/saved/{storyId}:
+    post:
+      $ref: '../swagger/paths/users/me/saved/{storyId}/post.yaml'
+    delete:
+      $ref: '../swagger/paths/users/me/saved/{storyId}/delete.yaml'
 
-#   /auth/authgoogle/redirect:
-#     get:
-#       $ref: '../swagger/paths/auth/authgoogle/redirect.get.yaml'
-
-#   /stories:
-#     get:
-#       $ref: '../swagger/paths/stories/get.yaml'
-#       post:
-#     $ref: '../swagger/paths/stories/post.yaml'
-
-
-#   /stories/{storyId}:
-#     patch:
-#       $ref: '../swagger/paths/stories/{storyId}/patch.yaml'
+  # ========== STORIES ENDPOINTS ==========
+  /stories:
+    get:
+      $ref: '../swagger/paths/stories/get.yaml'
+    post:
+      $ref: '../swagger/paths/stories/post.yaml'
+  
+  /stories/{storyId}:
+    patch:
+      $ref: '../swagger/paths/stories/{storyId}/patch.yaml'
 
 components:
   securitySchemes:
