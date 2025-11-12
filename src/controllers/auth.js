@@ -139,7 +139,7 @@ export const loginWithGoogleOAuthController = async (req, res) => {
   if (!result || !result.session) {
     return res.status(401).json({
       status: 401,
-      message: 'Google authentication failed',
+      message: 'Google authentication failed!',
       data: {},
     });
   }
