@@ -11,9 +11,10 @@ parameters:
     required: true
     schema:
       type: string
-      pattern: '^[0-9a-fA-F]{24}$'
-      example: '672b6cfea9f43a5e8f9f21a2'
+      pattern: '^[a-f0-9]{24}$'
+      example: 672b6cfea9f43a5e8f9f21a2
     description: The ID of the story to update (MongoDB ObjectId)
+
 requestBody:
   required: true
   content:
@@ -24,32 +25,125 @@ requestBody:
           title:
             type: string
             maxLength: 80
+            description: Story title (max 80 characters)
             example: My Updated Travel Story
-            description: Optional. Story title (max 80 characters)
           article:
             type: string
             maxLength: 2500
+            description: Story article/content (max 2500 characters)
             example: A detailed updated story about my trip to Kyiv...
-            description: Optional. Story article/content (max 2500 characters)
           category:
             type: string
-            pattern: '^[0-9a-fA-F]{24}$'
-            example: '672a5fe1c31a4c67fdfb12f9'
-            description: Optional. Category ID (MongoDB ObjectId, 24 character hex string)
-          img:
+            pattern: '^[a-f0-9]{24}$'
+            description: Category ID (MongoDB ObjectId, 24 character hex string)
+            example: 672a5fe1c31a4c67fdfb12f9
+          imageUrl:
             type: string
             format: binary
-            description: Optional. New story image file
+            description: Story cover image file (JPG, PNG, WebP)
         minProperties: 1
-        description: At least one field (title, article, category) or file (img) must be provided
+        description: At least one field (title, article, category) or file (imageUrl) must be provided
+
 responses:
   '200':
-    $ref: '../../../components/responses/stories/200-updateStory.yaml'
+    description: Story successfully updated
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [status, message, data]
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Story successfully updated
+            data:
+              $ref: '../../../components/schemas/story.yaml'
+        examples:
+          success:
+            value:
+              status: 200
+              message: Story successfully updated
+              data:
+                _id: 672b6cfea9f43a5e8f9f21a2
+                imageUrl: https://example.com/images/story-updated.jpg
+                title: My Updated Travel Story
+                article: A detailed updated story about my trip to Kyiv...
+                category:
+                  _id: 672a5fe1c31a4c67fdfb12f9
+                  name: Nature
+                ownerId:
+                  _id: 671f8a22b5e9a8e4c1d7f9b3
+                  name: John Doe
+                  avatarUrl: https://example.com/avatars/john.jpg
+                publishedDate: 2025-10-25T12:00:00.000Z
+                favoritesCount: 4
+                createdAt: 2025-10-08T18:21:10.157Z
+                updatedAt: 2025-11-13T11:00:00.000Z
+
   '400':
-    $ref: '../../../components/responses/400.yaml'
+    description: Invalid story data or file upload
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [status, message, data]
+          properties:
+            status:
+              type: integer
+              example: 400
+            message:
+              type: string
+              example: BadRequestError
+            data:
+              type: object
+              example:
+                name: BadRequestError
+                message: Invalid request body or file format
+                details:
+                  - At least one of title, article, category or imageUrl must be provided
+        examples:
+          minProperties:
+            value:
+              status: 400
+              message: BadRequestError
+              data:
+                name: BadRequestError
+                message: At least one field is required
+          invalidFile:
+            value:
+              status: 400
+              message: BadRequestError
+              data:
+                name: BadRequestError
+                message: Invalid image format
+                details:
+                  - Only JPG, PNG, WebP files are allowed
+
   '401':
     $ref: '../../../components/responses/401.yaml'
+  '403':
+    description: Forbidden - User is not the story owner
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [status, message, data]
+          properties:
+            status:
+              type: integer
+              example: 403
+            message:
+              type: string
+              example: ForbiddenError
+            data:
+              type: object
+              example:
+                name: ForbiddenError
+                message: You do not have permission to update this story
   '404':
-    $ref: '../../../components/responses/stories/404.yaml'
+    $ref: '../../../components/responses/404.yaml'
   '500':
     $ref: '../../../components/responses/500.yaml'

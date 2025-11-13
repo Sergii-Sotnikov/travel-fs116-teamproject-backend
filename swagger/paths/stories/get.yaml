@@ -2,7 +2,9 @@ tags:
   - Stories
 summary: Get list of stories
 operationId: getStories
-description: 'Get list of stories with pagination and category filtering. This is a public endpoint that does not require authentication.'
+description: >
+  Get list of stories with pagination and optional category filtering.
+  This is a public endpoint that does not require authentication.
 security: []
 parameters:
   - in: query
@@ -13,6 +15,7 @@ parameters:
       default: 1
     example: 1
     description: Page number for pagination
+
   - in: query
     name: perPage
     schema:
@@ -21,18 +24,110 @@ parameters:
       default: 10
     example: 10
     description: Number of stories per page
+
   - in: query
     name: category
     schema:
       type: string
-      pattern: '^[0-9a-fA-F]{24}$'
-    example: '68fb50c80ae91338641121f2'
+      pattern: '^[a-f0-9]{24}$'
+    example: 68fb50c80ae91338641121f2
     description: Optional. Filter stories by category ID (MongoDB ObjectId)
 
 responses:
   '200':
-    $ref: '../../components/responses/stories/200.yaml'
+    description: Stories successfully retrieved
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [status, message, data]
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Stories successfully retrieved
+            data:
+              type: object
+              required: [stories, page, perPage, totalPages, totalItems]
+              properties:
+                stories:
+                  type: array
+                  items:
+                    $ref: '../../components/schemas/articleCard.yaml'
+                page:
+                  type: integer
+                  example: 1
+                perPage:
+                  type: integer
+                  example: 10
+                totalPages:
+                  type: integer
+                  example: 5
+                totalItems:
+                  type: integer
+                  example: 42
+        examples:
+          success:
+            value:
+              status: 200
+              message: Stories successfully retrieved
+              data:
+                stories:
+                  - _id: 672b6cfea9f43a5e8f9f21a2
+                    imageUrl: https://example.com/photos/kyoto.jpg
+                    title: Sunset in Kyoto
+                    publishedDate: 2025-10-15T08:30:00.000Z
+                    favoritesCount: 25
+                    authorId: 671234abcde123456789abcd
+                  - _id: 672b6cff11f43a5e8f9f3000
+                    imageUrl: https://example.com/photos/alps.jpg
+                    title: Hiking in the Alps
+                    publishedDate: 2025-10-10T14:45:00.000Z
+                    favoritesCount: 18
+                    authorId: 6700aabbccddeeff00112233
+                page: 1
+                perPage: 10
+                totalPages: 5
+                totalItems: 42
+
   '400':
-    $ref: '../../components/responses/400.yaml'
+    description: Invalid pagination or filter parameters
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [status, message, data]
+          properties:
+            status:
+              type: integer
+              example: 400
+            message:
+              type: string
+              example: BadRequestError
+            data:
+              type: object
+              example:
+                name: BadRequestError
+                message: Invalid query parameters
+                details:
+                  - Page must be a positive integer
+        examples:
+          invalidPage:
+            value:
+              status: 400
+              message: BadRequestError
+              data:
+                name: BadRequestError
+                message: Page must be a positive integer
+          invalidCategory:
+            value:
+              status: 400
+              message: BadRequestError
+              data:
+                name: BadRequestError
+                message: Category must be a valid MongoDB ObjectId
+
   '500':
     $ref: '../../components/responses/500.yaml'
