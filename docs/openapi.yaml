@@ -75,6 +75,10 @@ paths:
     patch:
       $ref: '../swagger/paths/stories/{storyId}/patch.yaml'
 
+  /stories/{storyId}:
+    get:
+      $ref: '../swagger/paths/stories/{storyId}/get.yaml'
+
 components:
   securitySchemes:
     bearerAuth:
