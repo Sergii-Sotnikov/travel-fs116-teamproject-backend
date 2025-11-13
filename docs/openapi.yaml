@@ -40,10 +40,10 @@ paths:
       $ref: '../swagger/paths/auth/send-reset-email.yaml'
   /auth/authgoogle:
     get:
-      $ref: '../swagger/paths/auth/authgoogle/get.yaml'
+      $ref: '../swagger/paths/auth/get.yaml'
   /auth/authgoogle/redirect:
     get:
-      $ref: '../swagger/paths/auth/authgoogle/redirect.get.yaml'
+      $ref: '../swagger/paths/auth/redirect-get.yaml'
 
   /users:
     get:
