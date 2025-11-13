@@ -12,4 +12,12 @@ content:
           example: 401
         message:
           type: string
-          example: Unauthorized Error
+          example: UnauthorizedError
+        data:
+          type: object
+          required:
+            - message
+          properties:
+            message:
+              type: string
+              example: 'Access token expired'

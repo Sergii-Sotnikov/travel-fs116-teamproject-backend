@@ -13,8 +13,19 @@ content:
           example: 500
         message:
           type: string
-          example: Something went wrong
+          example: InternalServerError
         data:
           type: object
-          example:
-            message: Unexpected error
+          required:
+            - message
+          properties:
+            message:
+              type: string
+              example: 'Unexpected server error occurred'
+    examples:
+      serverError:
+        value:
+          status: 500
+          message: InternalServerError
+          data:
+            message: Unexpected server error occurred

@@ -1,4 +1,4 @@
-description: Unauthorized. User not found
+description: Not Found error
 content:
   application/json:
     schema:
@@ -10,10 +10,10 @@ content:
       properties:
         status:
           type: integer
-          example: 401
+          example: 404
         message:
           type: string
-          example: 'UnauthorizedError'
+          example: NotFoundError
         data:
           type: object
           required:
@@ -21,4 +21,11 @@ content:
           properties:
             message:
               type: string
-              example: 'User not found'
+              example: 'Resource not found'
+    examples:
+      notFound:
+        value:
+          status: 404
+          message: NotFoundError
+          data:
+            message: Resource not found
