@@ -1,3 +1,4 @@
+
 import { TravellersCollection } from '../db/models/traveller.js';
 import { UsersCollection } from '../db/models/user.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
@@ -34,12 +35,6 @@ export const getUserById = async (userId) => {
 
   const userDoc = await UsersCollection.findById(userId)
     .select('_id name avatarUrl description createdAt articlesAmount')
-    .select('+savedStories')
-    .populate({
-      path: 'savedStories',
-      select: '_id title img date favoriteCount createdAt',
-      options: { sort: { date: -1 } },
-    })
     .lean();
 
   if (!userDoc) {
@@ -50,13 +45,32 @@ export const getUserById = async (userId) => {
 
 
   const articles = await TravellersCollection.find({ ownerId: userId })
-    .select('_id title img date favoriteCount createdAt')
-    .sort({ date: -1 })
+    .select('_id title img article date favoriteCount createdAt')
+    .sort({ favoriteCount: -1 })
     .lean();
 
-  const { savedStories: savedArticles = [], ...user } = userDoc;
-  return { user, articles, savedArticles };
+  const { ...user } = userDoc;
+  return { user, articles };
 };
+
+
+// GET USER BY ID AND SAVED ARTICLES
+export const getUserSavedArticles = async (userId) =>{
+  const user = await UsersCollection.findById(userId)
+    .select('_id name avatarUrl description createdAt')
+    .select('+savedStories')
+    .populate({
+      path: 'savedStories',
+      select: '_id img title article date favoriteCount createdAt category',
+      options: { sort: { favoriteCount: -1 } },
+      populate: {
+        path: 'category',
+        select: 'name',
+      },
+    });
+
+  return {user}
+}
 
 
 // GET USER (PRIVATE)

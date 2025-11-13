@@ -6,6 +6,7 @@ import {
   updateMe,
   addArticleToSaved,
   getMeProfile,
+  getUserSavedArticles,
 } from '../services/users.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { deleteSavedStory } from '../services/users.js';
@@ -48,12 +49,12 @@ export const getUsersByIdController = async (req, res) => {
 
   try {
     const { userId } = req.params;
-    const { user, articles, savedArticles } = await getUserById(userId);
+    const { user, articles } = await getUserById(userId);
 
     return res.status(200).json({
       status: 200,
       message: 'Successfully found user by id!',
-      data: { user, articles, savedArticles },
+      data: { user, articles},
     });
   } catch (err) {
     const status = err.status || err.statusCode || 500;
@@ -62,6 +63,36 @@ export const getUsersByIdController = async (req, res) => {
     return res.status(status).json({ status, message, data: payload });
   }
 };
+
+//GET USER BY ID + SAVED ARTICLES
+export const getUsersSavedArticlesController = async (req, res)=>{
+  const userId = req.params.userId
+
+  const {user} = await getUserSavedArticles(userId);
+
+  if(!user){
+        throw createHttpError(404, 'User not found');
+  }
+
+  const { _id, name, avatarUrl, description, createdAt, savedStories } =
+    user.toObject();
+
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully found user by id and saved stories!',
+    data: {
+      user: {
+        _id,
+        name,
+        avatarUrl,
+        description,
+        createdAt,
+      },
+      savedStories,
+    },
+  });
+}
+
 
 
 // GET USER (PRIVATE)
@@ -75,6 +106,7 @@ export const getMeProfileController = async (req, res) => {
     data: user,
   });
 };
+
 
 
 // POST ARTICLE BY ID (PRIVATE)

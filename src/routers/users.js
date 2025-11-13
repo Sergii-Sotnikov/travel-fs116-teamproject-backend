@@ -9,6 +9,7 @@ import {
   patchMeAvatarController,
   patchMeController,
   addSavedArticleController,
+  getUsersSavedArticlesController,
 } from '../controllers/users.js';
 import { authenticate } from '../middlewares/authenticate.js';
 import { validateBody } from '../middlewares/validateBody.js';
@@ -18,7 +19,8 @@ const router = Router();
 
 //публічні
 router.get('/', ctrlWrapper(getAllUsersController));
-router.get('/:userId', ctrlWrapper(getUsersByIdController)); // створити публічний ендпоінт на отримання даних про користувача за ID - дані користувача + список статей
+router.get('/:userId', ctrlWrapper(getUsersByIdController)); // створити публічний ендпоінт на отримання даних про користувача за ID - дані користувача + список власних статей
+router.get('/:userId/saved-articles', ctrlWrapper(getUsersSavedArticlesController)); // створити публічний ендпоінт на отримання даних про користувача за ID - дані користувача + список збережених статей
 
 //Приватні
 router.use(authenticate);
