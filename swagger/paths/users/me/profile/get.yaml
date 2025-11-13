@@ -2,7 +2,7 @@ tags:
   - Users
 summary: Get current user's profile
 operationId: getMeProfile
-description: Retrieve the authenticated user's profile with their articles (private endpoint)
+description: Retrieve the authenticated user's profile with their articles and saved stories (private endpoint). Requires authentication.
 security:
   - bearerAuth: []
 
@@ -20,88 +20,50 @@ responses:
               example: 200
             message:
               type: string
-              example: 'Successfully found the user with id: 6912543ed3b94d5c0eae6420'
+              example: Successfully retrieved user profile
             data:
               type: object
-              required: [_id, name, avatarUrl, articlesAmount, createdAt, updatedAt, articles]
+              required: [user, articles]
               properties:
-                _id:
-                  type: string
-                  example: '6912543ed3b94d5c0eae6420'
-                name:
-                  type: string
-                  example: 'Djon Pui'
-                avatarUrl:
-                  type: string
-                  format: uri
-                  example: 'https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg'
-                articlesAmount:
-                  type: integer
-                  minimum: 0
-                  example: 8
-                createdAt:
-                  type: string
-                  format: date-time
-                  example: '2025-11-10T21:08:14.553Z'
-                updatedAt:
-                  type: string
-                  format: date-time
-                  example: '2025-11-10T23:49:42.964Z'
+                user:
+                  $ref: '../../../../components/schemas/user.yaml'
                 articles:
                   type: array
+                  description: Articles published by the user
                   items:
                     $ref: '../../../../components/schemas/articleCard.yaml'
         examples:
-          ok:
+          success:
             value:
               status: 200
-              message: 'Successfully found the user with id: 6912543ed3b94d5c0eae6420'
+              message: Successfully retrieved user profile
               data:
-                _id: '6912543ed3b94d5c0eae6420'
-                name: 'Martin Game'
-                avatarUrl: 'https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg'
-                articlesAmount: 8
-                createdAt: '2025-11-10T21:08:14.553Z'
-                updatedAt: '2025-11-10T23:49:42.964Z'
+                user:
+                  _id: 6912543ed3b94d5c0eae6420
+                  name: Martin Game
+                  email: martin@example.com
+                  avatarUrl: https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg
+                  articlesAmount: 8
+                  description: null
+                  createdAt: 2025-11-10T21:08:14.553Z
+                  updatedAt: 2025-11-10T23:49:42.964Z
                 articles:
-                  - _id: '6912703e9afd9812a62a9d4c'
-                    img: 'https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg'
-                    title: 'Hello World'
-                    date: '2025-11-10T23:07:42.866Z'
-                    favoriteCount: 0
-                    createdAt: '2025-11-10T23:07:42.867Z'
+                  - _id: 6912703e9afd9812a62a9d4c
+                    imageUrl: https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg
+                    title: Hello World
+                    publishedDate: 2025-11-10T23:07:42.866Z
+                    favoritesCount: 0
+                    authorId: 6912543ed3b94d5c0eae6420
+                  - _id: 69134980a9c11877caa26fed
+                    imageUrl: https://res.cloudinary.com/demo/image/upload/v1699999999/samples/city.jpg
+                    title: City Adventures
+                    publishedDate: 2025-11-09T18:30:00.000Z
+                    favoritesCount: 3
+                    authorId: 6912543ed3b94d5c0eae6420
+
   '401':
-    description: Unauthorized (missing or invalid token)
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            status: { type: integer, example: 401 }
-            message: { type: string, example: 'Unauthorized' }
+    $ref: '../../../../components/responses/401.yaml'
   '404':
-    description: User not found
-    content:
-      application/json:
-        schema:
-          type: object
-          required: [status, message, data]
-          properties:
-            status:
-              type: integer
-              example: 404
-            message:
-              type: string
-              example: User not found
-            data:
-              oneOf:
-                - type: object
-                - type: 'null'
-        examples:
-          not-found:
-            value:
-              status: 404
-              message: User not found
-              data: null
+    $ref: '../../../../components/responses/404.yaml'
   '500':
     $ref: '../../../../components/responses/500.yaml'

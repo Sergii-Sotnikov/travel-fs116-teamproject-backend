@@ -2,7 +2,7 @@ tags:
   - Users
 summary: Update current user's profile
 operationId: patchMe
-description: Update profile fields and optionally upload an avatar (multipart/form-data)
+description: Update profile fields (name, description) and optionally upload a new avatar image.
 security:
   - bearerAuth: []
 
@@ -16,185 +16,79 @@ requestBody:
           name:
             type: string
             maxLength: 100
-            example: 'Test8'
+            description: User's display name
+            example: Test8
           description:
             type: string
             maxLength: 1000
-            example: 'Hello Sergiy'
+            description: User's bio/description
+            example: Hello Sergiy
           avatar:
             type: string
             format: binary
-      encoding:
-        avatar:
-          contentType: image/jpeg, image/png, image/webp
-          style: form
-          explode: true
+            description: Avatar image file (JPG, PNG, WebP, max 5MB)
+        minProperties: 1
+        description: At least one field (name, description) or file (avatar) must be provided
 
 responses:
   '200':
-    description: Successfully patched my profile
+    description: Profile updated successfully
     content:
       application/json:
         schema:
           type: object
           required: [status, message, data]
           properties:
-            status: { type: integer, example: 200 }
-            message: { type: string, example: Successfully patched my profile! }
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Profile updated successfully
             data:
-              type: object
-              required: [_id, name, avatarUrl, articlesAmount, createdAt]
-              properties:
-                _id:
-                  type: string
-                  example: '69134925a9c11877caa26fd9'
-                name:
-                  type: string
-                  example: 'Test8'
-                avatarUrl:
-                  type: string
-                  format: uri
-                  example: 'https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png'
-                articlesAmount:
-                  type: integer
-                  example: 1
-                createdAt:
-                  type: string
-                  format: date-time
-                  example: '2025-11-11T14:33:09.641Z'
-                description:
-                  type: string
-                  example: 'Hello Sergiy'
+              $ref: '../../../components/schemas/user.yaml'
         examples:
-          ok:
+          success:
             value:
               status: 200
-              message: Successfully patched my profile!
+              message: Profile updated successfully
               data:
-                _id: '69134925a9c11877caa26fd9'
-                name: 'Test8'
-                avatarUrl: 'https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png'
+                _id: 69134925a9c11877caa26fd9
+                name: Test8
+                email: test8@example.com
+                avatarUrl: https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png
                 articlesAmount: 1
-                createdAt: '2025-11-11T14:33:09.641Z'
-                description: 'Hello Sergiy'
+                description: Hello Sergiy
+                createdAt: 2025-11-11T14:33:09.641Z
+                updatedAt: 2025-11-11T15:45:22.123Z
 
   '400':
-    description: Bad request (no fields provided or invalid file)
-    content:
-      application/json:
-        schema:
-          type: object
-          required: [status, message]
-          properties:
-            status: { type: integer, example: 400 }
-            message: { type: string, example: Invalid payload }
-            data:
-              type: object
-              properties:
-                details:
-                  type: array
-                  items: { type: string }
-        examples:
-          no-fields:
-            value:
-              status: 400
-              message: Invalid payload
-              data:
-                details:
-                  - 'At least one field is required: name, description, or avatar'
-          invalid-type:
-            value:
-              status: 400
-              message: Invalid avatar file type
-              data:
-                details: ['Allowed types: image/jpeg, image/png, image/webp']
-          too-large:
-            value:
-              status: 400
-              message: Avatar file is too large
-              data:
-                details: ['Max size: 5MB']
-          missing-buffer:
-            value:
-              status: 400
-              message: Invalid avatar file
-              data:
-                details: ['File buffer is required']
-
-  '401':
-    description: Unauthorized (missing/invalid token or session)
-    content:
-      application/json:
-        schema:
-          type: object
-          required: [status, message]
-          properties:
-            status: { type: integer, example: 401 }
-            message: { type: string, example: Session not found or invalid token }
-            data:
-              type: object
-              properties:
-                details:
-                  type: array
-                  items: { type: string }
-        examples:
-          no-token:
-            value:
-              status: 401
-              message: Unauthorized
-              data:
-                details: ['Missing access token']
-          invalid-token:
-            value:
-              status: 401
-              message: Session not found or invalid token
-              data:
-                details: ['Invalid or expired token']
-
-  '413':
-    description: Payload Too Large (file exceeds server limits)
-    content:
-      application/json:
-        schema:
-          type: object
-          required: [status, message]
-          properties:
-            status: { type: integer, example: 413 }
-            message: { type: string, example: Payload Too Large }
-        examples:
-          too-large:
-            value:
-              status: 413
-              message: Payload Too Large
-              data: null
-
-  '415':
-    description: Unsupported Media Type (wrong Content-Type)
-    content:
-      application/json:
-        schema:
-          type: object
-          required: [status, message]
-          properties:
-            status: { type: integer, example: 415 }
-            message: { type: string, example: Unsupported Media Type }
-        examples:
-          bad-media:
-            value:
-              status: 415
-              message: Unsupported Media Type
-              data: null
-
-  '500':
-    description: Internal Server Error
+    description: Invalid request (missing fields or invalid file)
     content:
       application/json:
         schema:
           type: object
           required: [status, message, data]
           properties:
-            status: { type: integer, example: 500 }
-            message: { type: string, example: Something went wrong }
+            status:
+              type: integer
+              example: 400
+            message:
+              type: string
+              example: BadRequestError
             data:
               type: object
-              example: { message: Unexpected error }
+              example:
+                name: BadRequestError
+                message: Invalid request body
+                details:
+                  - At least one field is required (name, description, or avatar)
+
+  '401':
+    $ref: '../../../components/responses/401.yaml'
+  '413':
+    description: Payload Too Large (file exceeds 5MB)
+  '415':
+    description: Unsupported Media Type
+  '500':
+    $ref: '../../../components/responses/500.yaml'
