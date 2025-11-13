@@ -18,8 +18,10 @@ const isProd = process.env.NODE_ENV === 'production';
 export async function setupServer() {
   const app = express();
 
+  // JSON
   app.use(express.json());
 
+  // CORS
   app.use(
     cors({
       origin: [
@@ -30,6 +32,7 @@ export async function setupServer() {
     }),
   );
 
+  // Cookies
   app.use(cookieParser());
 
   // Логи pino: в проде без pino-pretty, локально — з pretty
@@ -47,34 +50,44 @@ export async function setupServer() {
 
   app.use(logger);
 
-
+  // Примитивный лог времени
   app.use((req, res, next) => {
-    console.log(`Time: ${new Date().toLocaleString()}`);
+    console.log(
+      `Time: ${new Date().toISOString()} | ${req.method} ${req.url}`,
+    );
     next();
   });
 
-  // Основні роутери
+  // Роуты
   app.use('/api', router);
 
-  // Статичні файли
+  // Статика
   app.use('/uploads', express.static(UPLOAD_DIR));
 
   // Swagger docs
   app.use('/api-docs', swaggerDocs());
 
-  // Обробка 404
+  // 404
   app.use(notFoundHandler);
 
-  // Глобальний error handler
+  // Error handler
   app.use(errorHandler);
 
-  // Запуск сервера
-  try {
-    app.listen(PORT, (error) => {
-      if (error) throw error;
-      console.log(`🚀 Server is running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error('❌ Server startup error:', error);
-  }
+  // Запуск сервера — оборачиваем в Promise, чтобы bootstrap мог дождаться
+  return new Promise((resolve, reject) => {
+    try {
+      app.listen(PORT, (error) => {
+        if (error) {
+          console.error('❌ Server startup error:', error);
+          reject(error);
+          return;
+        }
+        console.log(`🚀 Server is running on port ${PORT}`);
+        resolve();
+      });
+    } catch (error) {
+      console.error('❌ Server startup error (sync):', error);
+      reject(error);
+    }
+  });
 }
