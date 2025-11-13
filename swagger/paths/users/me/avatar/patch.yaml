@@ -2,7 +2,7 @@ tags:
   - Users
 summary: Update current user's avatar
 operationId: patchMeAvatar
-description: Upload a new avatar image for the authenticated user (multipart/form-data)
+description: Upload a new avatar image for the authenticated user. Accepts JPG, PNG, WebP files up to 5MB.
 security:
   - bearerAuth: []
 
@@ -17,11 +17,7 @@ requestBody:
           avatar:
             type: string
             format: binary
-      encoding:
-        avatar:
-          contentType: image/jpeg, image/png, image/webp
-          style: form
-          explode: true
+            description: Avatar image file (JPG, PNG, WebP, max 5MB)
 
 responses:
   '200':
@@ -32,160 +28,56 @@ responses:
           type: object
           required: [status, message, data]
           properties:
-            status: { type: integer, example: 200 }
-            message: { type: string, example: Avatar updated successfully }
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Avatar updated successfully
             data:
-              type: object
-              required: [user]
-              properties:
-                user:
-                  type: object
-                  required: [_id, name, avatarUrl, articlesAmount, createdAt, updatedAt]
-                  properties:
-                    _id:
-                      type: string
-                      example: '6912543ed3b94d5c0eae6420'
-                    name:
-                      type: string
-                      example: 'Test7'
-                    avatarUrl:
-                      type: string
-                      format: uri
-                      example: 'https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg'
-                    articlesAmount:
-                      type: integer
-                      example: 8
-                    createdAt:
-                      type: string
-                      format: date-time
-                      example: '2025-11-10T21:08:14.553Z'
-                    updatedAt:
-                      type: string
-                      format: date-time
-                      example: '2025-11-11T09:12:31.001Z'
+              $ref: ../../../../components/schemas/user.yaml
         examples:
-          ok:
+          success:
             value:
               status: 200
               message: Avatar updated successfully
               data:
-                user:
-                  _id: '6912543ed3b94d5c0eae6420'
-                  name: 'Test7'
-                  avatarUrl: 'https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg'
-                  articlesAmount: 8
-                  createdAt: '2025-11-10T21:08:14.553Z'
-                  updatedAt: '2025-11-11T09:12:31.001Z'
+                _id: 6912543ed3b94d5c0eae6420
+                name: Test7
+                email: test7@example.com
+                avatarUrl: https://res.cloudinary.com/demo/image/upload/v1699999999/avatars/nature.jpg
+                articlesAmount: 8
+                description: null
+                createdAt: 2025-11-10T21:08:14.553Z
+                updatedAt: 2025-11-11T09:12:31.001Z
 
   '400':
-    description: Bad request (missing or invalid avatar file)
-    content:
-      application/json:
-        schema:
-          type: object
-          required: [status, message]
-          properties:
-            status: { type: integer, example: 400 }
-            message: { type: string, example: Avatar file is required }
-            data:
-              type: object
-              properties:
-                details:
-                  type: array
-                  items: { type: string }
-        examples:
-          missing-file:
-            value:
-              status: 400
-              message: Avatar file is required
-              data: null
-          invalid-type:
-            value:
-              status: 400
-              message: Invalid avatar file type
-              data:
-                details: ['Allowed types: image/jpeg, image/png, image/webp']
-          too-large:
-            value:
-              status: 400
-              message: Avatar file is too large
-              data:
-                details: ['Max size: 5MB']
-
-  '401':
-    description: Unauthorized (missing/invalid token or session)
-    content:
-      application/json:
-        schema:
-          type: object
-          required: [status, message]
-          properties:
-            status: { type: integer, example: 401 }
-            message: { type: string, example: Session not found or invalid token }
-            data:
-              type: object
-              properties:
-                details:
-                  type: array
-                  items: { type: string }
-        examples:
-          no-token:
-            value:
-              status: 401
-              message: Unauthorized
-              data:
-                details: ['Missing access token']
-          invalid-token:
-            value:
-              status: 401
-              message: Session not found or invalid token
-              data:
-                details: ['Invalid or expired token']
-
-  '413':
-    description: Payload Too Large (file exceeds server limits)
-    content:
-      application/json:
-        schema:
-          type: object
-          required: [status, message]
-          properties:
-            status: { type: integer, example: 413 }
-            message: { type: string, example: Payload Too Large }
-        examples:
-          too-large:
-            value:
-              status: 413
-              message: Payload Too Large
-              data: null
-
-  '415':
-    description: Unsupported Media Type (wrong Content-Type)
-    content:
-      application/json:
-        schema:
-          type: object
-          required: [status, message]
-          properties:
-            status: { type: integer, example: 415 }
-            message: { type: string, example: Unsupported Media Type }
-        examples:
-          bad-media:
-            value:
-              status: 415
-              message: Unsupported Media Type
-              data: null
-
-  '500':
-    description: Internal Server Error
+    description: Invalid avatar file
     content:
       application/json:
         schema:
           type: object
           required: [status, message, data]
           properties:
-            status: { type: integer, example: 500 }
-            message: { type: string, example: Something went wrong }
+            status:
+              type: integer
+              example: 400
+            message:
+              type: string
+              example: BadRequestError
             data:
               type: object
-              example: { message: Unexpected error }
+              example:
+                name: BadRequestError
+                message: Invalid avatar file
+                details:
+                  - Avatar file is required and must be JPG, PNG, or WebP
+
+  '401':
+    $ref: ../../../../components/responses/401.yaml
+  '413':
+    description: Payload Too Large
+  '415':
+    description: Unsupported Media Type
+  '500':
+    $ref: ../../../../components/responses/500.yaml

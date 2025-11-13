@@ -2,7 +2,7 @@ tags:
   - Users
 summary: Get all users
 operationId: getUsers
-description: Retrieve a paginated list of users
+description: Retrieve a paginated list of users with public profile information
 security: []
 parameters:
   - in: query
@@ -21,7 +21,7 @@ parameters:
       maximum: 100
       default: 12
       example: 12
-    description: Number of users per page
+    description: Number of users per page (max 100)
 
 responses:
   '200':
@@ -37,14 +37,14 @@ responses:
               example: 200
             message:
               type: string
-              example: Successfully found users!
+              example: Users successfully retrieved
             data:
               type: object
-              required:
-                [users, page, perPage, totalItems, totalPages, hasPreviousPage, hasNextPage]
+              required: [users, page, perPage, totalItems, totalPages]
               properties:
                 users:
                   type: array
+                  description: Array of users with public profile information
                   items:
                     $ref: '../../components/schemas/userPublic.yaml'
                 page:
@@ -59,62 +59,62 @@ responses:
                 totalPages:
                   type: integer
                   example: 6
-                hasPreviousPage:
-                  type: boolean
-                  example: false
-                hasNextPage:
-                  type: boolean
-                  example: true
         examples:
-          ok:
+          success:
             value:
               status: 200
-              message: Successfully found users!
+              message: Users successfully retrieved
               data:
                 users:
-                  - _id: '6881563901add19ee16fcff5'
-                    name: 'Дмитро Романенко'
-                    avatarUrl: 'https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp'
+                  - _id: 6881563901add19ee16fcff5
+                    name: Дмитро Романенко
+                    avatarUrl: https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp
                     articlesAmount: 13
-                    description: 'Привіт! Я Дмитро...'
+                    description: Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці та ділитися ними.
+                    createdAt: 2025-11-06T18:32:41.123Z
+                  - _id: 69134925a9c11877caa26fd9
+                    name: Test User
+                    avatarUrl: https://ftp.goit.study/img/harmoniq/users/69134925a9c11877caa26fd9.webp
+                    articlesAmount: 8
+                    description: null
+                    createdAt: 2025-11-10T21:08:14.553Z
                 page: 1
                 perPage: 12
                 totalItems: 63
                 totalPages: 6
-                hasPreviousPage: false
-                hasNextPage: true
 
   '400':
-    description: Bad request
+    description: Invalid pagination parameters
     content:
       application/json:
         schema:
           type: object
-          required: [status, message]
+          required: [status, message, data]
           properties:
-            status: { type: integer, example: 400 }
-            message: { type: string, example: 'Invalid query params' }
+            status:
+              type: integer
+              example: 400
+            message:
+              type: string
+              example: BadRequestError
             data:
               type: object
-              properties:
+              example:
+                name: BadRequestError
+                message: Invalid query parameters
                 details:
-                  type: array
-                  items: { type: string }
+                  - Page must be >= 1
+                  - perPage must be between 1 and 100
         examples:
-          invalid-page:
+          invalid-params:
             value:
               status: 400
-              message: Invalid query params
+              message: BadRequestError
               data:
+                name: BadRequestError
+                message: Invalid query parameters
                 details:
-                  - '"page" must be >= 1'
-          invalid-perPage:
-            value:
-              status: 400
-              message: Invalid query params
-              data:
-                details:
-                  - '"perPage" must be between 1 and 100'
+                  - perPage must be between 1 and 100
 
   '500':
     $ref: '../../components/responses/500.yaml'

@@ -1,22 +1,22 @@
 tags:
   - Users
-summary: Get user by id
+summary: Get user by ID
 operationId: getUserById
-description: Retrieve a specific user by ID (public endpoint)
+description: Retrieve a specific user's public profile and published articles by user ID. This is a public endpoint.
 security: []
 parameters:
   - name: userId
     in: path
     required: true
-    description: The unique ID of the user
+    description: The unique ID of the user (MongoDB ObjectId)
     schema:
       type: string
       pattern: '^[a-f0-9]{24}$'
-      example: '69134925a9c11877caa26fd9'
+      example: 69134925a9c11877caa26fd9
 
 responses:
   '200':
-    description: Successfully retrieved user by id
+    description: Successfully retrieved user and their articles
     content:
       application/json:
         schema:
@@ -28,97 +28,68 @@ responses:
               example: 200
             message:
               type: string
-              example: Successfully found user by id!
+              example: Successfully found user by id
             data:
               type: object
-              required: [user, articles, savedArticles]
+              required: [user, articles]
               properties:
                 user:
-                  $ref: '../../../components/schemas/user.yaml'
+                  $ref: '../../../components/schemas/userPublic.yaml'
                 articles:
                   type: array
-                  items:
-                    $ref: '../../../components/schemas/articleCard.yaml'
-                savedArticles:
-                  type: array
+                  description: Articles published by the user
                   items:
                     $ref: '../../../components/schemas/articleCard.yaml'
         examples:
-          ok:
+          success:
             value:
               status: 200
-              message: Successfully found user by id!
+              message: Successfully found user by id
               data:
                 user:
-                  _id: '69134925a9c11877caa26fd9'
-                  name: 'Test8'
-                  avatarUrl: 'https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png'
+                  _id: 69134925a9c11877caa26fd9
+                  name: Test8
+                  avatarUrl: https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png
                   articlesAmount: 1
-                  createdAt: '2025-11-11T14:33:09.641Z'
+                  description: null
+                  createdAt: 2025-11-11T14:33:09.641Z
                 articles:
-                  - _id: '69134980a9c11877caa26fed'
-                    img: 'https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg'
-                    title: 'Super'
-                    date: '2025-11-11T14:34:40.845Z'
-                    favoriteCount: 0
-                    createdAt: '2025-11-11T14:34:40.845Z'
-                savedArticles:
-                  - _id: '68498236a100312bea079008'
-                    img: 'https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg'
-                    title: 'Йорданія: шлях у Петру'
-                    date: '2025-01-10'
-                    favoriteCount: 6
-
+                  - _id: 69134980a9c11877caa26fed
+                    imageUrl: https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg
+                    title: Super
+                    publishedDate: 2025-11-11T14:34:40.845Z
+                    favoritesCount: 0
+                    authorId: 69134925a9c11877caa26fd9
+                  - _id: 68498236a100312bea079008
+                    imageUrl: https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg
+                    title: Йорданія - шлях у Петру
+                    publishedDate: 2025-01-10T00:00:00.000Z
+                    favoritesCount: 6
+                    authorId: 69134925a9c11877caa26fd9
 
   '400':
-    description: Bad request
+    description: Invalid user ID parameter
     content:
       application/json:
         schema:
           type: object
-          required: [status, message]
+          required: [status, message, data]
           properties:
-            status: { type: integer, example: 400 }
-            message: { type: string, example: 'Invalid "userId" path parameter' }
+            status:
+              type: integer
+              example: 400
+            message:
+              type: string
+              example: BadRequestError
             data:
               type: object
-              properties:
+              example:
+                name: BadRequestError
+                message: Invalid userId path parameter
                 details:
-                  type: array
-                  items: { type: string }
-        examples:
-          invalid-objectid:
-            value:
-              status: 400
-              message: Invalid "userId" path parameter
-              data:
-                details:
-                  - '"userId" must match /^[a-f0-9]{24}$/'
+                  - userId must match pattern ^[a-f0-9]{24}$
 
   '404':
-    description: User not found
-    content:
-      application/json:
-        schema:
-          type: object
-          required: [status, message]
-          properties:
-            status: { type: integer, example: 404 }
-            message: { type: string, example: 'User not found' }
-            data:
-              type: object
-              properties:
-                details:
-                  type: array
-                  items: { type: string }
-        examples:
-          not-found:
-            value:
-              status: 404
-              message: User not found
-              data:
-                details:
-                  - 'User with given id doesn’t exist'
-
+    $ref: '../../../components/responses/404.yaml'
   '500':
     $ref: '../../../components/responses/500.yaml'
