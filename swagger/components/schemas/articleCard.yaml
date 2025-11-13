@@ -1,25 +1,32 @@
-# components/schemas/articleCard.yaml
 type: object
-required: [_id, img, title, date, favoriteCount]
+required: [_id, imageUrl, title, publishedDate, favoritesCount]
 properties:
   _id:
     type: string
-    example: 68498236a100312bea078fee
-  img:
+    description: 'Article ID'
+    pattern: '^[a-f0-9]{24}$'
+    example: '68498236a100312bea078fee'
+  imageUrl:
     type: string
     format: uri
-    example: https://ftp.goit.study/img/travel-blog/4185d68f321c49b591f7e879ek.webp
+    description: 'Article cover image URL'
+    example: 'https://ftp.goit.study/img/travel-blog/4185d68f321c49b591f7e879ek.webp'
   title:
     type: string
+    description: 'Article title'
     example: 'Грузія на смак: винні підвали та гірські села'
-  date:
-    type: string
-    example: '2025-06-13'
-  favoriteCount:
-    type: integer
-    minimum: 0
-    example: 22
-  createdAt:
+  publishedDate:
     type: string
     format: date-time
-    example: '2025-11-11T14:34:40.845Z'
+    description: 'Publication date'
+    example: '2025-06-13T00:00:00.000Z'
+  favoritesCount:
+    type: integer
+    minimum: 0
+    description: 'Number of users who saved/favorited this article'
+    example: 22
+  authorId:
+    type: string
+    description: 'ID of the article author'
+    pattern: '^[a-f0-9]{24}$'
+    example: '69134925a9c11877caa26fd9'

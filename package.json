@@ -6,7 +6,7 @@
     "dev": "nodemon --watch src --ext js,json --exec node src/index.js",
     "start": "node src/index.js",
     "build": "npm run build-docs",
-    "build-docs": "npx @redocly/cli bundle docs/openapi.yaml --ext json -o docs/swagger.json",
+"build-docs": "npx -y @redocly/cli@1.34.5 bundle docs/openapi.yaml --ext json -o docs/swagger.json",
     "preview-docs": "redocly preview-docs"
   },
   "repository": {
@@ -46,6 +46,7 @@
     "mongoose": "^8.19.3",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.9",
+    "pino": "^10.1.0",
     "pino-http": "^10.5.0",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"

@@ -102,7 +102,7 @@ export const sendResetEmailController = async (req, res) => {
 
   res.status(200).json({
     status: 200,
-    message: 'Reset password email has been successfully sent.',
+    message: 'Reset password email has been successfully sent',
     data: {},
   });
 };
@@ -139,7 +139,7 @@ export const loginWithGoogleOAuthController = async (req, res) => {
   if (!result || !result.session) {
     return res.status(401).json({
       status: 401,
-      message: 'Google authentication failed',
+      message: 'Google authentication failed!',
       data: {},
     });
   }

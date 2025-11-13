@@ -4,6 +4,7 @@ import {
   createStoryController,
   getAllStoriesController,
   patchStoryController,
+  getStoriesByIdControlle,
 } from '../controllers/stories.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import { upload } from '../middlewares/multer.js';
@@ -13,6 +14,7 @@ const router = Router();
 
 //публічний
 router.get('/', ctrlWrapper(getAllStoriesController)); //створити публічний ендпоінт для ОТРИМАННЯ історій + пагінація + фільтрація за категоріями
+router.get('/:storyId', ctrlWrapper(getStoriesByIdControlle)) // створити публічний ендпоінт для ОТРИМАННЯ однієї історій
 
 //приватний
 router.use(authenticate);

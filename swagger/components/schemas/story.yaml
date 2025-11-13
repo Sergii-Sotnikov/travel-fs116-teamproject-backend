@@ -1,55 +1,84 @@
 type: object
 required:
-  - _id
-  - img
-  - title
-  - article
-  - category
-  - ownerId
-  - date
-  - favoriteCount
-  - createdAt
-  - updatedAt
+  [
+    _id,
+    imageUrl,
+    title,
+    article,
+    category,
+    ownerId,
+    publishedDate,
+    favoritesCount,
+    createdAt,
+    updatedAt,
+  ]
 properties:
-              _id:
-                type: string
-                example: 672b6cfea9f43a5e8f9f21a2
-              img:
-                type: string
-                example: https://example.com/images/story1.jpg
-              title:
-                type: string
-                example: My Travel Story
-              article:
-                type: string
-                example: A detailed story about my trip to Iceland...
-              category:
-                type: object
-                properties:
-                  _id:
-                    type: string
-                    example: 672a5fe1c31a4c67fdfb12f9
-
-              ownerId:
-                type: object
-                properties:
-                  _id:
-                    type: string
-                    example: 671f8a22b5e9a8e4c1d7f9b3
-
-              date:
-                type: string
-                format: date-time
-                example: 2025-10-25T12:00:00.000Z
-              favoriteCount:
-                type: integer
-                example: 4
-
-              createdAt:
-                type: string
-                format: date-time
-                example: 2025-10-08T18:21:10.157+00:00
-              updatedAt:
-                type: string
-                format: date-time
-                example: 2025-10-08T18:21:10.157+00:00
+  _id:
+    type: string
+    description: 'Story ID'
+    pattern: '^[a-f0-9]{24}$'
+    example: '672b6cfea9f43a5e8f9f21a2'
+  imageUrl:
+    type: string
+    format: uri
+    description: 'Story cover image URL'
+    example: 'https://example.com/images/story1.jpg'
+  title:
+    type: string
+    description: 'Story title'
+    example: 'My Travel Story'
+  article:
+    type: string
+    description: 'Full article content'
+    example: 'A detailed story about my trip to Iceland...'
+  category:
+    type: object
+    description: 'Story category'
+    properties:
+      _id:
+        type: string
+        description: 'Category ID'
+        pattern: '^[a-f0-9]{24}$'
+        example: '672a5fe1c31a4c67fdfb12f9'
+      name:
+        type: string
+        description: 'Category name'
+        example: 'Nature'
+  ownerId:
+    type: object
+    description: 'Story author (owner)'
+    properties:
+      _id:
+        type: string
+        description: 'User ID'
+        pattern: '^[a-f0-9]{24}$'
+        example: '671f8a22b5e9a8e4c1d7f9b3'
+      name:
+        type: string
+        description: 'Author name'
+        example: 'John Doe'
+      avatarUrl:
+        type: string
+        format: uri
+        description: 'Author avatar URL'
+        example: 'https://example.com/avatars/john.jpg'
+  publishedDate:
+    type: string
+    format: date-time
+    description: 'Travel date (when the story happened)'
+    example: '2025-10-25T12:00:00.000Z'
+  favoritesCount:
+    type: integer
+    minimum: 0
+    description: 'Number of users who saved/favorited this story'
+    example: 4
+  createdAt:
+    type: string
+    format: date-time
+    description: 'Timestamp when story was created'
+    example: '2025-10-08T18:21:10.157Z'
+  updatedAt:
+    type: string
+    format: date-time
+    description: 'Timestamp when story was last updated'
+    example: '2025-10-08T18:21:10.157Z'

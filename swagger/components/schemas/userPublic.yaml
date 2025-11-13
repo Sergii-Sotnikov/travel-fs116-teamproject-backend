@@ -1,20 +1,31 @@
 type: object
-required: [_id, name, avatarUrl, articlesAmount]
+required: [_id, name, avatarUrl, articlesAmount, createdAt]
 properties:
   _id:
     type: string
-    example: '6881563901add19ee16fcff5'
+    description: "User's unique identifier (MongoDB ObjectId)"
+    pattern: '^[a-f0-9]{24}$'
+    example: '65e4decdd286b30065d54af9'
   name:
     type: string
+    description: "User's display name"
     example: 'Дмитро Романенко'
   avatarUrl:
     type: string
     format: uri
-    example: 'https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp'
+    description: "User's avatar image URL"
+    example: 'https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png'
   articlesAmount:
     type: integer
     minimum: 0
+    description: 'Number of articles published by user'
     example: 13
   description:
-    type: [string, "null"]
-    example: "Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці та ділитися ними."
+    type: [string, 'null']
+    description: "User's bio/description (optional)"
+    example: 'Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці та ділитися ними.'
+  createdAt:
+    type: string
+    format: date-time
+    description: 'Account creation timestamp'
+    example: '2025-11-06T18:32:41.123Z'

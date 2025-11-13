@@ -31,6 +31,12 @@ export const getAllStories = async (query) => {
   };
 };
 
+// GET STRY BY ID (PUBKIC)
+export const getStoryById = async (storyId) =>{
+  const story = await TravellersCollection.findById({_id: storyId})
+  return story
+}
+
 
 // POST STORIE (PRIVATE)
 export const addStory = async (payload, userId, photo) => {

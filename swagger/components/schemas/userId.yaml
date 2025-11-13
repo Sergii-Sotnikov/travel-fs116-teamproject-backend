@@ -1,7 +1,0 @@
-name: userId
-in: path
-required: true
-schema:
-  type: string
-  pattern: '^[a-f0-9]{24}$'
-description: Mongo ObjectId of the user
