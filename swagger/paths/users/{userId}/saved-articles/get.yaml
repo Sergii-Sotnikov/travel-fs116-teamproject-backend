@@ -1,36 +1,44 @@
-get:
-  tags:
-    - Users
-  summary: Get saved articles
-  operationId: getSavedArticles
-  description: Get list of articles saved (favorited) by the current user
-  security:
-    - bearerAuth: []
-  responses:
-    '200':
-      description: Successfully saved articles
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - status
-              - message
-              - data
-            properties:
-              status:
-                type: integer
-                example: 200
-              message:
-                type: string
-                example: Successfully saved articles
-              data:
-                type: array
-                items:
-                  $ref: '../../../components/schemas/articleCard.yaml'
-    '401':
-      $ref: '../../../components/responses/401.yaml'
-    '404':
-      $ref: '../../../components/responses/404.yaml'
-    '500':
-      $ref: '../../../components/responses/500.yaml'
+tags:
+  - Users
+summary: Get saved articles for user
+operationId: getSavedArticlesByUserId
+description: Get list of articles saved (favorited) by a user specified by ID
+security:
+  - bearerAuth: []
+parameters:
+  - name: userId
+    in: path
+    required: true
+    description: The unique identifier of the user
+    schema:
+      type: string
+      pattern: '^[a-f0-9]{24}$'
+      example: '69134925a9c11877caa26fd9'
+responses:
+  '200':
+    description: Successfully retrieved saved articles
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully retrieved saved articles
+            data:
+              type: array
+              items:
+                $ref: ../../../../components/schemas/articleCard.yaml
+  '401':
+    $ref: '../../../../components/responses/401.yaml'
+  '404':
+    $ref: '../../../../components/responses/404.yaml'
+  '500':
+    $ref: '../../../../components/responses/500.yaml'

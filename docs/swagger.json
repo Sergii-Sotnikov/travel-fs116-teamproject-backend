@@ -11,10 +11,10 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000"
+      "url": "http://localhost:3000/api"
     },
     {
-      "url": "https://travel-fs116-teamproject-backend.onrender.com"
+      "url": "https://travel-fs116-teamproject-backend.onrender.com/api"
     }
   ],
   "tags": [
@@ -39,198 +39,41 @@
         ],
         "summary": "Register a new user",
         "operationId": "registerUser",
-        "description": "Create a new user account",
+        "description": "Registers a new user with name, email, and password. Returns the created user record upon success.",
         "security": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/registerUser"
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Sarah Michelle Gellar"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "sarah@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "qwerty12345"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "201": {
-            "$ref": "#/components/responses/201-register"
-          },
-          "409": {
-            "$ref": "#/components/responses/409"
-          }
-        }
-      }
-    },
-    "/auth/login": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Login user",
-        "operationId": "loginUser",
-        "description": "Authenticate a user and return access and refresh tokens",
-        "security": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/loginUser"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/200-login"
-          },
-          "401": {
-            "$ref": "#/components/responses/401-userNotFound"
-          }
-        }
-      }
-    },
-    "/auth/logout": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Logout user",
-        "operationId": "logoutUser",
-        "description": "Log out user and invalidate access token",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "204": {
-            "$ref": "#/components/responses/204"
-          }
-        }
-      }
-    },
-    "/auth/refresh": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Refresh access token",
-        "operationId": "refreshUserSession",
-        "description": "Refresh access token using a valid refresh token",
-        "security": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/refreshToken"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/200-refresh"
-          }
-        }
-      }
-    },
-    "/auth/reset-pwd": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Reset password",
-        "operationId": "resetPassword",
-        "description": "Reset the user's password using a token from email",
-        "security": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/resetPassword"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/200-resetPwd"
-          },
-          "404": {
-            "$ref": "#/components/responses/404-user"
-          }
-        }
-      }
-    },
-    "/auth/send-reset-email": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Request password reset",
-        "operationId": "requestResetEmail",
-        "description": "Send password reset email to the user",
-        "security": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/requestResetEmail"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/200-resetEmail"
-          },
-          "404": {
-            "$ref": "#/components/responses/404-user"
-          }
-        }
-      }
-    },
-    "/users": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "Get all users",
-        "operationId": "getUsers",
-        "description": "Retrieve a paginated list of users",
-        "security": [],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "page",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1,
-              "example": 1
-            },
-            "description": "Page number for pagination"
-          },
-          {
-            "in": "query",
-            "name": "perPage",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
-              "default": 12,
-              "example": 12
-            },
-            "description": "Number of users per page"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved users",
+            "description": "User successfully registered",
             "content": {
               "application/json": {
                 "schema": {
@@ -243,79 +86,46 @@
                   "properties": {
                     "status": {
                       "type": "integer",
-                      "example": 200
+                      "example": 201
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully found users!"
+                      "example": "Successfully registered a new user!"
                     },
                     "data": {
                       "type": "object",
                       "required": [
-                        "users",
-                        "page",
-                        "perPage",
-                        "totalItems",
-                        "totalPages",
-                        "hasPreviousPage",
-                        "hasNextPage"
+                        "_id",
+                        "name",
+                        "email"
                       ],
                       "properties": {
-                        "users": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/userPublic"
-                          }
+                        "_id": {
+                          "type": "string",
+                          "example": "65e4decdd286b30065d54af9"
                         },
-                        "page": {
-                          "type": "integer",
-                          "example": 1
+                        "name": {
+                          "type": "string",
+                          "example": "Sarah Michelle Gellar"
                         },
-                        "perPage": {
-                          "type": "integer",
-                          "example": 12
-                        },
-                        "totalItems": {
-                          "type": "integer",
-                          "example": 63
-                        },
-                        "totalPages": {
-                          "type": "integer",
-                          "example": 6
-                        },
-                        "hasPreviousPage": {
-                          "type": "boolean",
-                          "example": false
-                        },
-                        "hasNextPage": {
-                          "type": "boolean",
-                          "example": true
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "example": "sarah@gmail.com"
                         }
                       }
                     }
                   }
                 },
                 "examples": {
-                  "ok": {
+                  "success": {
                     "value": {
-                      "status": 200,
-                      "message": "Successfully found users!",
+                      "status": 201,
+                      "message": "Successfully registered a new user!",
                       "data": {
-                        "users": [
-                          {
-                            "_id": "6881563901add19ee16fcff5",
-                            "name": "Дмитро Романенко",
-                            "avatarUrl": "https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp",
-                            "articlesAmount": 13,
-                            "description": "Привіт! Я Дмитро..."
-                          }
-                        ],
-                        "page": 1,
-                        "perPage": 12,
-                        "totalItems": 63,
-                        "totalPages": 6,
-                        "hasPreviousPage": false,
-                        "hasNextPage": true
+                        "_id": "65e4decdd286b30065d54af9",
+                        "name": "Sarah Michelle Gellar",
+                        "email": "sarah@gmail.com"
                       }
                     }
                   }
@@ -324,7 +134,7 @@
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Invalid registration data",
             "content": {
               "application/json": {
                 "schema": {
@@ -340,42 +150,47 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Invalid query params"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "details": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      }
+                      "example": "Invalid email or password format"
                     }
                   }
                 },
                 "examples": {
-                  "invalid-page": {
+                  "invalid": {
                     "value": {
                       "status": 400,
-                      "message": "Invalid query params",
-                      "data": {
-                        "details": [
-                          "\"page\" must be >= 1"
-                        ]
-                      }
+                      "message": "Invalid email or password format"
                     }
-                  },
-                  "invalid-perPage": {
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "User already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 409
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Email already in use"
+                    }
+                  }
+                },
+                "examples": {
+                  "duplicate": {
                     "value": {
-                      "status": 400,
-                      "message": "Invalid query params",
-                      "data": {
-                        "details": [
-                          "\"perPage\" must be between 1 and 100"
-                        ]
-                      }
+                      "status": 409,
+                      "message": "Email already in use"
                     }
                   }
                 }
@@ -388,31 +203,43 @@
         }
       }
     },
-    "/users/{userId}": {
-      "get": {
+    "/auth/login": {
+      "post": {
         "tags": [
-          "Users"
+          "Auth"
         ],
-        "summary": "Get user by id",
-        "operationId": "getUserById",
-        "description": "Retrieve a specific user by ID (public endpoint)",
+        "summary": "Login user",
+        "operationId": "loginUser",
+        "description": "Authenticate a user and return access and refresh tokens.",
         "security": [],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "description": "The unique ID of the user",
-            "schema": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{24}$",
-              "example": "69134925a9c11877caa26fd9"
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "qwerty12345"
+                  }
+                }
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "Successfully retrieved user by id",
+            "description": "Successfully logged in",
             "content": {
               "application/json": {
                 "schema": {
@@ -429,29 +256,40 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully found user by id!"
+                      "example": "Successfully logged in"
                     },
                     "data": {
                       "type": "object",
                       "required": [
-                        "user",
-                        "articles",
-                        "savedArticles"
+                        "accessToken",
+                        "refreshToken",
+                        "user"
                       ],
                       "properties": {
+                        "accessToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        },
+                        "refreshToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        },
                         "user": {
-                          "$ref": "#/components/schemas/user"
-                        },
-                        "articles": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/articleCard"
-                          }
-                        },
-                        "savedArticles": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/articleCard"
+                          "type": "object",
+                          "required": [
+                            "_id",
+                            "email"
+                          ],
+                          "properties": {
+                            "_id": {
+                              "type": "string",
+                              "example": "65e4decdd286b30065d54af9"
+                            },
+                            "email": {
+                              "type": "string",
+                              "format": "email",
+                              "example": "user@gmail.com"
+                            }
                           }
                         }
                       }
@@ -459,37 +297,17 @@
                   }
                 },
                 "examples": {
-                  "ok": {
+                  "success": {
                     "value": {
                       "status": 200,
-                      "message": "Successfully found user by id!",
+                      "message": "Successfully logged in",
                       "data": {
+                        "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
                         "user": {
-                          "_id": "69134925a9c11877caa26fd9",
-                          "name": "Test8",
-                          "avatarUrl": "https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png",
-                          "articlesAmount": 1,
-                          "createdAt": "2025-11-11T14:33:09.641Z"
-                        },
-                        "articles": [
-                          {
-                            "_id": "69134980a9c11877caa26fed",
-                            "img": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg",
-                            "title": "Super",
-                            "date": "2025-11-11T14:34:40.845Z",
-                            "favoriteCount": 0,
-                            "createdAt": "2025-11-11T14:34:40.845Z"
-                          }
-                        ],
-                        "savedArticles": [
-                          {
-                            "_id": "68498236a100312bea079008",
-                            "img": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg",
-                            "title": "Йорданія: шлях у Петру",
-                            "date": "2025-01-10",
-                            "favoriteCount": 6
-                          }
-                        ]
+                          "_id": "65e4decdd286b30065d54af9",
+                          "email": "user@gmail.com"
+                        }
                       }
                     }
                   }
@@ -498,7 +316,7 @@
             }
           },
           "400": {
-            "description": "Bad request",
+            "description": "Invalid request body",
             "content": {
               "application/json": {
                 "schema": {
@@ -514,31 +332,413 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Invalid \"userId\" path parameter"
+                      "example": "email and password are required"
+                    }
+                  }
+                },
+                "examples": {
+                  "missingFields": {
+                    "value": {
+                      "status": 400,
+                      "message": "email and password are required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logout user",
+        "operationId": "logoutUser",
+        "description": "Logs out the current user and invalidates their access token. Requires a valid bearer token in the Authorization header.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully logged out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully logged out"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": 200,
+                      "message": "Successfully logged out"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or missing token format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid Authorization header"
+                    }
+                  }
+                },
+                "examples": {
+                  "badRequest": {
+                    "value": {
+                      "status": 400,
+                      "message": "Invalid Authorization header"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Refresh access token",
+        "operationId": "refreshUserSession",
+        "description": "Refresh the user's access token using a valid refresh token. Returns a new pair of `accessToken` and `refreshToken`. This endpoint does **not** require Authorization header, only a valid refresh token in the body.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "refreshToken"
+                ],
+                "properties": {
+                  "refreshToken": {
+                    "type": "string",
+                    "description": "The refresh token obtained during login.",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tokens successfully refreshed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully refreshed tokens"
                     },
                     "data": {
                       "type": "object",
+                      "required": [
+                        "accessToken",
+                        "refreshToken"
+                      ],
                       "properties": {
-                        "details": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
+                        "accessToken": {
+                          "type": "string",
+                          "example": "newAccessToken123"
+                        },
+                        "refreshToken": {
+                          "type": "string",
+                          "example": "newRefreshToken456"
                         }
                       }
                     }
                   }
                 },
                 "examples": {
-                  "invalid-objectid": {
+                  "success": {
+                    "value": {
+                      "status": 200,
+                      "message": "Successfully refreshed tokens",
+                      "data": {
+                        "accessToken": "newAccessToken123",
+                        "refreshToken": "newRefreshToken456"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid refresh token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid or missing refresh token"
+                    }
+                  }
+                },
+                "examples": {
+                  "invalid": {
                     "value": {
                       "status": 400,
-                      "message": "Invalid \"userId\" path parameter",
-                      "data": {
-                        "details": [
-                          "\"userId\" must match /^[a-f0-9]{24}$/"
-                        ]
-                      }
+                      "message": "Invalid or missing refresh token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/auth/reset-pwd": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Reset password",
+        "operationId": "resetPassword",
+        "description": "Resets the user's password using a valid reset token issued via the reset-email flow.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "token",
+                  "password"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "Password reset token received via email.",
+                    "example": "abc123resetToken"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "New password that meets the password policy.",
+                    "example": "newStrongPassword1!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password successfully reset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password has been reset successfully"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": 200,
+                      "message": "Password has been reset successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload or expired/invalid reset token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid or expired reset token"
+                    }
+                  }
+                },
+                "examples": {
+                  "invalidToken": {
+                    "value": {
+                      "status": 400,
+                      "message": "Invalid or expired reset token"
+                    }
+                  },
+                  "weakPassword": {
+                    "value": {
+                      "status": 400,
+                      "message": "Password does not meet requirements"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/auth/send-reset-email": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Request password reset",
+        "operationId": "requestResetEmail",
+        "description": "Sends a password reset email to the user. The email contains a unique token used to reset the password.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user@gmail.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset email sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password reset email sent"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": 200,
+                      "message": "Password reset email sent"
                     }
                   }
                 }
@@ -563,30 +763,14 @@
                     "message": {
                       "type": "string",
                       "example": "User not found"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "details": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      }
                     }
                   }
                 },
                 "examples": {
-                  "not-found": {
+                  "notFound": {
                     "value": {
                       "status": 404,
-                      "message": "User not found",
-                      "data": {
-                        "details": [
-                          "User with given id doesn’t exist"
-                        ]
-                      }
+                      "message": "User not found"
                     }
                   }
                 }
@@ -594,60 +778,44 @@
             }
           },
           "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      }
-    },
-    "/users/me": {
-      "patch": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "Update current user's profile",
-        "operationId": "patchMe",
-        "description": "Update profile fields and optionally upload an avatar (multipart/form-data)",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "example": "Test8"
-                  },
-                  "description": {
-                    "type": "string",
-                    "maxLength": 1000,
-                    "example": "Hello Sergiy"
-                  },
-                  "avatar": {
-                    "type": "string",
-                    "format": "binary"
+            "description": "Failed to send email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to send password reset email"
+                    }
                   }
-                }
-              },
-              "encoding": {
-                "avatar": {
-                  "contentType": "image/jpeg, image/png, image/webp",
-                  "style": "form",
-                  "explode": true
                 }
               }
             }
           }
-        },
+        }
+      }
+    },
+    "/auth/authgoogle": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Sign in with Google",
+        "description": "Returns a Google OAuth 2.0 authorization URL that the frontend should use to redirect the user for authentication.",
+        "operationId": "authGoogle",
+        "security": [],
         "responses": {
           "200": {
-            "description": "Successfully patched my profile",
+            "description": "OAuth URL successfully generated",
             "content": {
               "application/json": {
                 "schema": {
@@ -664,60 +832,30 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully patched my profile!"
+                      "example": "Successfully generated Google OAuth URL"
                     },
                     "data": {
                       "type": "object",
                       "required": [
-                        "_id",
-                        "name",
-                        "avatarUrl",
-                        "articlesAmount",
-                        "createdAt"
+                        "url"
                       ],
                       "properties": {
-                        "_id": {
-                          "type": "string",
-                          "example": "69134925a9c11877caa26fd9"
-                        },
-                        "name": {
-                          "type": "string",
-                          "example": "Test8"
-                        },
-                        "avatarUrl": {
+                        "url": {
                           "type": "string",
                           "format": "uri",
-                          "example": "https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png"
-                        },
-                        "articlesAmount": {
-                          "type": "integer",
-                          "example": 1
-                        },
-                        "createdAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "example": "2025-11-11T14:33:09.641Z"
-                        },
-                        "description": {
-                          "type": "string",
-                          "example": "Hello Sergiy"
+                          "example": "https://accounts.google.com/o/oauth2/v2/auth?client_id=1234567890.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fgoogle%2Fcallback&response_type=code&scope=openid%20email%20profile&state=abc123"
                         }
                       }
                     }
                   }
                 },
                 "examples": {
-                  "ok": {
+                  "success": {
                     "value": {
                       "status": 200,
-                      "message": "Successfully patched my profile!",
+                      "message": "Successfully generated Google OAuth URL",
                       "data": {
-                        "_id": "69134925a9c11877caa26fd9",
-                        "name": "Test8",
-                        "avatarUrl": "https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png",
-                        "articlesAmount": 1,
-                        "createdAt": "2025-11-11T14:33:09.641Z",
-                        "description": "Hello Sergiy"
+                        "url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=1234567890.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fapp.example.com%2Fauth%2Fgoogle%2Fcallback&response_type=code&scope=openid%20email%20profile&state=abc123"
                       }
                     }
                   }
@@ -726,7 +864,7 @@
             }
           },
           "400": {
-            "description": "Bad request (no fields provided or invalid file)",
+            "description": "Invalid configuration or failed to generate URL",
             "content": {
               "application/json": {
                 "schema": {
@@ -742,189 +880,15 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Invalid payload"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "details": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      }
+                      "example": "Invalid OAuth configuration"
                     }
                   }
                 },
                 "examples": {
-                  "no-fields": {
+                  "badConfig": {
                     "value": {
                       "status": 400,
-                      "message": "Invalid payload",
-                      "data": {
-                        "details": [
-                          "At least one field is required: name, description, or avatar"
-                        ]
-                      }
-                    }
-                  },
-                  "invalid-type": {
-                    "value": {
-                      "status": 400,
-                      "message": "Invalid avatar file type",
-                      "data": {
-                        "details": [
-                          "Allowed types: image/jpeg, image/png, image/webp"
-                        ]
-                      }
-                    }
-                  },
-                  "too-large": {
-                    "value": {
-                      "status": 400,
-                      "message": "Avatar file is too large",
-                      "data": {
-                        "details": [
-                          "Max size: 5MB"
-                        ]
-                      }
-                    }
-                  },
-                  "missing-buffer": {
-                    "value": {
-                      "status": 400,
-                      "message": "Invalid avatar file",
-                      "data": {
-                        "details": [
-                          "File buffer is required"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (missing/invalid token or session)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 401
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Session not found or invalid token"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "details": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "no-token": {
-                    "value": {
-                      "status": 401,
-                      "message": "Unauthorized",
-                      "data": {
-                        "details": [
-                          "Missing access token"
-                        ]
-                      }
-                    }
-                  },
-                  "invalid-token": {
-                    "value": {
-                      "status": 401,
-                      "message": "Session not found or invalid token",
-                      "data": {
-                        "details": [
-                          "Invalid or expired token"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "Payload Too Large (file exceeds server limits)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 413
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Payload Too Large"
-                    }
-                  }
-                },
-                "examples": {
-                  "too-large": {
-                    "value": {
-                      "status": 413,
-                      "message": "Payload Too Large",
-                      "data": null
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "415": {
-            "description": "Unsupported Media Type (wrong Content-Type)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 415
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Unsupported Media Type"
-                    }
-                  }
-                },
-                "examples": {
-                  "bad-media": {
-                    "value": {
-                      "status": 415,
-                      "message": "Unsupported Media Type",
-                      "data": null
+                      "message": "Invalid OAuth configuration"
                     }
                   }
                 }
@@ -932,7 +896,72 @@
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unexpected error while generating OAuth URL"
+                    }
+                  }
+                },
+                "examples": {
+                  "serverError": {
+                    "value": {
+                      "status": 500,
+                      "message": "Unexpected error while generating OAuth URL"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/authgoogle/redirect": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Sign in with Google (callback)",
+        "operationId": "authGoogleRedirect",
+        "description": "Completes Google OAuth 2.0 login or registration. Accepts the authorization `code` obtained from Google and returns access and refresh tokens.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "code"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "Authorization code received from Google after user consent.",
+                    "example": "4/0AdDMEyExampleOAuthCode"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully authenticated with Google",
             "content": {
               "application/json": {
                 "schema": {
@@ -945,22 +974,648 @@
                   "properties": {
                     "status": {
                       "type": "integer",
-                      "example": 500
+                      "example": 200
                     },
                     "message": {
                       "type": "string",
-                      "example": "Something went wrong"
+                      "example": "Successfully logged in with Google"
                     },
                     "data": {
                       "type": "object",
-                      "example": {
-                        "message": "Unexpected error"
+                      "required": [
+                        "accessToken",
+                        "refreshToken",
+                        "user"
+                      ],
+                      "properties": {
+                        "accessToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        },
+                        "refreshToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        },
+                        "user": {
+                          "type": "object",
+                          "required": [
+                            "_id",
+                            "email"
+                          ],
+                          "properties": {
+                            "_id": {
+                              "type": "string",
+                              "example": "65e4decdd286b30065d54af9"
+                            },
+                            "email": {
+                              "type": "string",
+                              "format": "email",
+                              "example": "user@gmail.com"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": 200,
+                      "message": "Successfully logged in with Google",
+                      "data": {
+                        "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                        "user": {
+                          "_id": "65e4decdd286b30065d54af9",
+                          "email": "user@gmail.com"
+                        }
                       }
                     }
                   }
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid or expired Google OAuth code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid or expired Google OAuth code"
+                    }
+                  }
+                },
+                "examples": {
+                  "invalidCode": {
+                    "value": {
+                      "status": 400,
+                      "message": "Invalid or expired Google OAuth code"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get all users",
+        "operationId": "getUsers",
+        "description": "Retrieve a paginated list of users with public profile information",
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "example": 1
+            },
+            "description": "Page number for pagination"
+          },
+          {
+            "in": "query",
+            "name": "perPage",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 12,
+              "example": 12
+            },
+            "description": "Number of users per page (max 100)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Users successfully retrieved"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "users",
+                        "page",
+                        "perPage",
+                        "totalItems",
+                        "totalPages"
+                      ],
+                      "properties": {
+                        "users": {
+                          "type": "array",
+                          "description": "Array of users with public profile information",
+                          "items": {
+                            "$ref": "#/components/schemas/userPublic"
+                          }
+                        },
+                        "page": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "perPage": {
+                          "type": "integer",
+                          "example": 12
+                        },
+                        "totalItems": {
+                          "type": "integer",
+                          "example": 63
+                        },
+                        "totalPages": {
+                          "type": "integer",
+                          "example": 6
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": 200,
+                      "message": "Users successfully retrieved",
+                      "data": {
+                        "users": [
+                          {
+                            "_id": "6881563901add19ee16fcff5",
+                            "name": "Дмитро Романенко",
+                            "avatarUrl": "https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp",
+                            "articlesAmount": 13,
+                            "description": "Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці та ділитися ними.",
+                            "createdAt": "2025-11-06T18:32:41.123Z"
+                          },
+                          {
+                            "_id": "69134925a9c11877caa26fd9",
+                            "name": "Test User",
+                            "avatarUrl": "https://ftp.goit.study/img/harmoniq/users/69134925a9c11877caa26fd9.webp",
+                            "articlesAmount": 8,
+                            "description": null,
+                            "createdAt": "2025-11-10T21:08:14.553Z"
+                          }
+                        ],
+                        "page": 1,
+                        "perPage": 12,
+                        "totalItems": 63,
+                        "totalPages": 6
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid pagination parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "name": "BadRequestError",
+                        "message": "Invalid query parameters",
+                        "details": [
+                          "Page must be >= 1",
+                          "perPage must be between 1 and 100"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "invalid-params": {
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "name": "BadRequestError",
+                        "message": "Invalid query parameters",
+                        "details": [
+                          "perPage must be between 1 and 100"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get user by ID",
+        "operationId": "getUserById",
+        "description": "Retrieve a specific user's public profile and published articles by user ID. This is a public endpoint.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "The unique ID of the user (MongoDB ObjectId)",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{24}$",
+              "example": "69134925a9c11877caa26fd9"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved user and their articles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully found user by id"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "user",
+                        "articles"
+                      ],
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/userPublic"
+                        },
+                        "articles": {
+                          "type": "array",
+                          "description": "Articles published by the user",
+                          "items": {
+                            "$ref": "#/components/schemas/articleCard"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": 200,
+                      "message": "Successfully found user by id",
+                      "data": {
+                        "user": {
+                          "_id": "69134925a9c11877caa26fd9",
+                          "name": "Test8",
+                          "avatarUrl": "https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png",
+                          "articlesAmount": 1,
+                          "description": null,
+                          "createdAt": "2025-11-11T14:33:09.641Z"
+                        },
+                        "articles": [
+                          {
+                            "_id": "69134980a9c11877caa26fed",
+                            "imageUrl": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg",
+                            "title": "Super",
+                            "publishedDate": "2025-11-11T14:34:40.845Z",
+                            "favoritesCount": 0,
+                            "authorId": "69134925a9c11877caa26fd9"
+                          },
+                          {
+                            "_id": "68498236a100312bea079008",
+                            "imageUrl": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg",
+                            "title": "Йорданія - шлях у Петру",
+                            "publishedDate": "2025-01-10T00:00:00.000Z",
+                            "favoritesCount": 6,
+                            "authorId": "69134925a9c11877caa26fd9"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user ID parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "name": "BadRequestError",
+                        "message": "Invalid userId path parameter",
+                        "details": [
+                          "userId must match pattern ^[a-f0-9]{24}$"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/users/{userId}/saved-articles": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get saved articles for user",
+        "operationId": "getSavedArticlesByUserId",
+        "description": "Get list of articles saved (favorited) by a user specified by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "The unique identifier of the user",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{24}$",
+              "example": "69134925a9c11877caa26fd9"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved saved articles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully retrieved saved articles"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/articleCard"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update current user's profile",
+        "operationId": "patchMe",
+        "description": "Update profile fields (name, description) and optionally upload a new avatar image.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "description": "User's display name",
+                    "example": "Test8"
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "User's bio/description",
+                    "example": "Hello Sergiy"
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Avatar image file (JPG, PNG, WebP, max 5MB)"
+                  }
+                },
+                "minProperties": 1,
+                "description": "At least one field (name, description) or file (avatar) must be provided"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Profile updated successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/user"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": 200,
+                      "message": "Profile updated successfully",
+                      "data": {
+                        "_id": "69134925a9c11877caa26fd9",
+                        "name": "Test8",
+                        "email": "test8@example.com",
+                        "avatarUrl": "https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png",
+                        "articlesAmount": 1,
+                        "description": "Hello Sergiy",
+                        "createdAt": "2025-11-11T14:33:09.641Z",
+                        "updatedAt": "2025-11-11T15:45:22.123Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request (missing fields or invalid file)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "name": "BadRequestError",
+                        "message": "Invalid request body",
+                        "details": [
+                          "At least one field is required (name, description, or avatar)"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "413": {
+            "description": "Payload Too Large (file exceeds 5MB)"
+          },
+          "415": {
+            "description": "Unsupported Media Type"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -972,7 +1627,7 @@
         ],
         "summary": "Update current user's avatar",
         "operationId": "patchMeAvatar",
-        "description": "Upload a new avatar image for the authenticated user (multipart/form-data)",
+        "description": "Upload a new avatar image for the authenticated user. Accepts JPG, PNG, WebP files up to 5MB.",
         "security": [
           {
             "bearerAuth": []
@@ -990,15 +1645,9 @@
                 "properties": {
                   "avatar": {
                     "type": "string",
-                    "format": "binary"
+                    "format": "binary",
+                    "description": "Avatar image file (JPG, PNG, WebP, max 5MB)"
                   }
-                }
-              },
-              "encoding": {
-                "avatar": {
-                  "contentType": "image/jpeg, image/png, image/webp",
-                  "style": "form",
-                  "explode": true
                 }
               }
             }
@@ -1026,69 +1675,24 @@
                       "example": "Avatar updated successfully"
                     },
                     "data": {
-                      "type": "object",
-                      "required": [
-                        "user"
-                      ],
-                      "properties": {
-                        "user": {
-                          "type": "object",
-                          "required": [
-                            "_id",
-                            "name",
-                            "avatarUrl",
-                            "articlesAmount",
-                            "createdAt",
-                            "updatedAt"
-                          ],
-                          "properties": {
-                            "_id": {
-                              "type": "string",
-                              "example": "6912543ed3b94d5c0eae6420"
-                            },
-                            "name": {
-                              "type": "string",
-                              "example": "Test7"
-                            },
-                            "avatarUrl": {
-                              "type": "string",
-                              "format": "uri",
-                              "example": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg"
-                            },
-                            "articlesAmount": {
-                              "type": "integer",
-                              "example": 8
-                            },
-                            "createdAt": {
-                              "type": "string",
-                              "format": "date-time",
-                              "example": "2025-11-10T21:08:14.553Z"
-                            },
-                            "updatedAt": {
-                              "type": "string",
-                              "format": "date-time",
-                              "example": "2025-11-11T09:12:31.001Z"
-                            }
-                          }
-                        }
-                      }
+                      "$ref": "#/components/schemas/user"
                     }
                   }
                 },
                 "examples": {
-                  "ok": {
+                  "success": {
                     "value": {
                       "status": 200,
                       "message": "Avatar updated successfully",
                       "data": {
-                        "user": {
-                          "_id": "6912543ed3b94d5c0eae6420",
-                          "name": "Test7",
-                          "avatarUrl": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg",
-                          "articlesAmount": 8,
-                          "createdAt": "2025-11-10T21:08:14.553Z",
-                          "updatedAt": "2025-11-11T09:12:31.001Z"
-                        }
+                        "_id": "6912543ed3b94d5c0eae6420",
+                        "name": "Test7",
+                        "email": "test7@example.com",
+                        "avatarUrl": "https://res.cloudinary.com/demo/image/upload/v1699999999/avatars/nature.jpg",
+                        "articlesAmount": 8,
+                        "description": null,
+                        "createdAt": "2025-11-10T21:08:14.553Z",
+                        "updatedAt": "2025-11-11T09:12:31.001Z"
                       }
                     }
                   }
@@ -1097,198 +1701,7 @@
             }
           },
           "400": {
-            "description": "Bad request (missing or invalid avatar file)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 400
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Avatar file is required"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "details": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "missing-file": {
-                    "value": {
-                      "status": 400,
-                      "message": "Avatar file is required",
-                      "data": null
-                    }
-                  },
-                  "invalid-type": {
-                    "value": {
-                      "status": 400,
-                      "message": "Invalid avatar file type",
-                      "data": {
-                        "details": [
-                          "Allowed types: image/jpeg, image/png, image/webp"
-                        ]
-                      }
-                    }
-                  },
-                  "too-large": {
-                    "value": {
-                      "status": 400,
-                      "message": "Avatar file is too large",
-                      "data": {
-                        "details": [
-                          "Max size: 5MB"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (missing/invalid token or session)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 401
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Session not found or invalid token"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "details": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "no-token": {
-                    "value": {
-                      "status": 401,
-                      "message": "Unauthorized",
-                      "data": {
-                        "details": [
-                          "Missing access token"
-                        ]
-                      }
-                    }
-                  },
-                  "invalid-token": {
-                    "value": {
-                      "status": 401,
-                      "message": "Session not found or invalid token",
-                      "data": {
-                        "details": [
-                          "Invalid or expired token"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "Payload Too Large (file exceeds server limits)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 413
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Payload Too Large"
-                    }
-                  }
-                },
-                "examples": {
-                  "too-large": {
-                    "value": {
-                      "status": 413,
-                      "message": "Payload Too Large",
-                      "data": null
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "415": {
-            "description": "Unsupported Media Type (wrong Content-Type)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 415
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Unsupported Media Type"
-                    }
-                  }
-                },
-                "examples": {
-                  "bad-media": {
-                    "value": {
-                      "status": 415,
-                      "message": "Unsupported Media Type",
-                      "data": null
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
+            "description": "Invalid avatar file",
             "content": {
               "application/json": {
                 "schema": {
@@ -1301,22 +1714,38 @@
                   "properties": {
                     "status": {
                       "type": "integer",
-                      "example": 500
+                      "example": 400
                     },
                     "message": {
                       "type": "string",
-                      "example": "Something went wrong"
+                      "example": "BadRequestError"
                     },
                     "data": {
                       "type": "object",
                       "example": {
-                        "message": "Unexpected error"
+                        "name": "BadRequestError",
+                        "message": "Invalid avatar file",
+                        "details": [
+                          "Avatar file is required and must be JPG, PNG, or WebP"
+                        ]
                       }
                     }
                   }
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "413": {
+            "description": "Payload Too Large"
+          },
+          "415": {
+            "description": "Unsupported Media Type"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -1328,7 +1757,7 @@
         ],
         "summary": "Get current user's profile",
         "operationId": "getMeProfile",
-        "description": "Retrieve the authenticated user's profile with their articles (private endpoint)",
+        "description": "Retrieve the authenticated user's profile with their articles and saved stories (private endpoint). Requires authentication.",
         "security": [
           {
             "bearerAuth": []
@@ -1353,50 +1782,21 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully found the user with id: 6912543ed3b94d5c0eae6420"
+                      "example": "Successfully retrieved user profile"
                     },
                     "data": {
                       "type": "object",
                       "required": [
-                        "_id",
-                        "name",
-                        "avatarUrl",
-                        "articlesAmount",
-                        "createdAt",
-                        "updatedAt",
+                        "user",
                         "articles"
                       ],
                       "properties": {
-                        "_id": {
-                          "type": "string",
-                          "example": "6912543ed3b94d5c0eae6420"
-                        },
-                        "name": {
-                          "type": "string",
-                          "example": "Djon Pui"
-                        },
-                        "avatarUrl": {
-                          "type": "string",
-                          "format": "uri",
-                          "example": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg"
-                        },
-                        "articlesAmount": {
-                          "type": "integer",
-                          "minimum": 0,
-                          "example": 8
-                        },
-                        "createdAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "example": "2025-11-10T21:08:14.553Z"
-                        },
-                        "updatedAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "example": "2025-11-10T23:49:42.964Z"
+                        "user": {
+                          "$ref": "#/components/schemas/user"
                         },
                         "articles": {
                           "type": "array",
+                          "description": "Articles published by the user",
                           "items": {
                             "$ref": "#/components/schemas/articleCard"
                           }
@@ -1406,25 +1806,37 @@
                   }
                 },
                 "examples": {
-                  "ok": {
+                  "success": {
                     "value": {
                       "status": 200,
-                      "message": "Successfully found the user with id: 6912543ed3b94d5c0eae6420",
+                      "message": "Successfully retrieved user profile",
                       "data": {
-                        "_id": "6912543ed3b94d5c0eae6420",
-                        "name": "Martin Game",
-                        "avatarUrl": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg",
-                        "articlesAmount": 8,
-                        "createdAt": "2025-11-10T21:08:14.553Z",
-                        "updatedAt": "2025-11-10T23:49:42.964Z",
+                        "user": {
+                          "_id": "6912543ed3b94d5c0eae6420",
+                          "name": "Martin Game",
+                          "email": "martin@example.com",
+                          "avatarUrl": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg",
+                          "articlesAmount": 8,
+                          "description": null,
+                          "createdAt": "2025-11-10T21:08:14.553Z",
+                          "updatedAt": "2025-11-10T23:49:42.964Z"
+                        },
                         "articles": [
                           {
                             "_id": "6912703e9afd9812a62a9d4c",
-                            "img": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg",
+                            "imageUrl": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg",
                             "title": "Hello World",
-                            "date": "2025-11-10T23:07:42.866Z",
-                            "favoriteCount": 0,
-                            "createdAt": "2025-11-10T23:07:42.867Z"
+                            "publishedDate": "2025-11-10T23:07:42.866Z",
+                            "favoritesCount": 0,
+                            "authorId": "6912543ed3b94d5c0eae6420"
+                          },
+                          {
+                            "_id": "69134980a9c11877caa26fed",
+                            "imageUrl": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/city.jpg",
+                            "title": "City Adventures",
+                            "publishedDate": "2025-11-09T18:30:00.000Z",
+                            "favoritesCount": 3,
+                            "authorId": "6912543ed3b94d5c0eae6420"
                           }
                         ]
                       }
@@ -1435,68 +1847,10 @@
             }
           },
           "401": {
-            "description": "Unauthorized (missing or invalid token)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 401
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Unauthorized"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/401"
           },
           "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message",
-                    "data"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 404
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "User not found"
-                    },
-                    "data": {
-                      "oneOf": [
-                        {
-                          "type": "object"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    }
-                  }
-                },
-                "examples": {
-                  "not-found": {
-                    "value": {
-                      "status": 404,
-                      "message": "User not found",
-                      "data": null
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/404"
           },
           "500": {
             "$ref": "#/components/responses/500"
@@ -1511,239 +1865,7 @@
         ],
         "summary": "Save a story for the current user",
         "operationId": "saveStoryForMe",
-        "description": "Add a story to the authenticated user's saved list (idempotent)",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/storyId"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Story already in saved (idempotent POST)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SavedStoriesResponse"
-                },
-                "examples": {
-                  "already": {
-                    "value": {
-                      "status": 200,
-                      "message": "Story already in saved",
-                      "data": {
-                        "user": {
-                          "savedStories": [
-                            "68498236a100312bea079008",
-                            "68498236a100312bea079011",
-                            "6912703e9afd9812a62a9d4c"
-                          ]
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "Story saved",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SavedStoriesResponse"
-                },
-                "examples": {
-                  "created": {
-                    "value": {
-                      "status": 201,
-                      "message": "Story saved",
-                      "data": {
-                        "user": {
-                          "savedStories": [
-                            "68498236a100312bea079008",
-                            "68498236a100312bea079011",
-                            "6912703e9afd9812a62a9d4c"
-                          ]
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 400
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Invalid storyId"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "details": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "invalid-storyid": {
-                    "value": {
-                      "status": 400,
-                      "message": "Invalid storyId",
-                      "data": {
-                        "details": [
-                          "\"storyId\" must match /^[a-f0-9]{24}$/"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized. Access token is missing, invalid, or expired",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message",
-                    "data"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 401
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "UnauthorizedError"
-                    },
-                    "data": {
-                      "type": "object",
-                      "required": [
-                        "message"
-                      ],
-                      "properties": {
-                        "message": {
-                          "type": "string",
-                          "example": "No access token provided"
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "missing-token": {
-                    "summary": "No token provided",
-                    "value": {
-                      "status": 401,
-                      "message": "UnauthorizedError",
-                      "data": {
-                        "message": "No access token provided"
-                      }
-                    }
-                  },
-                  "invalid-token": {
-                    "summary": "Invalid token",
-                    "value": {
-                      "status": 401,
-                      "message": "UnauthorizedError",
-                      "data": {
-                        "message": "Invalid or expired access token"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Story not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 404
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Story not found"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "details": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "not-found": {
-                    "value": {
-                      "status": 404,
-                      "message": "Story not found",
-                      "data": {
-                        "details": [
-                          "Story with given id doesn't exist"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "Remove a story from the current user's saved list",
-        "operationId": "removeSavedStoryForMe",
-        "description": "Delete a story from the authenticated user's saved list (idempotent)",
+        "description": "Add a story to the authenticated user's saved list (idempotent operation)",
         "security": [
           {
             "bearerAuth": []
@@ -1756,14 +1878,143 @@
             "required": true,
             "schema": {
               "type": "string",
-              "pattern": "^[a-f0-9]{24}$"
+              "pattern": "^[a-f0-9]{24}$",
+              "example": "68498236a100312bea079008"
             },
-            "description": "Mongo ObjectId of the story to remove"
+            "description": "Story ID to save (MongoDB ObjectId)"
           }
         ],
         "responses": {
           "200": {
-            "description": "Story removed from saved (idempotent)",
+            "description": "Story saved (or already in saved list - idempotent)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story saved"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "savedStories"
+                      ],
+                      "properties": {
+                        "savedStories": {
+                          "type": "array",
+                          "description": "Updated list of saved story IDs",
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[a-f0-9]{24}$"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": 200,
+                      "message": "Story saved",
+                      "data": {
+                        "savedStories": [
+                          "68498236a100312bea079008",
+                          "68498236a100312bea079011",
+                          "6912703e9afd9812a62a9d4c"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid story ID parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "name": "BadRequestError",
+                        "message": "Invalid storyId path parameter",
+                        "details": [
+                          "storyId must match pattern ^[a-f0-9]{24}$"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Remove a story from saved",
+        "operationId": "removeSavedStoryForMe",
+        "description": "Delete a story from the authenticated user's saved list. Returns the updated list of saved stories (idempotent operation).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "storyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{24}$",
+              "example": "68498236a100312bea079008"
+            },
+            "description": "Story ID to remove from saved (MongoDB ObjectId)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Story removed from saved (or was not in list - idempotent)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1785,22 +2036,15 @@
                     "data": {
                       "type": "object",
                       "required": [
-                        "user"
+                        "savedStories"
                       ],
                       "properties": {
-                        "user": {
-                          "type": "object",
-                          "required": [
-                            "savedStories"
-                          ],
-                          "properties": {
-                            "savedStories": {
-                              "type": "array",
-                              "items": {
-                                "type": "string",
-                                "pattern": "^[a-f0-9]{24}$"
-                              }
-                            }
+                        "savedStories": {
+                          "type": "array",
+                          "description": "Updated list of saved story IDs",
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[a-f0-9]{24}$"
                           }
                         }
                       }
@@ -1808,33 +2052,16 @@
                   }
                 },
                 "examples": {
-                  "removed": {
+                  "success": {
                     "value": {
                       "status": 200,
                       "message": "Story removed from saved",
                       "data": {
-                        "user": {
-                          "savedStories": [
-                            "68498236a100312bea079008",
-                            "68498236a100312bea07902c",
-                            "68498236a100312bea079018"
-                          ]
-                        }
-                      }
-                    }
-                  },
-                  "already-removed": {
-                    "value": {
-                      "status": 200,
-                      "message": "Story was not in saved",
-                      "data": {
-                        "user": {
-                          "savedStories": [
-                            "68498236a100312bea079008",
-                            "68498236a100312bea07902c",
-                            "68498236a100312bea079018"
-                          ]
-                        }
+                        "savedStories": [
+                          "68498236a100312bea079008",
+                          "68498236a100312bea07902c",
+                          "68498236a100312bea079018"
+                        ]
                       }
                     }
                   }
@@ -1843,162 +2070,7 @@
             }
           },
           "400": {
-            "description": "Bad request (invalid storyId)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 400
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Invalid storyId"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "details": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "invalid-storyid": {
-                    "value": {
-                      "status": 400,
-                      "message": "Invalid storyId",
-                      "data": {
-                        "details": [
-                          "\"storyId\" must match /^[a-f0-9]{24}$/"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (missing/invalid token or session)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 401
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Session not found or invalid token"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "details": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "no-token": {
-                    "value": {
-                      "status": 401,
-                      "message": "Unauthorized",
-                      "data": {
-                        "details": [
-                          "Missing access token"
-                        ]
-                      }
-                    }
-                  },
-                  "invalid-token": {
-                    "value": {
-                      "status": 401,
-                      "message": "Session not found or invalid token",
-                      "data": {
-                        "details": [
-                          "Invalid or expired token"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Story not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "message"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 404
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Story not found"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "details": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "not-found": {
-                    "value": {
-                      "status": 404,
-                      "message": "Story not found",
-                      "data": {
-                        "details": [
-                          "Story with given id doesn't exist"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
+            "description": "Invalid story ID parameter",
             "content": {
               "application/json": {
                 "schema": {
@@ -2011,22 +2083,694 @@
                   "properties": {
                     "status": {
                       "type": "integer",
-                      "example": 500
+                      "example": 400
                     },
                     "message": {
                       "type": "string",
-                      "example": "Something went wrong"
+                      "example": "BadRequestError"
                     },
                     "data": {
                       "type": "object",
                       "example": {
-                        "message": "Unexpected error"
+                        "name": "BadRequestError",
+                        "message": "Invalid storyId path parameter",
+                        "details": [
+                          "storyId must match pattern ^[a-f0-9]{24}$"
+                        ]
                       }
                     }
                   }
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/stories": {
+      "get": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Get list of stories",
+        "operationId": "getStories",
+        "description": "Get list of stories with pagination and optional category filtering. This is a public endpoint that does not require authentication.\n",
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "example": 1,
+            "description": "Page number for pagination"
+          },
+          {
+            "in": "query",
+            "name": "perPage",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 10
+            },
+            "example": 10,
+            "description": "Number of stories per page"
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{24}$"
+            },
+            "example": "68fb50c80ae91338641121f2",
+            "description": "Optional. Filter stories by category ID (MongoDB ObjectId)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stories successfully retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Stories successfully retrieved"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "stories",
+                        "page",
+                        "perPage",
+                        "totalPages",
+                        "totalItems"
+                      ],
+                      "properties": {
+                        "stories": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/articleCard"
+                          }
+                        },
+                        "page": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "perPage": {
+                          "type": "integer",
+                          "example": 10
+                        },
+                        "totalPages": {
+                          "type": "integer",
+                          "example": 5
+                        },
+                        "totalItems": {
+                          "type": "integer",
+                          "example": 42
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": 200,
+                      "message": "Stories successfully retrieved",
+                      "data": {
+                        "stories": [
+                          {
+                            "_id": "672b6cfea9f43a5e8f9f21a2",
+                            "imageUrl": "https://example.com/photos/kyoto.jpg",
+                            "title": "Sunset in Kyoto",
+                            "publishedDate": "2025-10-15T08:30:00.000Z",
+                            "favoritesCount": 25,
+                            "authorId": "671234abcde123456789abcd"
+                          },
+                          {
+                            "_id": "672b6cff11f43a5e8f9f3000",
+                            "imageUrl": "https://example.com/photos/alps.jpg",
+                            "title": "Hiking in the Alps",
+                            "publishedDate": "2025-10-10T14:45:00.000Z",
+                            "favoritesCount": 18,
+                            "authorId": "6700aabbccddeeff00112233"
+                          }
+                        ],
+                        "page": 1,
+                        "perPage": 10,
+                        "totalPages": 5,
+                        "totalItems": 42
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid pagination or filter parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "name": "BadRequestError",
+                        "message": "Invalid query parameters",
+                        "details": [
+                          "Page must be a positive integer"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "invalidPage": {
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "name": "BadRequestError",
+                        "message": "Page must be a positive integer"
+                      }
+                    }
+                  },
+                  "invalidCategory": {
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "name": "BadRequestError",
+                        "message": "Category must be a valid MongoDB ObjectId"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Create a new story",
+        "operationId": "createStory",
+        "description": "Create a new travel story with title, article content, category and optional cover image. Requires authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "article",
+                  "category"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 80,
+                    "description": "Story title (max 80 characters)",
+                    "example": "Моя подорож до Італії"
+                  },
+                  "article": {
+                    "type": "string",
+                    "maxLength": 2500,
+                    "description": "Story article/content (max 2500 characters)",
+                    "example": "Це був незабутній день у Римі..."
+                  },
+                  "category": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{24}$",
+                    "description": "Category ID (MongoDB ObjectId)",
+                    "example": "672a5fe1c31a4c67fdfb12f9"
+                  },
+                  "imageUrl": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Optional. Story cover image file (JPG, PNG, WebP)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Story successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story successfully created"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/story"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": 201,
+                      "message": "Story successfully created",
+                      "data": {
+                        "_id": "672b6cfea9f43a5e8f9f21a2",
+                        "imageUrl": "https://example.com/images/story.jpg",
+                        "title": "Моя подорож до Італії",
+                        "article": "Це був незабутній день у Римі...",
+                        "category": {
+                          "_id": "672a5fe1c31a4c67fdfb12f9",
+                          "name": "Travel"
+                        },
+                        "ownerId": {
+                          "_id": "671f8a22b5e9a8e4c1d7f9b3",
+                          "name": "John Doe",
+                          "avatarUrl": "https://example.com/avatars/john.jpg"
+                        },
+                        "publishedDate": "2025-11-13T10:00:00.000Z",
+                        "favoritesCount": 0,
+                        "createdAt": "2025-11-13T10:00:00.000Z",
+                        "updatedAt": "2025-11-13T10:00:00.000Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid story data or file upload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "name": "BadRequestError",
+                        "message": "Invalid request body",
+                        "details": [
+                          "Title is required and must not exceed 80 characters",
+                          "Article is required and must not exceed 2500 characters",
+                          "Category must be a valid MongoDB ObjectId"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/stories/{storyId}": {
+      "get": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Get story by ID",
+        "operationId": "getStoryById",
+        "description": "Retrieve a complete story with all details by its unique ID. This is a public endpoint.",
+        "security": [],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "storyId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{24}$",
+              "example": "672b6cfea9f43a5e8f9f21a2"
+            },
+            "description": "The ID of the story to retrieve (MongoDB ObjectId)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Story successfully retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story successfully retrieved"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/story"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": 200,
+                      "message": "Story successfully retrieved",
+                      "data": {
+                        "_id": "672b6cfea9f43a5e8f9f21a2",
+                        "imageUrl": "https://example.com/images/story1.jpg",
+                        "title": "My Travel Story",
+                        "article": "A detailed story about my trip to Iceland...",
+                        "category": {
+                          "_id": "672a5fe1c31a4c67fdfb12f9",
+                          "name": "Nature"
+                        },
+                        "ownerId": {
+                          "_id": "671f8a22b5e9a8e4c1d7f9b3",
+                          "name": "John Doe",
+                          "avatarUrl": "https://example.com/avatars/john.jpg"
+                        },
+                        "publishedDate": "2025-10-25T12:00:00.000Z",
+                        "favoritesCount": 4,
+                        "createdAt": "2025-10-08T18:21:10.157Z",
+                        "updatedAt": "2025-10-08T18:21:10.157Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Update a story",
+        "operationId": "patchStory",
+        "description": "Update an existing story by its ID. Allows updating title, article, category fields and uploading a new image. Requires authentication and ownership of the story.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "storyId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{24}$",
+              "example": "672b6cfea9f43a5e8f9f21a2"
+            },
+            "description": "The ID of the story to update (MongoDB ObjectId)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 80,
+                    "description": "Story title (max 80 characters)",
+                    "example": "My Updated Travel Story"
+                  },
+                  "article": {
+                    "type": "string",
+                    "maxLength": 2500,
+                    "description": "Story article/content (max 2500 characters)",
+                    "example": "A detailed updated story about my trip to Kyiv..."
+                  },
+                  "category": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{24}$",
+                    "description": "Category ID (MongoDB ObjectId, 24 character hex string)",
+                    "example": "672a5fe1c31a4c67fdfb12f9"
+                  },
+                  "imageUrl": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Story cover image file (JPG, PNG, WebP)"
+                  }
+                },
+                "minProperties": 1,
+                "description": "At least one field (title, article, category) or file (imageUrl) must be provided"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Story successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Story successfully updated"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/story"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "status": 200,
+                      "message": "Story successfully updated",
+                      "data": {
+                        "_id": "672b6cfea9f43a5e8f9f21a2",
+                        "imageUrl": "https://example.com/images/story-updated.jpg",
+                        "title": "My Updated Travel Story",
+                        "article": "A detailed updated story about my trip to Kyiv...",
+                        "category": {
+                          "_id": "672a5fe1c31a4c67fdfb12f9",
+                          "name": "Nature"
+                        },
+                        "ownerId": {
+                          "_id": "671f8a22b5e9a8e4c1d7f9b3",
+                          "name": "John Doe",
+                          "avatarUrl": "https://example.com/avatars/john.jpg"
+                        },
+                        "publishedDate": "2025-10-25T12:00:00.000Z",
+                        "favoritesCount": 4,
+                        "createdAt": "2025-10-08T18:21:10.157Z",
+                        "updatedAt": "2025-11-13T11:00:00.000Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid story data or file upload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "name": "BadRequestError",
+                        "message": "Invalid request body or file format",
+                        "details": [
+                          "At least one of title, article, category or imageUrl must be provided"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "minProperties": {
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "name": "BadRequestError",
+                        "message": "At least one field is required"
+                      }
+                    }
+                  },
+                  "invalidFile": {
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "name": "BadRequestError",
+                        "message": "Invalid image format",
+                        "details": [
+                          "Only JPG, PNG, WebP files are allowed"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "description": "Forbidden - User is not the story owner",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "ForbiddenError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "name": "ForbiddenError",
+                        "message": "You do not have permission to update this story"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -2041,9 +2785,6 @@
       }
     },
     "responses": {
-      "204": {
-        "description": "Successfully deleted contact"
-      },
       "401": {
         "description": "Unauthorized Error",
         "content": {
@@ -2061,7 +2802,19 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Unauthorized Error"
+                  "example": "UnauthorizedError"
+                },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Access token expired"
+                    }
+                  }
                 }
               }
             }
@@ -2069,26 +2822,47 @@
         }
       },
       "404": {
-        "$ref": "#/components/responses/404-contact"
-      },
-      "409": {
-        "description": "Conflict - Duplicate resource",
+        "description": "Not Found error",
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
               "required": [
                 "status",
-                "message"
+                "message",
+                "data"
               ],
               "properties": {
                 "status": {
                   "type": "integer",
-                  "example": 409
+                  "example": 404
                 },
                 "message": {
                   "type": "string",
-                  "example": "Email in use"
+                  "example": "NotFoundError"
+                },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Resource not found"
+                    }
+                  }
+                }
+              }
+            },
+            "examples": {
+              "notFound": {
+                "value": {
+                  "status": 404,
+                  "message": "NotFoundError",
+                  "data": {
+                    "message": "Resource not found"
+                  }
                 }
               }
             }
@@ -2113,159 +2887,7 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Something went wrong"
-                },
-                "data": {
-                  "type": "object",
-                  "example": {
-                    "message": "Unexpected error"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "201-register": {
-        "description": "Successfully created a new contact",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 201
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Successfully registered a contact!"
-                },
-                "data": {
-                  "$ref": "#/components/schemas/user"
-                }
-              }
-            }
-          }
-        }
-      },
-      "200-login": {
-        "description": "User successfully logged in",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 200
-                },
-                "message": {
-                  "type": "string",
-                  "example": "User successfully logged in"
-                },
-                "data": {
-                  "type": "object",
-                  "required": [
-                    "user",
-                    "accessToken",
-                    "accessTokenValidUntil",
-                    "sessionId"
-                  ],
-                  "properties": {
-                    "user": {
-                      "type": "object",
-                      "required": [
-                        "id",
-                        "name",
-                        "email"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "description": "User unique identifier (MongoDB ObjectId)",
-                          "example": "69134925a9c11877caa26fd9"
-                        },
-                        "name": {
-                          "type": "string",
-                          "example": "brad@example.com"
-                        },
-                        "email": {
-                          "type": "string",
-                          "format": "email",
-                          "example": "secret12345"
-                        }
-                      }
-                    },
-                    "accessToken": {
-                      "type": "string",
-                      "example": "4ckstboS7vKzyuV6I7IwZvBlb5Ix+/2Du5kcnNdn"
-                    },
-                    "accessTokenValidUntil": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2025-11-11T18:12:16.511Z"
-                    },
-                    "sessionId": {
-                      "type": "string",
-                      "description": "ID of the active user session",
-                      "example": "691378fc4b198ed004979a7c"
-                    }
-                  }
-                }
-              }
-            },
-            "examples": {
-              "success": {
-                "summary": "Successful login",
-                "value": {
-                  "status": 200,
-                  "message": "User successfully logged in",
-                  "data": {
-                    "user": {
-                      "id": "69134925a9c11877caa26fd9",
-                      "name": "Brad Pitt",
-                      "email": "brad@example.com"
-                    },
-                    "accessToken": "4ckstboS7vKzyuV6I7IwZvBlb5Ix+/2Du5kcnNdn",
-                    "accessTokenValidUntil": "2025-11-11T18:12:16.511Z",
-                    "sessionId": "691378fc4b198ed004979a7c"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "401-userNotFound": {
-        "description": "Unauthorized. User not found",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 401
-                },
-                "message": {
-                  "type": "string",
-                  "example": "UnauthorizedError"
+                  "example": "InternalServerError"
                 },
                 "data": {
                   "type": "object",
@@ -2275,152 +2897,20 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "User not found"
+                      "example": "Unexpected server error occurred"
                     }
                   }
                 }
               }
-            }
-          }
-        }
-      },
-      "200-refresh": {
-        "description": "Successfully refreshed a session",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 200
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Successfully refreshed a session!"
-                },
-                "data": {
-                  "type": "object",
-                  "required": [
-                    "accessToken"
-                  ],
-                  "properties": {
-                    "accessToken": {
-                      "type": "string",
-                      "example": "fuxTEoxM6DQy2e2wMuCGCSjUqseBa7fGhOONH5sQ"
-                    }
+            },
+            "examples": {
+              "serverError": {
+                "value": {
+                  "status": 500,
+                  "message": "InternalServerError",
+                  "data": {
+                    "message": "Unexpected server error occurred"
                   }
-                }
-              }
-            }
-          }
-        }
-      },
-      "200-resetPwd": {
-        "description": "Successfully reset user password",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 200
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Password was successfully reset!"
-                }
-              }
-            }
-          }
-        }
-      },
-      "404-user": {
-        "description": "Contact not found",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 404
-                },
-                "message": {
-                  "type": "string",
-                  "example": "User not found"
-                },
-                "data": {
-                  "type": "object",
-                  "example": {}
-                }
-              }
-            }
-          }
-        }
-      },
-      "200-resetEmail": {
-        "description": "Successfully sent reset password email",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 200
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Reset password email was successfully sent!"
-                }
-              }
-            }
-          }
-        }
-      },
-      "404-contact": {
-        "description": "Contact not found",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status",
-                "message",
-                "data"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 404
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Contact not found"
-                },
-                "data": {
-                  "type": "object",
-                  "example": {}
                 }
               }
             }
@@ -2447,33 +2937,45 @@
           },
           "name": {
             "type": "string",
-            "example": "Brad Pitt"
+            "description": "User's display name",
+            "example": "Дмитро Романенко"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email address (private)",
+            "example": "user@example.com"
           },
           "avatarUrl": {
             "type": "string",
             "format": "uri",
+            "description": "User's avatar image URL",
             "example": "https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png"
           },
           "articlesAmount": {
             "type": "integer",
             "minimum": 0,
-            "example": 2
+            "description": "Number of articles published by user",
+            "example": 13
           },
           "description": {
             "type": [
               "string",
               "null"
             ],
-            "example": "The best traveler in the World"
+            "description": "User's bio/description (optional)",
+            "example": "Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці та ділитися ними."
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
+            "description": "Account creation timestamp",
             "example": "2025-11-06T18:32:41.123Z"
           },
           "updatedAt": {
             "type": "string",
             "format": "date-time",
+            "description": "Last profile update timestamp",
             "example": "2025-11-06T18:45:12.456Z"
           }
         }
@@ -2482,118 +2984,46 @@
         "type": "object",
         "required": [
           "_id",
-          "img",
+          "imageUrl",
           "title",
-          "date",
-          "favoriteCount"
+          "publishedDate",
+          "favoritesCount"
         ],
         "properties": {
           "_id": {
             "type": "string",
+            "description": "Article ID",
+            "pattern": "^[a-f0-9]{24}$",
             "example": "68498236a100312bea078fee"
           },
-          "img": {
+          "imageUrl": {
             "type": "string",
             "format": "uri",
+            "description": "Article cover image URL",
             "example": "https://ftp.goit.study/img/travel-blog/4185d68f321c49b591f7e879ek.webp"
           },
           "title": {
             "type": "string",
+            "description": "Article title",
             "example": "Грузія на смак: винні підвали та гірські села"
           },
-          "date": {
-            "type": "string",
-            "example": "2025-06-13"
-          },
-          "favoriteCount": {
-            "type": "integer",
-            "minimum": 0,
-            "example": 22
-          },
-          "createdAt": {
+          "publishedDate": {
             "type": "string",
             "format": "date-time",
-            "example": "2025-11-11T14:34:40.845Z"
-          }
-        }
-      },
-      "registerUser": {
-        "type": "object",
-        "required": [
-          "name",
-          "email",
-          "password"
-        ],
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Brad Pitt"
+            "description": "Publication date",
+            "example": "2025-06-13T00:00:00.000Z"
           },
-          "email": {
-            "type": "string",
-            "example": "brad@example.com"
+          "favoritesCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of users who saved/favorited this article",
+            "example": 22
           },
-          "password": {
+          "authorId": {
             "type": "string",
-            "example": "secret12345"
-          }
-        }
-      },
-      "loginUser": {
-        "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
-        "properties": {
-          "email": {
-            "type": "string",
-            "example": "brad@example.com"
-          },
-          "password": {
-            "type": "string",
-            "example": "secret12345"
-          }
-        }
-      },
-      "refreshToken": {
-        "type": "object",
-        "required": [
-          "refreshToken"
-        ],
-        "properties": {
-          "refreshToken": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-          }
-        }
-      },
-      "resetPassword": {
-        "type": "object",
-        "required": [
-          "token",
-          "newPassword"
-        ],
-        "properties": {
-          "token": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-          },
-          "newPassword": {
-            "type": "string",
-            "example": "NewStrongPassword123"
-          }
-        }
-      },
-      "requestResetEmail": {
-        "type": "object",
-        "required": [
-          "email"
-        ],
-        "properties": {
-          "email": {
-            "type": "string",
-            "example": "john@example.com"
+            "description": "ID of the article author",
+            "pattern": "^[a-f0-9]{24}$",
+            "example": "69134925a9c11877caa26fd9"
           }
         }
       },
@@ -2603,25 +3033,31 @@
           "_id",
           "name",
           "avatarUrl",
-          "articlesAmount"
+          "articlesAmount",
+          "createdAt"
         ],
         "properties": {
           "_id": {
             "type": "string",
-            "example": "6881563901add19ee16fcff5"
+            "description": "User's unique identifier (MongoDB ObjectId)",
+            "pattern": "^[a-f0-9]{24}$",
+            "example": "65e4decdd286b30065d54af9"
           },
           "name": {
             "type": "string",
+            "description": "User's display name",
             "example": "Дмитро Романенко"
           },
           "avatarUrl": {
             "type": "string",
             "format": "uri",
-            "example": "https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcff5.webp"
+            "description": "User's avatar image URL",
+            "example": "https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png"
           },
           "articlesAmount": {
             "type": "integer",
             "minimum": 0,
+            "description": "Number of articles published by user",
             "example": 13
           },
           "description": {
@@ -2629,67 +3065,119 @@
               "string",
               "null"
             ],
+            "description": "User's bio/description (optional)",
             "example": "Привіт! Я Дмитро. Люблю знаходити приховані перлини у кожній поїздці та ділитися ними."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Account creation timestamp",
+            "example": "2025-11-06T18:32:41.123Z"
           }
         }
       },
-      "SavedStoriesResponse": {
+      "story": {
         "type": "object",
         "required": [
-          "status",
-          "message",
-          "data"
+          "_id",
+          "imageUrl",
+          "title",
+          "article",
+          "category",
+          "ownerId",
+          "publishedDate",
+          "favoritesCount",
+          "createdAt",
+          "updatedAt"
         ],
         "properties": {
-          "status": {
-            "type": "integer",
-            "example": 201
-          },
-          "message": {
+          "_id": {
             "type": "string",
-            "example": "Story saved"
+            "description": "Story ID",
+            "pattern": "^[a-f0-9]{24}$",
+            "example": "672b6cfea9f43a5e8f9f21a2"
           },
-          "data": {
+          "imageUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Story cover image URL",
+            "example": "https://example.com/images/story1.jpg"
+          },
+          "title": {
+            "type": "string",
+            "description": "Story title",
+            "example": "My Travel Story"
+          },
+          "article": {
+            "type": "string",
+            "description": "Full article content",
+            "example": "A detailed story about my trip to Iceland..."
+          },
+          "category": {
             "type": "object",
-            "required": [
-              "user"
-            ],
+            "description": "Story category",
             "properties": {
-              "user": {
-                "type": "object",
-                "required": [
-                  "savedStories"
-                ],
-                "properties": {
-                  "savedStories": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "pattern": "^[a-f0-9]{24}$"
-                    },
-                    "example": [
-                      "68498236a100312bea079008",
-                      "68498236a100312bea079011",
-                      "6912703e9afd9812a62a9d4c"
-                    ]
-                  }
-                }
+              "_id": {
+                "type": "string",
+                "description": "Category ID",
+                "pattern": "^[a-f0-9]{24}$",
+                "example": "672a5fe1c31a4c67fdfb12f9"
+              },
+              "name": {
+                "type": "string",
+                "description": "Category name",
+                "example": "Nature"
               }
             }
+          },
+          "ownerId": {
+            "type": "object",
+            "description": "Story author (owner)",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "description": "User ID",
+                "pattern": "^[a-f0-9]{24}$",
+                "example": "671f8a22b5e9a8e4c1d7f9b3"
+              },
+              "name": {
+                "type": "string",
+                "description": "Author name",
+                "example": "John Doe"
+              },
+              "avatarUrl": {
+                "type": "string",
+                "format": "uri",
+                "description": "Author avatar URL",
+                "example": "https://example.com/avatars/john.jpg"
+              }
+            }
+          },
+          "publishedDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Travel date (when the story happened)",
+            "example": "2025-10-25T12:00:00.000Z"
+          },
+          "favoritesCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of users who saved/favorited this story",
+            "example": 4
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when story was created",
+            "example": "2025-10-08T18:21:10.157Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when story was last updated",
+            "example": "2025-10-08T18:21:10.157Z"
           }
         }
-      }
-    },
-    "parameters": {
-      "storyId": {
-        "name": "storyId",
-        "in": "path",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{24}$"
-        },
-        "description": "Mongo ObjectId of the story"
       }
     }
   }
