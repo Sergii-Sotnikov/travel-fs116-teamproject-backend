@@ -82,7 +82,8 @@ export async function getMeProfile(userId) {
   if (!user) throw createHttpError(404, 'User not found');
 
   const articles = await TravellersCollection.find({ ownerId: userId })
-    .select('_id title img date favoriteCount createdAt')
+    .select('_id title img date favoriteCount createdAt category')
+    .populate('category', '_id name')
     .sort({ createdAt: -1 })
     .lean();
 
