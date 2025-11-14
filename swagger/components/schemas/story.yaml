@@ -39,11 +39,11 @@ properties:
         type: string
         description: 'Category ID'
         pattern: '^[a-f0-9]{24}$'
-        example: '672a5fe1c31a4c67fdfb12f9'
+        example: '68fb50c80ae91338641121f2'
       name:
         type: string
         description: 'Category name'
-        example: 'Nature'
+        example: 'Європа'
   ownerId:
     type: object
     description: 'Story author (owner)'
@@ -52,16 +52,20 @@ properties:
         type: string
         description: 'User ID'
         pattern: '^[a-f0-9]{24}$'
-        example: '671f8a22b5e9a8e4c1d7f9b3'
+        example: '6881563901add19ee16fcffb'
       name:
         type: string
         description: 'Author name'
-        example: 'John Doe'
+        example: 'Дарина Ковальчук'
       avatarUrl:
         type: string
         format: uri
         description: 'Author avatar URL'
-        example: 'https://example.com/avatars/john.jpg'
+        example: 'https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcffb.webp'
+      description:
+        type: string
+        description: 'Short description / bio of the author'
+        example: 'Привіт, я Дарина. Знаю, як подорожувати яскраво та знаходити цікаві рішення. Ділюся практичними лайфхаками та маршрутами.'
   publishedDate:
     type: string
     format: date-time
