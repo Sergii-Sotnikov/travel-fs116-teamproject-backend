@@ -16,8 +16,8 @@ tags:
     description: Operations related to managing travel stories (CRUD, images, categories)
 
 servers:
-  - url: http://localhost:3000
-  - url: https://travel-fs116-teamproject-backend.onrender.com
+  - url: http://localhost:3000/api
+  - url: https://travel-fs116-teamproject-backend.onrender.com/api-docs
 
 paths:
   /auth/register:
