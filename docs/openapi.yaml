@@ -16,8 +16,8 @@ tags:
     description: Operations related to managing travel stories (CRUD, images, categories)
 
 servers:
-  - url: http://localhost:3000
-  - url: https://travel-fs116-teamproject-backend.onrender.com
+  - url: http://localhost:3000/api
+  - url: https://travel-fs116-teamproject-backend.onrender.com/api
 
 paths:
   /auth/register:
@@ -51,6 +51,9 @@ paths:
   /users/{userId}:
     get:
       $ref: '../swagger/paths/users/{userId}/get.yaml'
+  /users/{userId}/saved-articles:
+    get:
+      $ref: '../swagger/paths/users/{userId}/saved-articles/get.yaml'
   /users/me:
     patch:
       $ref: '../swagger/paths/users/me/patch.yaml'
@@ -72,6 +75,8 @@ paths:
     post:
       $ref: '../swagger/paths/stories/post.yaml'
   /stories/{storyId}:
+    get:
+    $ref: '../swagger/paths/stories/{storyId}/get.yaml'
     patch:
       $ref: '../swagger/paths/stories/{storyId}/patch.yaml'
 
