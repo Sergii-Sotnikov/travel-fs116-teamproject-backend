@@ -1,11 +1,14 @@
 import updateStorySchema from '../validation/traveller.js';
-import { getAllStories, updateStoryById, addStory, getStoryById } from '../services/stories.js';
+import {
+  getAllStories,
+  updateStoryById,
+  addStory,
+  getStoryById,
+} from '../services/stories.js';
 
 import { checkCategoryExists } from '../services/categories.js';
 import createHttpError from 'http-errors';
 import fs from 'node:fs/promises';
-
-
 
 // GET ALL STORIES (PUBLIC)
 export const getAllStoriesController = async (req, res) => {
@@ -18,23 +21,21 @@ export const getAllStoriesController = async (req, res) => {
   });
 };
 
-
 // GET STORY BY ID
 export const getStoriesByIdControlle = async (req, res) => {
-  const {storyId} = req.params;
+  const { storyId } = req.params;
 
   const story = await getStoryById(storyId);
-  if(!story){
-        throw createHttpError(404, 'Story not found');
+  if (!story) {
+    throw createHttpError(404, 'Story not found');
   }
 
-    res.status(200).json({
+  res.status(200).json({
     status: 200,
     message: `Successfully found story!`,
     data: story,
   });
-}
-
+};
 
 // POST STORIE (PRIVATE)
 export const createStoryController = async (req, res) => {
@@ -58,9 +59,7 @@ export const createStoryController = async (req, res) => {
   const category = sortCategories(req.body.category);
   storyRawData.category = category;
 
-
-  const story = await addStory(req.body, userId, img);
-
+  const story = await addStory(storyRawData, userId, img);
 
   res.status(201).json({
     status: 201,
@@ -68,7 +67,6 @@ export const createStoryController = async (req, res) => {
     data: story,
   });
 };
-
 
 // PATCH UPDATE STORY
 export const patchStoryController = async (req, res) => {
