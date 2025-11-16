@@ -48,9 +48,8 @@ properties:
         example: '68fb50c80ae91338641121f2'
       name:
         type: string
-        description: Category name
+        description: 'Category name'
         example: 'Європа'
-
   ownerId:
     type: object
     description: Story author (owner)
@@ -66,20 +65,17 @@ properties:
         example: '6881563901add19ee16fcffb'
       name:
         type: string
-        description: Author name
+        description: 'Author name'
         example: 'Дарина Ковальчук'
       avatarUrl:
         type: string
         format: uri
-        description: Author avatar URL
+        description: 'Author avatar URL'
         example: 'https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcffb.webp'
       description:
-        type:
-          - string
-          - 'null'
-        description: Author bio
-        example: 'Привіт, я Дарина. Знаю, як подорожувати яскраво та знаходити цікаві рішення...'
-
+        type: string
+        description: 'Short description / bio of the author'
+        example: 'Привіт, я Дарина. Знаю, як подорожувати яскраво та знаходити цікаві рішення. Ділюся практичними лайфхаками та маршрутами.'
   publishedDate:
     type: string
     format: date-time
