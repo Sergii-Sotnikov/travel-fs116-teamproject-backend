@@ -12,7 +12,7 @@ import { UPLOAD_DIR } from './constants/index.js';
 
 dotenv.config();
 
-const PORT = Number(getEnvVar('PORT', '3000'));
+const PORT = Number(getEnvVar('PORT', '4000'));
 const isProd = process.env.NODE_ENV === 'production';
 
 export async function setupServer() {

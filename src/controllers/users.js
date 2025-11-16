@@ -13,7 +13,6 @@ import { deleteSavedStory } from '../services/users.js';
 import { uploadImageToCloudinary } from '../services/cloudinary.js';
 import { UsersCollection } from '../db/models/user.js';
 
-
 // GET ALL USERS (PUBLIC)
 export const getAllUsersController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
@@ -43,18 +42,18 @@ export const getAllUsersController = async (req, res) => {
   });
 };
 
-
 // GET USER BY ID (PUBLIC)
 export const getUsersByIdController = async (req, res) => {
-
   try {
     const { userId } = req.params;
-    const { user, articles } = await getUserById(userId);
+    const page = parseInt(req.query.page) || 1;
+    const perPage = parseInt(req.query.perPage) || 10;
+    const { user, articles } = await getUserById(userId, page, perPage);
 
     return res.status(200).json({
       status: 200,
       message: 'Successfully found user by id!',
-      data: { user, articles},
+      data: { user, articles },
     });
   } catch (err) {
     const status = err.status || err.statusCode || 500;
@@ -65,13 +64,13 @@ export const getUsersByIdController = async (req, res) => {
 };
 
 //GET USER BY ID + SAVED ARTICLES
-export const getUsersSavedArticlesController = async (req, res)=>{
-  const userId = req.params.userId
+export const getUsersSavedArticlesController = async (req, res) => {
+  const userId = req.params.userId;
 
-  const {user} = await getUserSavedArticles(userId);
+  const { user } = await getUserSavedArticles(userId);
 
-  if(!user){
-        throw createHttpError(404, 'User not found');
+  if (!user) {
+    throw createHttpError(404, 'User not found');
   }
 
   const { _id, name, avatarUrl, description, createdAt, savedStories } =
@@ -91,9 +90,7 @@ export const getUsersSavedArticlesController = async (req, res)=>{
       savedStories,
     },
   });
-}
-
-
+};
 
 // GET USER (PRIVATE)
 export const getMeProfileController = async (req, res) => {
@@ -106,8 +103,6 @@ export const getMeProfileController = async (req, res) => {
     data: user,
   });
 };
-
-
 
 // POST ARTICLE BY ID (PRIVATE)
 export const addSavedArticleController = async (req, res) => {
@@ -136,7 +131,6 @@ export const addSavedArticleController = async (req, res) => {
   }
 };
 
-
 // DELETE ARTICLE BY ID (PRIVATE)
 export const deleteMeSavedStoriesController = async (req, res) => {
   const userId = req.user._id;
@@ -154,7 +148,6 @@ export const deleteMeSavedStoriesController = async (req, res) => {
     data: { user: { savedStories: (user.savedStories || []).map(String) } },
   });
 };
-
 
 //PATCH AVATAR (PRIVATE)
 export const patchMeAvatarController = async (req, res) => {
@@ -187,7 +180,6 @@ export const patchMeAvatarController = async (req, res) => {
   });
 };
 
-
 //PATCH ME (PRIVATE)
 export const patchMeController = async (req, res, next) => {
   const userId = req.user._id;
@@ -210,13 +202,3 @@ export const patchMeController = async (req, res, next) => {
     data: updatedUser,
   });
 };
-
-
-
-
-
-
-
-
-
-

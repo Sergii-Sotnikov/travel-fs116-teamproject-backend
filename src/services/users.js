@@ -1,10 +1,8 @@
-
 import { TravellersCollection } from '../db/models/traveller.js';
 import { UsersCollection } from '../db/models/user.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
-
 
 // GET ALL USERS (PUBLIC)
 export const getAllUsers = async ({ page = 1, perPage = 12 }) => {
@@ -23,10 +21,8 @@ export const getAllUsers = async ({ page = 1, perPage = 12 }) => {
   };
 };
 
-
 // GET USER BY ID (PUBLIC)
-export const getUserById = async (userId) => {
-
+export const getUserById = async (userId, page = 1, perPage = 10) => {
   if (!mongoose.isValidObjectId(userId)) {
     throw createHttpError(400, 'Invalid "userId"', {
       data: { details: ['"userId" must match /^[a-f0-9]{24}$/'] },
@@ -43,19 +39,41 @@ export const getUserById = async (userId) => {
     });
   }
 
+  const skip = (page - 1) * perPage;
 
+  // Знаходимо статті користувача з пагінацією
   const articles = await TravellersCollection.find({ ownerId: userId })
     .select('_id title img article date favoriteCount createdAt')
     .sort({ favoriteCount: -1 })
+    .skip(skip)
+    .limit(perPage)
     .lean();
 
-  const { ...user } = userDoc;
-  return { user, articles };
+  // Отримуємо загальну кількість статей для пагінації
+  const totalArticles = await TravellersCollection.countDocuments({
+    ownerId: userId, // Використовуємо той самий критерій пошуку
+  });
+
+  const totalPages = Math.ceil(totalArticles / perPage);
+
+  return {
+    user: userDoc,
+    articles: {
+      items: articles,
+      pagination: {
+        currentPage: page,
+        perPage: perPage,
+        totalItems: totalArticles,
+        totalPages: totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    },
+  };
 };
 
-
 // GET USER BY ID AND SAVED ARTICLES
-export const getUserSavedArticles = async (userId) =>{
+export const getUserSavedArticles = async (userId) => {
   const user = await UsersCollection.findById(userId)
     .select('_id name avatarUrl description createdAt')
     .select('+savedStories')
@@ -69,13 +87,11 @@ export const getUserSavedArticles = async (userId) =>{
       },
     });
 
-  return {user}
-}
-
+  return { user };
+};
 
 // GET USER (PRIVATE)
 export async function getMeProfile(userId) {
-
   const user = await UsersCollection.findById(userId)
     .select('_id name avatarUrl articlesAmount createdAt updatedAt')
     .lean();
@@ -88,7 +104,6 @@ export async function getMeProfile(userId) {
 
   return { ...user, articles };
 }
-
 
 // POST ARTICLE BY ID (PRIVATE)
 export const addArticleToSaved = async (userId, storyId) => {
@@ -107,23 +122,19 @@ export const addArticleToSaved = async (userId, storyId) => {
 
   const res = await UsersCollection.updateOne(
     { _id: userId, savedStories: { $ne: storyId } },
-    { $addToSet: { savedStories: storyId }, $inc: { savedAmount: 1 } }
+    { $addToSet: { savedStories: storyId }, $inc: { savedAmount: 1 } },
   );
   const created = res.modifiedCount > 0;
 
   if (created) {
     await TravellersCollection.updateOne(
       { _id: storyId },
-      { $inc: { favoriteCount: 1 } }
+      { $inc: { favoriteCount: 1 } },
     );
   }
 
   return { created };
 };
-
-
-
-
 
 // DELETE ARTICLE BY ID (PRIVATE)
 export const deleteSavedStory = async (userId, storyId) => {
@@ -133,19 +144,19 @@ export const deleteSavedStory = async (userId, storyId) => {
 
   const res = await UsersCollection.updateOne(
     { _id: userId, savedStories: storyId, savedAmount: { $gt: 0 } },
-    { $pull: { savedStories: storyId }, $inc: { savedAmount: -1 } }
+    { $pull: { savedStories: storyId }, $inc: { savedAmount: -1 } },
   );
 
   const removed = res.modifiedCount > 0;
   if (removed) {
     await TravellersCollection.updateOne(
       { _id: storyId, favoriteCount: { $gt: 0 } },
-      { $inc: { favoriteCount: -1 } }
+      { $inc: { favoriteCount: -1 } },
     );
   }
 
   return { removed };
-}
+};
 
 //PATCH AVATAR (PRIVATE)
 export const updateUserAvatar = async (userId, avatarUrl) => {
@@ -167,7 +178,6 @@ export const updateUserAvatar = async (userId, avatarUrl) => {
   }
 };
 
-
 //PATCH ME (PRIVATE)
 export async function updateMe(userId, payload, options = {}) {
   return UsersCollection.findOneAndUpdate(
@@ -181,14 +191,3 @@ export async function updateMe(userId, payload, options = {}) {
     .select('_id name description avatarUrl articlesAmount createdAt')
     .lean();
 }
-
-
-
-
-
-
-
-
-
-
-
