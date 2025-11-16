@@ -1,5 +1,5 @@
 type: object
-required: [_id, imageUrl, title, publishedDate, favoritesCount]
+required: [_id, imageUrl, title, publishedDate, favoritesCount, authorId]
 properties:
   _id:
     type: string

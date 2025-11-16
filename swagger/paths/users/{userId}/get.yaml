@@ -4,6 +4,7 @@ summary: Get user by ID
 operationId: getUserById
 description: Retrieve a specific user's public profile and published articles by user ID. This is a public endpoint.
 security: []
+
 parameters:
   - name: userId
     in: path
@@ -12,7 +13,7 @@ parameters:
     schema:
       type: string
       pattern: '^[a-f0-9]{24}$'
-      example: 69134925a9c11877caa26fd9
+      example: 6881563901add19ee16fd017
 
 responses:
   '200':
@@ -28,7 +29,7 @@ responses:
               example: 200
             message:
               type: string
-              example: Successfully found user by id
+              example: Successfully found user by id!
             data:
               type: object
               required: [user, articles]
@@ -36,36 +37,77 @@ responses:
                 user:
                   $ref: '../../../components/schemas/userPublic.yaml'
                 articles:
-                  type: array
-                  description: Articles published by the user
-                  items:
-                    $ref: '../../../components/schemas/articleCard.yaml'
+                  type: object
+                  description: Paginated list of articles published by the user
+                  required: [items, pagination]
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '../../../components/schemas/articleCard.yaml'
+                    pagination:
+                      type: object
+                      required:
+                        - currentPage
+                        - perPage
+                        - totalItems
+                        - totalPages
+                        - hasNextPage
+                        - hasPrevPage
+                      properties:
+                        currentPage:
+                          type: integer
+                          example: 1
+                        perPage:
+                          type: integer
+                          example: 4
+                        totalItems:
+                          type: integer
+                          example: 20
+                        totalPages:
+                          type: integer
+                          example: 5
+                        hasNextPage:
+                          type: boolean
+                          example: true
+                        hasPrevPage:
+                          type: boolean
+                          example: false
         examples:
           success:
             value:
               status: 200
-              message: Successfully found user by id
+              message: Successfully found user by id!
               data:
                 user:
-                  _id: 69134925a9c11877caa26fd9
-                  name: Test8
-                  avatarUrl: https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png
-                  articlesAmount: 1
-                  description: null
-                  createdAt: 2025-11-11T14:33:09.641Z
+                  _id: 6881563901add19ee16fd017
+                  name: 'Матвій Савченко'
+                  avatarUrl: 'https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fd017.webp'
+                  articlesAmount: 20
+                  description: 'Мене звати Матвій. Почав ділитися враженнями...'
+                  createdAt: '2025-01-01T12:00:00.000Z'
+                  updatedAt: '2025-01-05T08:30:00.000Z'
                 articles:
-                  - _id: 69134980a9c11877caa26fed
-                    imageUrl: https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg
-                    title: Super
-                    publishedDate: 2025-11-11T14:34:40.845Z
-                    favoritesCount: 0
-                    authorId: 69134925a9c11877caa26fd9
-                  - _id: 68498236a100312bea079008
-                    imageUrl: https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg
-                    title: Йорданія - шлях у Петру
-                    publishedDate: 2025-01-10T00:00:00.000Z
-                    favoritesCount: 6
-                    authorId: 69134925a9c11877caa26fd9
+                  items:
+                    - _id: '68498236a100312bea079003'
+                      imageUrl: 'https://ftp.goit.study/img/travel-blog/68498236a100312bea079003.webp'
+                      title: 'Нова Зеландія: кемпінг серед гір і озер'
+                      publishedDate: '2025-06-28T00:00:00.000Z'
+                      favoritesCount: 26
+                      authorId: '6881563901add19ee16fd017'
+                    - _id: '68498236a100312bea079031'
+                      imageUrl: 'https://ftp.goit.study/img/travel-blog/68498236a100312bea079031.webp'
+                      title: 'Непал: шлях до базового табору Евересту'
+                      publishedDate: '2025-02-27T00:00:00.000Z'
+                      favoritesCount: 23
+                      authorId: '6881563901add19ee16fd017'
+                  pagination:
+                    currentPage: 1
+                    perPage: 4
+                    totalItems: 20
+                    totalPages: 5
+                    hasNextPage: true
+                    hasPrevPage: false
 
   '400':
     description: Invalid user ID parameter
@@ -91,5 +133,6 @@ responses:
 
   '404':
     $ref: '../../../components/responses/404.yaml'
+
   '500':
     $ref: '../../../components/responses/500.yaml'
