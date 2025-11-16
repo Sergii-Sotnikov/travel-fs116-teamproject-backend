@@ -1,0 +1,43 @@
+tags:
+  - Stories
+summary: Get categories
+operationId: getCategories
+description: Retrieve a list of available story categories
+security: []
+responses:
+  '200':
+    description: Successfully retrieved categories
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully found categories!
+            data:
+              type: array
+              items:
+                type: object
+                required:
+                  - _id
+                  - name
+                properties:
+                  _id:
+                    type: string
+                    pattern: '^[a-f0-9]{24}$'
+                    example: '68fb50c80ae91338641121f2'
+                  name:
+                    type: string
+                    example: 'Європа'
+  '404':
+    $ref: ../../components/responses/404.yaml
+  '500':
+    $ref: ../../components/responses/500.yaml

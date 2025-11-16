@@ -4,15 +4,16 @@ summary: Get story by ID
 operationId: getStoryById
 description: Retrieve a complete story with all details by its unique ID. This is a public endpoint.
 security: []
+
 parameters:
   - in: path
     name: storyId
     required: true
+    description: The ID of the story to retrieve (MongoDB ObjectId)
     schema:
       type: string
       pattern: '^[a-f0-9]{24}$'
-      example: 672b6cfea9f43a5e8f9f21a2
-    description: The ID of the story to retrieve (MongoDB ObjectId)
+      example: '672b6cfea9f43a5e8f9f21a2'
 
 responses:
   '200':
@@ -21,7 +22,10 @@ responses:
       application/json:
         schema:
           type: object
-          required: [status, message, data]
+          required:
+            - status
+            - message
+            - data
           properties:
             status:
               type: integer
@@ -37,23 +41,25 @@ responses:
               status: 200
               message: Story successfully retrieved
               data:
-                _id: 672b6cfea9f43a5e8f9f21a2
-                imageUrl: https://example.com/images/story1.jpg
-                title: My Travel Story
-                article: A detailed story about my trip to Iceland...
+                _id: '672b6cfea9f43a5e8f9f21a2'
+                imageUrl: 'https://example.com/images/story1.jpg'
+                title: 'My Travel Story'
+                article: 'A detailed story about my trip to Iceland...'
                 category:
-                  _id: 672a5fe1c31a4c67fdfb12f9
-                  name: Nature
+                  _id: '68fb50c80ae91338641121f2'
+                  name: 'Європа'
                 ownerId:
-                  _id: 671f8a22b5e9a8e4c1d7f9b3
-                  name: John Doe
-                  avatarUrl: https://example.com/avatars/john.jpg
-                publishedDate: 2025-10-25T12:00:00.000Z
+                  _id: '6881563901add19ee16fcffb'
+                  name: 'Дарина Ковальчук'
+                  avatarUrl: 'https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcffb.webp'
+                  description: 'Привіт, я Дарина. Знаю, як подорожувати яскраво та знаходити цікаві рішення...'
+                publishedDate: '2025-10-25T12:00:00.000Z'
                 favoritesCount: 4
-                createdAt: 2025-10-08T18:21:10.157Z
-                updatedAt: 2025-10-08T18:21:10.157Z
+                createdAt: '2025-10-08T18:21:10.157Z'
+                updatedAt: '2025-10-08T18:21:10.157Z'
 
   '404':
     $ref: '../../../components/responses/404.yaml'
+
   '500':
     $ref: '../../../components/responses/500.yaml'
