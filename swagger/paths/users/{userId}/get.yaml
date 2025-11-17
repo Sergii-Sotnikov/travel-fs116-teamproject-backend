@@ -2,7 +2,7 @@ tags:
   - Users
 summary: Get user by ID
 operationId: getUserById
-description: Retrieve a specific user's public profile and published articles by user ID. This is a public endpoint.
+description: Retrieve a specific user's public profile and paginated list of their articles by user ID. This is a public endpoint.
 security: []
 
 parameters:
@@ -14,6 +14,25 @@ parameters:
       type: string
       pattern: '^[a-f0-9]{24}$'
       example: 6881563901add19ee16fd017
+
+  - in: query
+    name: page
+    schema:
+      type: integer
+      minimum: 1
+      default: 1
+      example: 1
+    description: Page number for articles pagination
+
+  - in: query
+    name: perPage
+    schema:
+      type: integer
+      minimum: 1
+      maximum: 100
+      default: 4
+      example: 4
+    description: Number of articles per page (max 100)
 
 responses:
   '200':
@@ -110,7 +129,7 @@ responses:
                     hasPrevPage: false
 
   '400':
-    description: Invalid user ID parameter
+    description: Invalid user ID or pagination parameters
     content:
       application/json:
         schema:
@@ -127,9 +146,11 @@ responses:
               type: object
               example:
                 name: BadRequestError
-                message: Invalid userId path parameter
+                message: Invalid userId or query parameters
                 details:
                   - userId must match pattern ^[a-f0-9]{24}$
+                  - page must be >= 1
+                  - perPage must be between 1 and 100
 
   '404':
     $ref: '../../../components/responses/404.yaml'
