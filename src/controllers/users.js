@@ -216,23 +216,51 @@ export const patchMeAvatarController = async (req, res) => {
 
 //PATCH ME (PRIVATE)
 export const patchMeController = async (req, res, next) => {
-  const userId = req.user._id;
-  const update = { ...req.body };
+  try {
+    const userId = req.user._id;
+    const update = { ...req.body };
 
-  if (req.file) {
-    const avatarUrl = await uploadImageToCloudinary(req.file);
-    update.avatarUrl = avatarUrl;
+    // Перевірка, що хоча б одне поле або файл надано
+    const hasTextFields = Object.keys(update).length > 0;
+    const hasFile = !!req.file;
+
+    if (!hasTextFields && !hasFile) {
+      return next(
+        createHttpError(
+          400,
+          'At least one field (name, description) or file (avatar) must be provided',
+        ),
+      );
+    }
+
+    // Завантаження аватару, якщо надано
+    if (req.file) {
+      try {
+        const avatarUrl = await uploadImageToCloudinary(req.file);
+        update.avatarUrl = avatarUrl;
+      } catch (error) {
+        return next(
+          createHttpError(
+            500,
+            'Failed to upload avatar image',
+            { details: error.message },
+          ),
+        );
+      }
+    }
+
+    const updatedUser = await updateMe(userId, update);
+
+    if (!updatedUser) {
+      return next(createHttpError(404, 'User not found'));
+    }
+
+    res.json({
+      status: 200,
+      message: 'Successfully updated profile!',
+      data: updatedUser,
+    });
+  } catch (error) {
+    next(error);
   }
-
-  const updatedUser = await updateMe(userId, update);
-
-  if (!updatedUser) {
-    return next(createHttpError(404, 'User not found'));
-  }
-
-  res.json({
-    status: 200,
-    message: `Successfully patched my profile!`,
-    data: updatedUser,
-  });
 };

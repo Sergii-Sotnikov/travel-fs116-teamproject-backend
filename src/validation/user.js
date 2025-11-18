@@ -41,11 +41,24 @@ export const createUserSchema = Joi.object({
 });
 
 export const UpdateUserSchema = Joi.object({
-  name: Joi.string().trim().min(3).max(20),
-  description: Joi.string().trim().min(5).max(3000),
+  name: Joi.string().trim().min(3).max(20).allow('').messages({
+    'string.base': 'Name should be a string',
+    'string.min': 'Name should have at least {#limit} characters',
+    'string.max': 'Name should have at most {#limit} characters',
+  }),
+  description: Joi.string().trim().min(5).max(3000).allow('').messages({
+    'string.base': 'Description should be a string',
+    'string.min': 'Description should have at least {#limit} characters',
+    'string.max': 'Description should have at most {#limit} characters',
+  }),
   avatarUrl: Joi.string()
     .uri({ scheme: ['http', 'https'] })
-    .max(200),
+    .max(500)
+    .allow('')
+    .messages({
+      'string.uri': 'Avatar URL must be a valid URL',
+      'string.max': 'Avatar URL should not exceed {#limit} characters',
+    }),
 })
   .min(0)
   .unknown(false);

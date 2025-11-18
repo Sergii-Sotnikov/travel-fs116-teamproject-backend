@@ -1,8 +1,8 @@
 tags:
   - Users
-summary: Get current user's profile
+summary: Get current user's profile for editing
 operationId: getMeProfile
-description: Retrieve the authenticated user's profile with their articles and saved stories (private endpoint). Requires authentication.
+description: Retrieve the authenticated user's profile data (name, description, avatarUrl) with their articles. This endpoint is used to fetch user data for the profile editing page. Requires authentication.
 security:
   - bearerAuth: []
 

@@ -93,7 +93,7 @@ export const getUserSavedArticles = async (userId) => {
 // GET USER (PRIVATE)
 export async function getMeProfile(userId) {
   const user = await UsersCollection.findById(userId)
-    .select('_id name avatarUrl articlesAmount createdAt updatedAt')
+    .select('_id name avatarUrl description articlesAmount createdAt updatedAt')
     .lean();
   if (!user) throw createHttpError(404, 'User not found');
 
