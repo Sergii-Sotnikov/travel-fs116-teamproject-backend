@@ -72,7 +72,24 @@ export const createStoryController = async (req, res) => {
 export const patchStoryController = async (req, res) => {
   const { storyId } = req.params;
   const ownerId = req.user._id;
-  const updateFields = req.body || {};
+   const storyRawData = req.body;
+
+  function sortCategories(categoryName) {
+    if (categoryName === 'Азія') return '68fb50c80ae91338641121f0';
+    if (categoryName === 'Гори') return '68fb50c80ae91338641121f1';
+    if (categoryName === 'Європа') return '68fb50c80ae91338641121f2';
+    if (categoryName === 'Америка') return '68fb50c80ae91338641121f3';
+    if (categoryName === 'Африка') return '68fb50c80ae91338641121f4';
+    if (categoryName === 'Пустелі') return '68fb50c80ae91338641121f6';
+    if (categoryName === 'Балкани') return '68fb50c80ae91338641121f7';
+    if (categoryName === 'Кавказ') return '68fb50c80ae91338641121f8';
+    if (categoryName === 'Океанія') return '68fb50c80ae91338641121f9';
+  }
+
+  const category = sortCategories(req.body.category);
+  storyRawData.category = category;
+
+  const updateFields = storyRawData || {};
   const storyImageFile = req.file;
 
   const hasTextFields = Object.keys(updateFields).length > 0;

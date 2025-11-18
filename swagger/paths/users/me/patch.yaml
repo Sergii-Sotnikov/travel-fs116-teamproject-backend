@@ -15,18 +15,20 @@ requestBody:
         properties:
           name:
             type: string
-            maxLength: 100
-            description: User's display name
+            minLength: 3
+            maxLength: 20
+            description: User's display name (3-20 characters)
             example: Test8
           description:
             type: string
-            maxLength: 1000
-            description: User's bio/description
+            minLength: 5
+            maxLength: 3000
+            description: User's bio/description (5-3000 characters, can be empty)
             example: Hello Sergiy
           avatar:
             type: string
             format: binary
-            description: Avatar image file (JPG, PNG, WebP, max 5MB)
+            description: Avatar image file (JPG, PNG, GIF, max 5MB)
         minProperties: 1
         description: At least one field (name, description) or file (avatar) must be provided
 
@@ -44,7 +46,7 @@ responses:
               example: 200
             message:
               type: string
-              example: Profile updated successfully
+              example: Successfully updated profile!
             data:
               $ref: '../../../components/schemas/user.yaml'
         examples:
@@ -82,7 +84,7 @@ responses:
                 name: BadRequestError
                 message: Invalid request body
                 details:
-                  - At least one field is required (name, description, or avatar)
+                  - At least one field (name, description) or file (avatar) must be provided
 
   '401':
     $ref: '../../../components/responses/401.yaml'
