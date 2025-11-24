@@ -1269,7 +1269,7 @@
         ],
         "summary": "Get user by ID",
         "operationId": "getUserById",
-        "description": "Retrieve a specific user's public profile and published articles by user ID. This is a public endpoint.",
+        "description": "Retrieve a specific user's public profile and paginated list of their articles by user ID. This is a public endpoint.",
         "security": [],
         "parameters": [
           {
@@ -1280,8 +1280,31 @@
             "schema": {
               "type": "string",
               "pattern": "^[a-f0-9]{24}$",
-              "example": "69134925a9c11877caa26fd9"
+              "example": "6881563901add19ee16fd017"
             }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "example": 1
+            },
+            "description": "Page number for articles pagination"
+          },
+          {
+            "in": "query",
+            "name": "perPage",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 4,
+              "example": 4
+            },
+            "description": "Number of articles per page (max 100)"
           }
         ],
         "responses": {
@@ -1303,7 +1326,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully found user by id"
+                      "example": "Successfully found user by id!"
                     },
                     "data": {
                       "type": "object",
@@ -1316,10 +1339,56 @@
                           "$ref": "#/components/schemas/userPublic"
                         },
                         "articles": {
-                          "type": "array",
-                          "description": "Articles published by the user",
-                          "items": {
-                            "$ref": "#/components/schemas/articleCard"
+                          "type": "object",
+                          "description": "Paginated list of articles published by the user",
+                          "required": [
+                            "items",
+                            "pagination"
+                          ],
+                          "properties": {
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/articleCard"
+                              }
+                            },
+                            "pagination": {
+                              "type": "object",
+                              "required": [
+                                "currentPage",
+                                "perPage",
+                                "totalItems",
+                                "totalPages",
+                                "hasNextPage",
+                                "hasPrevPage"
+                              ],
+                              "properties": {
+                                "currentPage": {
+                                  "type": "integer",
+                                  "example": 1
+                                },
+                                "perPage": {
+                                  "type": "integer",
+                                  "example": 4
+                                },
+                                "totalItems": {
+                                  "type": "integer",
+                                  "example": 20
+                                },
+                                "totalPages": {
+                                  "type": "integer",
+                                  "example": 5
+                                },
+                                "hasNextPage": {
+                                  "type": "boolean",
+                                  "example": true
+                                },
+                                "hasPrevPage": {
+                                  "type": "boolean",
+                                  "example": false
+                                }
+                              }
+                            }
                           }
                         }
                       }
@@ -1330,34 +1399,45 @@
                   "success": {
                     "value": {
                       "status": 200,
-                      "message": "Successfully found user by id",
+                      "message": "Successfully found user by id!",
                       "data": {
                         "user": {
-                          "_id": "69134925a9c11877caa26fd9",
-                          "name": "Test8",
-                          "avatarUrl": "https://res.cloudinary.com/dcyt4kr5s/image/upload/v1762684805/avatars/ycozq7nun3lbze83tjsk.png",
-                          "articlesAmount": 1,
-                          "description": null,
-                          "createdAt": "2025-11-11T14:33:09.641Z"
+                          "_id": "6881563901add19ee16fd017",
+                          "name": "Матвій Савченко",
+                          "avatarUrl": "https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fd017.webp",
+                          "articlesAmount": 20,
+                          "description": "Мене звати Матвій. Почав ділитися враженнями...",
+                          "createdAt": "2025-01-01T12:00:00.000Z",
+                          "updatedAt": "2025-01-05T08:30:00.000Z"
                         },
-                        "articles": [
-                          {
-                            "_id": "69134980a9c11877caa26fed",
-                            "imageUrl": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg",
-                            "title": "Super",
-                            "publishedDate": "2025-11-11T14:34:40.845Z",
-                            "favoritesCount": 0,
-                            "authorId": "69134925a9c11877caa26fd9"
-                          },
-                          {
-                            "_id": "68498236a100312bea079008",
-                            "imageUrl": "https://res.cloudinary.com/demo/image/upload/v1699999999/samples/landscapes/nature-mountains.jpg",
-                            "title": "Йорданія - шлях у Петру",
-                            "publishedDate": "2025-01-10T00:00:00.000Z",
-                            "favoritesCount": 6,
-                            "authorId": "69134925a9c11877caa26fd9"
+                        "articles": {
+                          "items": [
+                            {
+                              "_id": "68498236a100312bea079003",
+                              "imageUrl": "https://ftp.goit.study/img/travel-blog/68498236a100312bea079003.webp",
+                              "title": "Нова Зеландія: кемпінг серед гір і озер",
+                              "publishedDate": "2025-06-28T00:00:00.000Z",
+                              "favoritesCount": 26,
+                              "authorId": "6881563901add19ee16fd017"
+                            },
+                            {
+                              "_id": "68498236a100312bea079031",
+                              "imageUrl": "https://ftp.goit.study/img/travel-blog/68498236a100312bea079031.webp",
+                              "title": "Непал: шлях до базового табору Евересту",
+                              "publishedDate": "2025-02-27T00:00:00.000Z",
+                              "favoritesCount": 23,
+                              "authorId": "6881563901add19ee16fd017"
+                            }
+                          ],
+                          "pagination": {
+                            "currentPage": 1,
+                            "perPage": 4,
+                            "totalItems": 20,
+                            "totalPages": 5,
+                            "hasNextPage": true,
+                            "hasPrevPage": false
                           }
-                        ]
+                        }
                       }
                     }
                   }
@@ -1366,7 +1446,7 @@
             }
           },
           "400": {
-            "description": "Invalid user ID parameter",
+            "description": "Invalid user ID or pagination parameters",
             "content": {
               "application/json": {
                 "schema": {
@@ -1389,9 +1469,11 @@
                       "type": "object",
                       "example": {
                         "name": "BadRequestError",
-                        "message": "Invalid userId path parameter",
+                        "message": "Invalid userId or query parameters",
                         "details": [
-                          "userId must match pattern ^[a-f0-9]{24}$"
+                          "userId must match pattern ^[a-f0-9]{24}$",
+                          "page must be >= 1",
+                          "perPage must be between 1 and 100"
                         ]
                       }
                     }
@@ -1501,20 +1583,22 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "maxLength": 100,
-                    "description": "User's display name",
+                    "minLength": 3,
+                    "maxLength": 20,
+                    "description": "User's display name (3-20 characters)",
                     "example": "Test8"
                   },
                   "description": {
                     "type": "string",
-                    "maxLength": 1000,
-                    "description": "User's bio/description",
+                    "minLength": 5,
+                    "maxLength": 3000,
+                    "description": "User's bio/description (5-3000 characters, can be empty)",
                     "example": "Hello Sergiy"
                   },
                   "avatar": {
                     "type": "string",
                     "format": "binary",
-                    "description": "Avatar image file (JPG, PNG, WebP, max 5MB)"
+                    "description": "Avatar image file (JPG, PNG, GIF, max 5MB)"
                   }
                 },
                 "minProperties": 1,
@@ -1542,7 +1626,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Profile updated successfully"
+                      "example": "Successfully updated profile!"
                     },
                     "data": {
                       "$ref": "#/components/schemas/user"
@@ -1596,7 +1680,7 @@
                         "name": "BadRequestError",
                         "message": "Invalid request body",
                         "details": [
-                          "At least one field is required (name, description, or avatar)"
+                          "At least one field (name, description) or file (avatar) must be provided"
                         ]
                       }
                     }
@@ -1755,9 +1839,9 @@
         "tags": [
           "Users"
         ],
-        "summary": "Get current user's profile",
+        "summary": "Get current user's profile for editing",
         "operationId": "getMeProfile",
-        "description": "Retrieve the authenticated user's profile with their articles and saved stories (private endpoint). Requires authentication.",
+        "description": "Retrieve the authenticated user's profile data (name, description, avatarUrl) with their articles. This endpoint is used to fetch user data for the profile editing page. Requires authentication.",
         "security": [
           {
             "bearerAuth": []
@@ -2481,12 +2565,12 @@
             "in": "path",
             "name": "storyId",
             "required": true,
+            "description": "The ID of the story to retrieve (MongoDB ObjectId)",
             "schema": {
               "type": "string",
               "pattern": "^[a-f0-9]{24}$",
               "example": "672b6cfea9f43a5e8f9f21a2"
-            },
-            "description": "The ID of the story to retrieve (MongoDB ObjectId)"
+            }
           }
         ],
         "responses": {
@@ -2526,13 +2610,14 @@
                         "title": "My Travel Story",
                         "article": "A detailed story about my trip to Iceland...",
                         "category": {
-                          "_id": "672a5fe1c31a4c67fdfb12f9",
-                          "name": "Nature"
+                          "_id": "68fb50c80ae91338641121f2",
+                          "name": "Європа"
                         },
                         "ownerId": {
-                          "_id": "671f8a22b5e9a8e4c1d7f9b3",
-                          "name": "John Doe",
-                          "avatarUrl": "https://example.com/avatars/john.jpg"
+                          "_id": "6881563901add19ee16fcffb",
+                          "name": "Дарина Ковальчук",
+                          "avatarUrl": "https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcffb.webp",
+                          "description": "Привіт, я Дарина. Знаю, як подорожувати яскраво та знаходити цікаві рішення..."
                         },
                         "publishedDate": "2025-10-25T12:00:00.000Z",
                         "favoritesCount": 4,
@@ -2773,6 +2858,161 @@
             "$ref": "#/components/responses/500"
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Delete story",
+        "operationId": "deleteStory",
+        "description": "Delete a story by its unique ID. Private endpoint (only owner/admin). Requires authentication.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "storyId",
+            "required": true,
+            "description": "The unique ID of the story (MongoDB ObjectId)",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{24}$",
+              "example": "672b6cfea9f43a5e8f9f21a2"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Story successfully deleted"
+          },
+          "400": {
+            "description": "Invalid story ID parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "BadRequestError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "name": "BadRequestError",
+                        "message": "Invalid storyId path parameter",
+                        "details": [
+                          "storyId must match pattern ^[a-f0-9]{24}$"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "invalid-id": {
+                    "value": {
+                      "status": 400,
+                      "message": "BadRequestError",
+                      "data": {
+                        "name": "BadRequestError",
+                        "message": "Invalid storyId path parameter",
+                        "details": [
+                          "storyId must match pattern ^[a-f0-9]{24}$"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "tags": [
+          "Stories"
+        ],
+        "summary": "Get categories",
+        "operationId": "getCategories",
+        "description": "Retrieve a list of available story categories",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully found categories!"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "_id",
+                          "name"
+                        ],
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "pattern": "^[a-f0-9]{24}$",
+                            "example": "68fb50c80ae91338641121f2"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Європа"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
       }
     }
   },
@@ -2987,7 +3227,8 @@
           "imageUrl",
           "title",
           "publishedDate",
-          "favoritesCount"
+          "favoritesCount",
+          "authorId"
         ],
         "properties": {
           "_id": {
@@ -3116,40 +3357,54 @@
           "category": {
             "type": "object",
             "description": "Story category",
+            "required": [
+              "_id",
+              "name"
+            ],
             "properties": {
               "_id": {
                 "type": "string",
                 "description": "Category ID",
                 "pattern": "^[a-f0-9]{24}$",
-                "example": "672a5fe1c31a4c67fdfb12f9"
+                "example": "68fb50c80ae91338641121f2"
               },
               "name": {
                 "type": "string",
                 "description": "Category name",
-                "example": "Nature"
+                "example": "Європа"
               }
             }
           },
           "ownerId": {
             "type": "object",
             "description": "Story author (owner)",
+            "required": [
+              "_id",
+              "name",
+              "avatarUrl"
+            ],
             "properties": {
               "_id": {
                 "type": "string",
                 "description": "User ID",
                 "pattern": "^[a-f0-9]{24}$",
-                "example": "671f8a22b5e9a8e4c1d7f9b3"
+                "example": "6881563901add19ee16fcffb"
               },
               "name": {
                 "type": "string",
                 "description": "Author name",
-                "example": "John Doe"
+                "example": "Дарина Ковальчук"
               },
               "avatarUrl": {
                 "type": "string",
                 "format": "uri",
                 "description": "Author avatar URL",
-                "example": "https://example.com/avatars/john.jpg"
+                "example": "https://ftp.goit.study/img/harmoniq/users/6881563901add19ee16fcffb.webp"
+              },
+              "description": {
+                "type": "string",
+                "description": "Short description / bio of the author",
+                "example": "Привіт, я Дарина. Знаю, як подорожувати яскраво та знаходити цікаві рішення. Ділюся практичними лайфхаками та маршрутами."
               }
             }
           },

@@ -86,6 +86,8 @@ paths:
       $ref: '../swagger/paths/stories/{storyId}/get.yaml'
     patch:
       $ref: '../swagger/paths/stories/{storyId}/patch.yaml'
+    delete:
+      $ref: '../swagger/paths/stories/{storyId}/delete.yaml'
 
   /categories:
     get:
