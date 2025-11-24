@@ -1,0 +1,62 @@
+tags:
+  - Stories
+summary: Delete story
+operationId: deleteStory
+description: Delete a story by its unique ID. Private endpoint (only owner/admin). Requires authentication.
+security:
+  - bearerAuth: []
+
+parameters:
+  - in: path
+    name: storyId
+    required: true
+    description: The unique ID of the story (MongoDB ObjectId)
+    schema:
+      type: string
+      pattern: '^[a-f0-9]{24}$'
+      example: '672b6cfea9f43a5e8f9f21a2'
+
+responses:
+  '204':
+    description: Story successfully deleted
+
+  '400':
+    description: Invalid story ID parameter
+    content:
+      application/json:
+        schema:
+          type: object
+          required: [status, message, data]
+          properties:
+            status:
+              type: integer
+              example: 400
+            message:
+              type: string
+              example: BadRequestError
+            data:
+              type: object
+              example:
+                name: BadRequestError
+                message: Invalid storyId path parameter
+                details:
+                  - storyId must match pattern ^[a-f0-9]{24}$
+        examples:
+          invalid-id:
+            value:
+              status: 400
+              message: BadRequestError
+              data:
+                name: BadRequestError
+                message: Invalid storyId path parameter
+                details:
+                  - storyId must match pattern ^[a-f0-9]{24}$
+
+  '401':
+    $ref: '../../../components/responses/401.yaml'
+
+  '404':
+    $ref: '../../../components/responses/404.yaml'
+
+  '500':
+    $ref: '../../../components/responses/500.yaml'
